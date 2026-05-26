@@ -1,0 +1,2551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🔐 吴洋 OS v32.0 - 密室逃脱</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Caveat:wght@400;700&family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-handwrite: 'Ma Shan Zheng', cursive;
+  --font-caveat: 'Caveat', cursive;
+  --font-body: 'Noto Sans SC', sans-serif;
+  --warm-white: #fdf8f0;
+  --paper: #fef9e7;
+  --paper-shadow: rgba(120, 80, 20, 0.15);
+  --ink: #2c1810;
+  --ink-light: #5a3e2b;
+  --accent: #e85d3a;
+  --accent-glow: rgba(232, 93, 58, 0.3);
+  --success: #4caf50;
+  --error: #e53935;
+  --pixel-green: #33ff33;
+  --pixel-yellow: #ffcc00;
+  --pixel-bg: #0a0a0a;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: var(--font-body);
+  background: #000;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* ========== CRT SCANLINE OVERLAY (persists across entire game) ========== */
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.12) 0px,
+    rgba(0, 0, 0, 0.12) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+.crt-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.35) 100%);
+}
+
+/* ========== BITSY SCENES ========== */
+.scene {
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 10;
+}
+.scene.active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Scene 1: Terminal */
+#scene1 {
+  background: var(--pixel-bg);
+  padding: 20px;
+  justify-content: flex-start;
+  padding-top: 8vh;
+}
+#terminal-bitsy {
+  width: 100%;
+  max-width: 700px;
+  color: var(--pixel-green);
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  line-height: 2.2;
+  text-align: left;
+  padding: 0 10px;
+}
+#terminal-bitsy .line {
+  opacity: 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
+#terminal-bitsy .line.visible { opacity: 1; }
+#terminal-bitsy .line .cursor { animation: blink 0.5s infinite; }
+#terminal-bitsy .blink-line { animation: blink 1s infinite; }
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Scene 2: Pixel Room */
+#scene2 {
+  background: var(--pixel-bg);
+  flex-direction: column;
+}
+#room-container {
+  position: relative;
+  width: 100%;
+  max-width: 512px;
+  aspect-ratio: 1;
+}
+#room-canvas {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+#speech-bubble {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  border: 2px solid var(--pixel-green);
+  color: var(--pixel-green);
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  padding: 10px 14px;
+  line-height: 1.8;
+  max-width: 85%;
+  text-align: center;
+  display: none;
+  z-index: 10;
+}
+#speech-bubble::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 8px solid var(--pixel-green);
+}
+#fridge-hitbox {
+  position: absolute;
+  cursor: pointer;
+  z-index: 20;
+}
+#fridge-hint {
+  position: absolute;
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: var(--pixel-yellow);
+  text-align: center;
+  display: none;
+  animation: floatHint 1.5s ease-in-out infinite;
+}
+@keyframes floatHint {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes fridgePulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(51,255,51,0.3); }
+  50% { box-shadow: 0 0 12px rgba(51,255,51,0.7); }
+}
+
+/* Scene 3: Item Get */
+#scene3 {
+  background: var(--pixel-bg);
+  padding: 20px;
+  justify-content: center;
+}
+#item-list {
+  width: 100%;
+  max-width: 600px;
+  color: var(--pixel-green);
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  line-height: 2.4;
+  text-align: left;
+  padding: 0 10px;
+}
+#item-list .item-line {
+  opacity: 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
+#item-list .item-line.visible { opacity: 1; }
+
+#enter-btn {
+  display: none;
+  margin-top: 40px;
+  padding: 14px 28px;
+  background: #000;
+  border: 3px solid var(--pixel-green);
+  color: var(--pixel-green);
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  cursor: pointer;
+  animation: btnPulse 1.5s ease-in-out infinite;
+  transition: all 0.1s;
+}
+#enter-btn:hover, #enter-btn:active {
+  background: var(--pixel-green);
+  color: #000;
+}
+@keyframes btnPulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(51,255,51,0.4); }
+  50% { box-shadow: 0 0 20px rgba(51,255,51,0.8); }
+}
+
+/* ========== PIXEL INTRO SCREEN (after bitsy) ========== */
+#pixel-intro {
+  background: var(--pixel-bg);
+  justify-content: center;
+  align-items: center;
+}
+#pixel-intro .pixel-intro-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 20px;
+}
+
+/* Pixel Door CSS Art */
+.pixel-door-container {
+  position: relative;
+  width: 140px;
+  height: 180px;
+}
+.pixel-door {
+  width: 100px;
+  height: 150px;
+  background: #2a1f15;
+  border: 4px solid #5a3e2b;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  image-rendering: pixelated;
+}
+.pixel-door::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 40px;
+  border: 3px solid #8a6a4a;
+  background: #1a1210;
+}
+.pixel-door::after {
+  content: '';
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 40px;
+  border: 3px solid #8a6a4a;
+  background: #1a1210;
+}
+.pixel-door-handle {
+  position: absolute;
+  right: 12px;
+  top: 55%;
+  width: 10px;
+  height: 10px;
+  background: var(--pixel-yellow);
+  border: 2px solid #aa8800;
+  z-index: 2;
+}
+.pixel-door-lock {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 28px;
+  background: #666;
+  border: 2px solid #888;
+  border-radius: 2px;
+  z-index: 2;
+}
+.pixel-door-lock::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 14px;
+  border: 3px solid #888;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+}
+.pixel-door-lock::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 8px;
+  background: #333;
+}
+.pixel-door-frame {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 160px;
+  border: 4px solid #8a6a4a;
+  border-bottom: none;
+  background: transparent;
+}
+
+/* Four mini lock indicators */
+.pixel-locks-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.pixel-mini-lock {
+  width: 20px;
+  height: 24px;
+  background: #444;
+  border: 2px solid #666;
+  position: relative;
+  animation: lockGlow 2s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+.pixel-mini-lock::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 10px;
+  border: 2px solid #666;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+}
+@keyframes lockGlow {
+  0%, 100% { box-shadow: 0 0 4px rgba(51,255,51,0.2); }
+  50% { box-shadow: 0 0 10px rgba(51,255,51,0.5); }
+}
+
+.pixel-intro-text {
+  font-family: var(--font-pixel);
+  color: var(--pixel-green);
+  font-size: 10px;
+  text-align: center;
+  line-height: 2;
+}
+.pixel-intro-text .sub {
+  color: var(--pixel-yellow);
+  font-size: 8px;
+  margin-top: 8px;
+}
+
+.pixel-start-btn {
+  padding: 14px 24px;
+  background: #000;
+  border: 3px solid var(--pixel-green);
+  color: var(--pixel-green);
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  cursor: pointer;
+  animation: btnPulse 1.5s ease-in-out infinite;
+  transition: all 0.1s;
+}
+.pixel-start-btn:hover, .pixel-start-btn:active {
+  background: var(--pixel-green);
+  color: #000;
+}
+
+/* ========== ROOM SYSTEM ========== */
+.room {
+  position: fixed;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.room.active { display: flex; }
+
+.room-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+.room-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.05) 0%,
+    rgba(0,0,0,0.02) 30%,
+    rgba(0,0,0,0.02) 60%,
+    rgba(0,0,0,0.25) 100%
+  );
+}
+
+.room-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 40px;
+  padding-top: 70px;
+  margin: auto 0;
+}
+.room-content.entering {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.room-content.entered {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.8s ease-out 0.6s, transform 0.8s ease-out 0.6s;
+}
+
+/* ========== PHYSICAL UI COMPONENTS ========== */
+.sticky-note {
+  background: var(--paper);
+  padding: 16px 20px;
+  font-family: var(--font-handwrite);
+  font-size: 1.2rem;
+  color: var(--ink);
+  transform: rotate(-1.5deg);
+  box-shadow: 2px 3px 8px var(--paper-shadow), 0 0 0 1px rgba(0,0,0,0.03);
+  position: relative;
+  line-height: 1.6;
+  max-width: 300px;
+  border: 2px solid rgba(0,0,0,0.05);
+}
+.sticky-note::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 12px;
+  background: rgba(200, 180, 100, 0.5);
+  border-radius: 2px;
+}
+
+.torn-paper {
+  background: var(--warm-white);
+  padding: 20px 24px;
+  position: relative;
+  box-shadow: 2px 4px 12px var(--paper-shadow);
+  border-radius: 2px;
+  max-width: 340px;
+  width: 100%;
+  border: 2px solid rgba(0,0,0,0.05);
+}
+.torn-paper::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 0; right: 0;
+  height: 8px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8'%3E%3Cpath d='M0,4 Q5,0 10,4 Q15,8 20,4 Q25,0 30,4 Q35,8 40,4 Q45,0 50,4 Q55,8 60,4 Q65,0 70,4 Q75,8 80,4 Q85,0 90,4 Q95,8 100,4 L100,8 L0,8 Z' fill='%23fdf8f0'/%3E%3C/svg%3E") repeat-x;
+  background-size: 60px 8px;
+}
+
+.whiteboard {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 4px;
+  padding: 20px;
+  border: 3px solid #555;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.5);
+  width: 100%;
+  max-width: 360px;
+}
+
+.padlock {
+  background: linear-gradient(145deg, #8a8a8a, #5a5a5a);
+  border-radius: 4px;
+  padding: 16px 24px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  border: 2px solid #444;
+}
+.padlock-digit {
+  width: 44px;
+  height: 56px;
+  background: #111;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #4ade80;
+  font-family: var(--font-pixel);
+  border: 2px solid #333;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s;
+}
+.padlock-digit:active { transform: scale(0.95); }
+
+.key-collected {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 215, 0, 0.15);
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  border-radius: 2px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  color: #ffd700;
+  backdrop-filter: blur(4px);
+  font-family: var(--font-pixel);
+}
+
+/* Keychain - pixel styled */
+.keychain {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 100;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  background: rgba(0,0,0,0.6);
+  border: 2px solid rgba(255,215,0,0.3);
+  padding: 4px 8px;
+  backdrop-filter: blur(4px);
+}
+.keychain-key {
+  width: 28px;
+  height: 28px;
+  background: rgba(100, 100, 100, 0.4);
+  border: 2px dashed rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.keychain-key.found {
+  background: rgba(255, 215, 0, 0.8);
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+  transform: scale(1.1);
+}
+
+/* Buttons - pixel styled */
+.btn-physical {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 2px;
+  font-family: var(--font-pixel);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  color: white;
+  background: var(--accent);
+  box-shadow: 0 4px 0 #b8432a, 0 6px 12px rgba(0,0,0,0.2);
+  border: 2px solid #ff7755;
+}
+.btn-physical:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #b8432a, 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.btn-ghost {
+  padding: 10px 20px;
+  border: 2px solid rgba(255,255,255,0.6);
+  border-radius: 2px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(4px);
+  color: white;
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-ghost:active {
+  background: rgba(255,255,255,0.2);
+  transform: scale(0.97);
+}
+
+/* Room title - pixel font */
+.room-title {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 2;
+  font-family: var(--font-pixel);
+  font-size: 0.85rem;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8), 2px 2px 0 rgba(0,0,0,0.5);
+  line-height: 2;
+}
+.room-title small {
+  display: block;
+  font-family: var(--font-pixel);
+  font-size: 0.55rem;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+/* Toast messages - pixel retro style */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  padding: 12px 20px;
+  border-radius: 2px;
+  font-size: 0.75rem;
+  font-family: var(--font-pixel);
+  z-index: 200;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 90vw;
+  text-align: center;
+  border: 2px solid;
+  background: rgba(0,0,0,0.9);
+  backdrop-filter: blur(4px);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast.error {
+  border-color: #ff4444;
+  color: #ff6666;
+}
+.toast.success {
+  border-color: var(--pixel-green);
+  color: var(--pixel-green);
+}
+.toast.info {
+  border-color: var(--pixel-yellow);
+  color: var(--pixel-yellow);
+}
+
+/* Animations */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px) rotate(-1deg); }
+  40% { transform: translateX(8px) rotate(1deg); }
+  60% { transform: translateX(-6px) rotate(-0.5deg); }
+  80% { transform: translateX(6px) rotate(0.5deg); }
+}
+.shake { animation: shake 0.5s ease-in-out; }
+
+@keyframes keyGet {
+  0% { transform: scale(1) rotate(0deg); }
+  30% { transform: scale(1.4) rotate(-10deg); }
+  60% { transform: scale(1.2) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+.key-get { animation: keyGet 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  animation: fadeUp 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+/* ========== ROOM 1: MOUNTAIN ========== */
+#room1 .room-bg {
+  background-image: url('images/mountain.jpg');
+  filter: brightness(0.85);
+}
+
+.packing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  max-width: 340px;
+}
+.pack-item {
+  background: rgba(255, 255, 255, 0.92);
+  border: 2px solid transparent;
+  border-radius: 2px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+  user-select: none;
+  position: relative;
+}
+.pack-item .item-emoji {
+  font-size: 1.6rem;
+  display: block;
+  margin-bottom: 4px;
+}
+.pack-item.selected {
+  border-color: var(--accent);
+  background: rgba(232, 93, 58, 0.1);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.pack-item.wrong {
+  border-color: var(--error);
+  background: rgba(229, 57, 53, 0.1);
+}
+.pack-item.correct {
+  border-color: var(--success);
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.order-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 300px;
+}
+.order-slot {
+  background: rgba(255,255,255,0.9);
+  border: 2px dashed #ccc;
+  border-radius: 2px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+.order-slot .slot-num {
+  width: 24px;
+  height: 24px;
+  background: var(--accent);
+  color: white;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  font-family: var(--font-pixel);
+}
+.order-slot.filled {
+  border-color: var(--accent);
+  background: rgba(232, 93, 58, 0.05);
+}
+
+/* ========== ROOM 2: BASKETBALL ========== */
+#room2 .room-bg {
+  background-image: url('images/basketball.jpg');
+  filter: brightness(0.8);
+}
+
+.locker-scene {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+.clue-item {
+  background: rgba(255,255,255,0.93);
+  border-radius: 4px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+.clue-item:active { transform: scale(0.98); }
+.clue-item .clue-icon { font-size: 1.8rem; flex-shrink: 0; }
+.clue-item .clue-label {
+  font-size: 0.85rem;
+  color: var(--ink-light);
+  font-weight: 700;
+}
+.clue-item .clue-reveal {
+  display: none;
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  color: var(--accent);
+  margin-top: 4px;
+}
+.clue-item.revealed .clue-reveal { display: block; }
+.clue-item.revealed { border: 2px solid rgba(232, 93, 58, 0.3); }
+
+/* ========== ROOM 3: SKIING ========== */
+#room3 .room-bg {
+  background-image: url('images/skiing.jpg');
+  filter: brightness(0.82);
+}
+#room3 .room-content {
+  margin: 0;
+  padding-top: 80px;
+  padding-bottom: 60px;
+}
+
+.weather-card {
+  background: rgba(0, 20, 60, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 4px;
+  padding: 14px 18px;
+  color: white;
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 2px solid rgba(100,150,255,0.3);
+}
+.weather-tag {
+  background: rgba(255,255,255,0.15);
+  padding: 4px 10px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.config-panel {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.config-row {
+  background: rgba(255,255,255,0.92);
+  border-radius: 4px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: 2px solid rgba(0,0,0,0.05);
+}
+.config-row label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink-light);
+  margin-bottom: 8px;
+}
+.config-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.config-opt {
+  padding: 10px 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 2px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+  color: var(--ink);
+  background: white;
+}
+.config-opt:active { transform: scale(0.98); }
+.config-opt.selected {
+  border-color: var(--accent);
+  background: rgba(232, 93, 58, 0.08);
+  font-weight: 700;
+}
+.config-opt.wrong-highlight {
+  border-color: var(--error);
+  background: rgba(229, 57, 53, 0.08);
+}
+
+/* ========== ROOM 4: CODING ========== */
+#room4 .room-bg {
+  background-image: url('images/coding.jpg');
+  filter: brightness(0.75);
+}
+
+.terminal {
+  background: #1e1e2e;
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  font-family: 'Courier New', monospace;
+  border: 2px solid #444;
+}
+.terminal-bar {
+  background: #313244;
+  padding: 8px 12px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+.terminal-dot.r { background: #f38ba8; }
+.terminal-dot.y { background: #f9e2af; }
+.terminal-dot.g { background: #a6e3a1; }
+.terminal-title {
+  margin-left: 8px;
+  font-size: 0.7rem;
+  color: #a6adc8;
+  font-family: var(--font-pixel);
+}
+.terminal-body {
+  padding: 14px;
+  max-height: 320px;
+  overflow-y: auto;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: #cdd6f4;
+}
+.terminal-line {
+  margin-bottom: 4px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.terminal-line.error { color: #f38ba8; }
+.terminal-line.success { color: #a6e3a1; }
+.terminal-line.comment { color: #6c7086; }
+.terminal-line.highlight { color: #f9e2af; }
+.terminal-input-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #313244;
+}
+.terminal-input-row span { color: #a6e3a1; }
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #cdd6f4;
+  font-family: inherit;
+  font-size: 0.8rem;
+  caret-color: #a6e3a1;
+}
+
+/* ========== ROOM 5: DAD ========== */
+#room5 .room-bg {
+  background-image: url('images/dad.jpg');
+  filter: brightness(0.85);
+}
+
+.nursery-items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+  max-width: 300px;
+}
+.nursery-item {
+  background: rgba(255,255,255,0.9);
+  border-radius: 4px;
+  padding: 14px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: 2px solid transparent;
+}
+.nursery-item:active { transform: scale(0.95); }
+.nursery-item .ni-emoji { font-size: 1.6rem; display: block; margin-bottom: 4px; }
+.nursery-item .ni-label { font-size: 0.7rem; color: var(--ink-light); font-weight: 700; }
+.nursery-item.found {
+  border: 2px solid var(--success);
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.key-slots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.key-slot {
+  width: 60px;
+  height: 60px;
+  border: 2px dashed rgba(255, 215, 0, 0.5);
+  border-radius: 2px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-pixel);
+}
+.key-slot.filled {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.15);
+}
+.key-slot .ks-emoji { font-size: 1.2rem; }
+.key-slot .ks-label { margin-top: 2px; }
+
+/* ========== VICTORY ========== */
+#victory {
+  background: linear-gradient(135deg, #fef9e7, #fff5f5, #f0f9ff);
+}
+#victory .room-bg {
+  background-image: url('images/dad.jpg');
+  filter: brightness(0.9) saturate(1.1);
+}
+#victory .room-bg::after {
+  background: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.6) 50%, rgba(255,248,240,0.85) 100%);
+}
+.victory-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 40px 20px 60px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+.victory-title {
+  font-family: var(--font-handwrite);
+  font-size: clamp(2.2rem, 10vw, 3.5rem);
+  color: var(--ink);
+  margin-bottom: 12px;
+  animation: fadeUp 0.8s ease-out;
+}
+.victory-sub {
+  font-size: 1.3rem;
+  color: var(--ink-light);
+  margin-bottom: 24px;
+  animation: fadeUp 0.8s ease-out 0.2s forwards;
+  opacity: 0;
+}
+.victory-from {
+  font-family: var(--font-handwrite);
+  font-size: 1.4rem;
+  color: var(--accent);
+  margin-bottom: 32px;
+  animation: fadeUp 0.8s ease-out 0.4s forwards;
+  opacity: 0;
+}
+.victory-footer {
+  font-size: 0.7rem;
+  color: var(--ink-light);
+  opacity: 0.6;
+  animation: fadeUp 0.8s ease-out 0.6s forwards;
+  opacity: 0;
+  line-height: 1.8;
+}
+
+/* Coke transition overlay */
+.coke-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.coke-transition.show {
+  opacity: 1;
+  pointer-events: all;
+}
+.coke-transition .coke-can {
+  font-size: 4rem;
+  animation: cokeFloat 0.8s ease-in-out infinite alternate;
+}
+.coke-transition .coke-text {
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  color: var(--pixel-green);
+  margin-top: 12px;
+  opacity: 0;
+  animation: fadeUp 0.4s ease-out 0.3s forwards;
+}
+@keyframes cokeFloat {
+  from { transform: translateY(0) rotate(-3deg); }
+  to { transform: translateY(-10px) rotate(3deg); }
+}
+
+.coke-bubble {
+  position: absolute;
+  width: 6px; height: 6px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: bubble 1.5s ease-out forwards;
+}
+@keyframes bubble {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-60px) scale(0.3); opacity: 0; }
+}
+
+.confetti-piece {
+  position: fixed;
+  width: 10px; height: 10px;
+  z-index: 300;
+  pointer-events: none;
+  animation: confettiFall 3s ease-in forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+/* Progress bar */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--pixel-green), var(--pixel-yellow));
+  z-index: 150;
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Coke easter egg */
+.coke-egg {
+  position: absolute;
+  font-size: 2.2rem;
+  cursor: pointer;
+  z-index: 3;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+  animation: cokePulse 2.5s ease-in-out infinite;
+}
+.coke-egg::after {
+  content: '👆';
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  opacity: 0;
+  animation: cokeHint 3s ease-in-out infinite 2s;
+}
+@keyframes cokePulse {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.15) rotate(5deg); }
+}
+@keyframes cokeHint {
+  0%, 100% { opacity: 0; transform: translateX(-50%) translateY(0); }
+  50% { opacity: 0.8; transform: translateX(-50%) translateY(-3px); }
+}
+
+/* Hide scrollbar */
+.room::-webkit-scrollbar { display: none; }
+.room { scrollbar-width: none; }
+
+.phase-hidden { display: none !important; }
+.phase-visible { display: flex !important; }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 480px) {
+  #terminal-bitsy, #item-list {
+    font-size: 7px;
+    line-height: 2.4;
+  }
+  #speech-bubble { font-size: 7px; padding: 8px 10px; }
+  #enter-btn { font-size: 10px; padding: 12px 20px; }
+  #scene1 { padding-top: 5vh; }
+  .pixel-intro-text { font-size: 8px; }
+  .pixel-start-btn { font-size: 9px; padding: 12px 18px; }
+}
+@media (max-width: 380px) {
+  .packing-grid { gap: 8px; }
+  .pack-item { padding: 10px 8px; font-size: 0.8rem; }
+  .pack-item .item-emoji { font-size: 1.3rem; }
+  .padlock-digit { width: 38px; height: 48px; font-size: 1.5rem; }
+  .terminal-body { font-size: 0.72rem; max-height: 260px; }
+  #terminal-bitsy, #item-list { font-size: 6px; }
+}
+@media (max-width: 360px) {
+  #terminal-bitsy, #item-list { font-size: 6px; }
+}
+@media (min-height: 800px) {
+  .room-content { padding-bottom: 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- CRT Scanline Overlay - persists across ENTIRE game -->
+<div class="crt-overlay"></div>
+
+<!-- Progress bar (hidden during bitsy scenes) -->
+<div class="progress-bar" id="progressBar" style="width: 0%; display: none;"></div>
+
+<!-- Keychain (hidden until escape room) -->
+<div class="keychain" id="keychain" style="display: none;">
+  <div class="keychain-key" id="key1" title="雪山钥匙">🏔️</div>
+  <div class="keychain-key" id="key2" title="篮球钥匙">🏀</div>
+  <div class="keychain-key" id="key3" title="滑雪钥匙">🎿</div>
+  <div class="keychain-key" id="key4" title="代码钥匙">💻</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Coke transition -->
+<div class="coke-transition" id="cokeTransition">
+  <div class="coke-can">🥤</div>
+  <div class="coke-text">补充能量中...</div>
+</div>
+
+<!-- ==================== BITSY SCENE 1: TERMINAL BOOT ==================== -->
+<div id="scene1" class="scene active">
+  <div id="terminal-bitsy"></div>
+</div>
+
+<!-- ==================== BITSY SCENE 2: PIXEL ROOM ==================== -->
+<div id="scene2" class="scene">
+  <div id="room-container">
+    <canvas id="room-canvas" width="256" height="256"></canvas>
+    <div id="speech-bubble">又加班？先帮我拿罐可乐，在冰箱里。</div>
+    <div id="fridge-hitbox"></div>
+    <div id="fridge-hint">▼ 点击冰箱</div>
+  </div>
+</div>
+
+<!-- ==================== BITSY SCENE 3: ITEM GET ==================== -->
+<div id="scene3" class="scene">
+  <div id="item-list"></div>
+  <button id="enter-btn" onclick="startEscapeRoom()">[进入解谜模式]</button>
+</div>
+
+<!-- ==================== PIXEL INTRO SCREEN (NEW) ==================== -->
+<div class="room" id="pixel-intro">
+  <div class="pixel-intro-content">
+    <!-- Pixel Door -->
+    <div class="pixel-door-container">
+      <div class="pixel-door-frame"></div>
+      <div class="pixel-door">
+        <div class="pixel-door-handle"></div>
+        <div class="pixel-door-lock"></div>
+      </div>
+    </div>
+    
+    <!-- Four mini locks -->
+    <div class="pixel-locks-row">
+      <div class="pixel-mini-lock" style="--delay: 0s;"></div>
+      <div class="pixel-mini-lock" style="--delay: 0.3s;"></div>
+      <div class="pixel-mini-lock" style="--delay: 0.6s;"></div>
+      <div class="pixel-mini-lock" style="--delay: 0.9s;"></div>
+    </div>
+    
+    <!-- Text -->
+    <div class="pixel-intro-text">
+      打开这四扇门，获取专属game
+      <div class="sub">⚠️ 建议携带可乐若干罐作为通关补给</div>
+    </div>
+    
+    <!-- Start button -->
+    <button class="pixel-start-btn" onclick="startGame()">点击密室大门开始游戏🕹️</button>
+  </div>
+</div>
+
+<!-- ==================== ROOM 1: MOUNTAIN ==================== -->
+<div class="room" id="room1">
+  <div class="room-bg"></div>
+  <div class="room-title">🏔️ 雪山营地<small>Altitude: 5025m</small></div>
+  <div class="coke-egg" style="bottom:20px;right:20px;" onclick="cokeEasterEgg()">🥤</div>
+  <div class="room-content entering">
+    <!-- Phase 1: Selection -->
+    <div id="r1-phase1">
+      <div class="sticky-note" style="margin-bottom: 16px;">
+        装备按使用顺序放好，到了营地先安家 📝<br>
+        <span style="font-size: 0.85rem; opacity: 0.7;">（先选对的4样，再排顺序）</span>
+      </div>
+      <div class="packing-grid" id="r1-grid">
+        <div class="pack-item" data-item="tent" data-correct="true" onclick="r1Select(this)">
+          <span class="item-emoji">⛺</span>防风帐篷
+        </div>
+        <div class="pack-item" data-item="umbrella" data-correct="false" onclick="r1Select(this)">
+          <span class="item-emoji">🏖️</span>沙滩伞
+        </div>
+        <div class="pack-item" data-item="oxygen" data-correct="true" onclick="r1Select(this)">
+          <span class="item-emoji">🫁</span>氧气瓶
+        </div>
+        <div class="pack-item" data-item="heels" data-correct="false" onclick="r1Select(this)">
+          <span class="item-emoji">👠</span>高跟鞋
+        </div>
+        <div class="pack-item" data-item="pole" data-correct="true" onclick="r1Select(this)">
+          <span class="item-emoji">🥾</span>登山杖
+        </div>
+        <div class="pack-item" data-item="goggles" data-correct="false" onclick="r1Select(this)">
+          <span class="item-emoji">🥽</span>泳镜
+        </div>
+        <div class="pack-item" data-item="flag" data-correct="true" onclick="r1Select(this)">
+          <span class="item-emoji">🚩</span>登顶旗
+        </div>
+        <div class="pack-item" data-item="cola" data-correct="false" onclick="r1Select(this)">
+          <span class="item-emoji">🥤</span>可乐（一箱）
+        </div>
+      </div>
+      <button class="btn-physical" style="margin-top: 16px;" onclick="r1ConfirmSelection()">确认选择</button>
+    </div>
+
+    <!-- Phase 2: Ordering -->
+    <div id="r1-phase2" class="phase-hidden" style="width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;gap:12px;">
+      <div class="sticky-note" style="margin-bottom: 8px;">
+        好的！现在按使用顺序排列 ⬇️<br>
+        <span style="font-size: 0.85rem; opacity: 0.7;">（点击按从先到后顺序排）</span>
+      </div>
+      <div class="order-zone" id="r1-order">
+        <div class="order-slot" data-slot="1"><span class="slot-num">1</span><span class="slot-text">到达后第一件事</span></div>
+        <div class="order-slot" data-slot="2"><span class="slot-num">2</span><span class="slot-text">适应环境</span></div>
+        <div class="order-slot" data-slot="3"><span class="slot-num">3</span><span class="slot-text">开始攀登</span></div>
+        <div class="order-slot" data-slot="4"><span class="slot-num">4</span><span class="slot-text">到达顶峰</span></div>
+      </div>
+      <div id="r1-item-pool" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px;"></div>
+      <button class="btn-physical" style="margin-top: 12px;" onclick="r1ConfirmOrder()">确认顺序</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== ROOM 2: BASKETBALL ==================== -->
+<div class="room" id="room2">
+  <div class="room-bg"></div>
+  <div class="room-title">🏀 篮球更衣室<small>Locker Room</small></div>
+  <div class="coke-egg" style="bottom:20px;left:20px;" onclick="cokeEasterEgg()">🥤</div>
+  <div class="room-content entering">
+    <div class="whiteboard" style="margin-bottom: 12px; text-align: center; font-size: 0.85rem;">
+      <p style="font-weight:700; margin-bottom:8px;">🔒 更衣柜密码锁</p>
+      <p style="color: var(--ink-light);">找到四个线索，破解密码</p>
+    </div>
+
+    <div class="locker-scene" id="r2-clues">
+      <div class="clue-item" onclick="r2RevealClue(this, 0)">
+        <span class="clue-icon">👕</span>
+        <div>
+          <div class="clue-label">Curry球衣 #30</div>
+          <div class="clue-reveal">"球衣号 30 ÷ 10 的余数 = ___"</div>
+        </div>
+      </div>
+      <div class="clue-item" onclick="r2RevealClue(this, 1)">
+        <span class="clue-icon">📋</span>
+        <div>
+          <div class="clue-label">战术板</div>
+          <div class="clue-reveal">"加时赛每节 = ___分钟"</div>
+        </div>
+      </div>
+      <div class="clue-item" onclick="r2RevealClue(this, 2)">
+        <span class="clue-icon">🥤</span>
+        <div>
+          <div class="clue-label">储物柜里的可乐</div>
+          <div class="clue-reveal">"可乐都被喝完了，剩余 ___罐"</div>
+        </div>
+      </div>
+      <div class="clue-item" onclick="r2RevealClue(this, 3)">
+        <span class="clue-icon">📺</span>
+        <div>
+          <div class="clue-label">记分牌</div>
+          <div class="clue-reveal">"今晚比分 109:100，赢的队个位数 = ___"</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 16px; text-align: center;">
+      <p style="font-size: 0.8rem; color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.5); margin-bottom: 10px; font-weight: 700;">输入4位密码：</p>
+      <div class="padlock" id="r2-lock">
+        <div class="padlock-digit" data-val="0" onclick="r2Spin(this)">0</div>
+        <div class="padlock-digit" data-val="0" onclick="r2Spin(this)">0</div>
+        <div class="padlock-digit" data-val="0" onclick="r2Spin(this)">0</div>
+        <div class="padlock-digit" data-val="0" onclick="r2Spin(this)">0</div>
+      </div>
+      <button class="btn-physical" style="margin-top: 14px;" onclick="r2Submit()">开锁</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== ROOM 3: SKIING ==================== -->
+<div class="room" id="room3">
+  <div class="room-bg"></div>
+  <div class="room-title">🎿 滑雪装备间<small>Gear Room</small></div>
+  <div class="coke-egg" style="top:75px;right:20px;" onclick="cokeEasterEgg()">🥤</div>
+  <div class="room-content entering">
+    <div class="weather-card">
+      <div class="weather-tag">❄️ 50cm新雪</div>
+      <div class="weather-tag">🌨️ 暴风雪预警</div>
+      <div class="weather-tag">🌫️ 能见度低</div>
+      <div class="weather-tag">🌡️ -8°C</div>
+    </div>
+
+    <div class="config-panel" id="r3-panel">
+      <div class="config-row">
+        <label>🏂 板型选择</label>
+        <div class="config-options" data-group="board">
+          <div class="config-opt" data-val="A" onclick="r3Pick(this)">A. 窄腰卡宾板（硬雪/压雪道）</div>
+          <div class="config-opt" data-val="B" onclick="r3Pick(this)">B. 宽腰粉雪板（深雪/野雪）</div>
+          <div class="config-opt" data-val="C" onclick="r3Pick(this)">C. 公园花式板（跳台/道具）</div>
+        </div>
+      </div>
+      <div class="config-row">
+        <label>⚙️ 固定器角度</label>
+        <div class="config-options" data-group="binding">
+          <div class="config-opt" data-val="A" onclick="r3Pick(this)">A. +15/-15 鸭脚（公园花式）</div>
+          <div class="config-opt" data-val="B" onclick="r3Pick(this)">B. +30/+15 前倾（竞速刻滑）</div>
+          <div class="config-opt" data-val="C" onclick="r3Pick(this)">C. +18/-6 偏前（全地形/野雪）</div>
+        </div>
+      </div>
+      <div class="config-row">
+        <label>🥽 雪镜镜片</label>
+        <div class="config-options" data-group="lens">
+          <div class="config-opt" data-val="A" onclick="r3Pick(this)">A. 黑色偏光（大晴天）</div>
+          <div class="config-opt" data-val="B" onclick="r3Pick(this)">B. 橙色增光（阴天/低能见度）</div>
+          <div class="config-opt" data-val="C" onclick="r3Pick(this)">C. 透明镜片（夜场）</div>
+        </div>
+      </div>
+      <div class="config-row">
+        <label>💧 防水指数</label>
+        <div class="config-options" data-group="waterproof">
+          <div class="config-opt" data-val="A" onclick="r3Pick(this)">A. 5,000mm（小雪/短时间）</div>
+          <div class="config-opt" data-val="B" onclick="r3Pick(this)">B. 15,000mm（中雪/半天）</div>
+          <div class="config-opt" data-val="C" onclick="r3Pick(this)">C. 30,000mm（暴风雪/全天）</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-physical" style="margin-top: 12px;" onclick="r3Submit()">出发！</button>
+  </div>
+</div>
+
+<!-- ==================== ROOM 4: CODING ==================== -->
+<div class="room" id="room4">
+  <div class="room-bg"></div>
+  <div class="room-title">💻 程序员作战室<small>Debug Mode</small></div>
+  <div class="room-content entering">
+    <div class="terminal" id="r4-terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot r"></div>
+        <div class="terminal-dot y"></div>
+        <div class="terminal-dot g"></div>
+        <span class="terminal-title">birthday.py</span>
+      </div>
+      <div class="terminal-body" id="r4-body">
+        <div class="terminal-line comment"># === Birthday System v32.0 ===</div>
+        <div class="terminal-line comment"># 桌上有: 💻 笔记本 | 🥤 可乐(第3罐) | 📱 柚柚监控</div>
+        <div class="terminal-line">$ python birthday_system.py</div>
+        <div class="terminal-line success">Loading modules...</div>
+        <div class="terminal-line success">Importing happiness... ✓</div>
+        <div class="terminal-line success">Importing cola_energy... ✓ 🥤</div>
+        <div class="terminal-line success">Importing memories... ✓</div>
+        <div class="terminal-line"></div>
+        <div class="terminal-line error">❌ Bug 1/3: TypeError</div>
+        <div class="terminal-line error">  yang = Person(name="吴洋")</div>
+        <div class="terminal-line error">  yang.age = ???</div>
+        <div class="terminal-line highlight">  # 吴洋今年几岁了？输入年龄</div>
+      </div>
+      <div class="terminal-input-row">
+        <span>$&gt;</span>
+        <input class="terminal-input" id="r4-input" type="text" placeholder="输入修复代码..." autocomplete="off" autocapitalize="off">
+      </div>
+    </div>
+    <p style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-top: 8px; text-align: center;">修复3个bug，让生日系统跑起来</p>
+    <div class="coke-egg" style="top:75px;right:20px;" onclick="cokeEasterEgg()">🥤</div>
+  </div>
+</div>
+
+<!-- ==================== ROOM 5: DAD ==================== -->
+<div class="room" id="room5">
+  <div class="room-bg"></div>
+  <div class="room-title">🍼 奶爸控制室<small>Mission: Go Home</small></div>
+  <div class="coke-egg" style="top:75px;right:20px;" onclick="cokeEasterEgg()">🥤</div>
+  <div class="room-content entering">
+    <!-- Phase 1: Explore -->
+    <div id="r5-phase1">
+      <div class="torn-paper" style="margin-bottom: 16px; text-align: center;">
+        <p style="font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;">🚪 最后一道门</p>
+        <p style="font-size: 0.8rem; color: var(--ink-light);">找到柚柚的作息表，按顺序插入钥匙</p>
+      </div>
+      <div class="nursery-items" id="r5-items">
+        <div class="nursery-item" onclick="r5Explore('monitor')">
+          <span class="ni-emoji">📺</span>
+          <span class="ni-label">婴儿监视器</span>
+        </div>
+        <div class="nursery-item" onclick="r5Explore('fridge')">
+          <span class="ni-emoji">🧊</span>
+          <span class="ni-label">冰箱</span>
+        </div>
+        <div class="nursery-item" onclick="r5Explore('calendar')">
+          <span class="ni-emoji">📅</span>
+          <span class="ni-label">墙上日历</span>
+        </div>
+        <div class="nursery-item" onclick="r5Explore('toy')">
+          <span class="ni-emoji">🧸</span>
+          <span class="ni-label">玩具箱</span>
+        </div>
+        <div class="nursery-item" onclick="r5Explore('bottle')">
+          <span class="ni-emoji">🍼</span>
+          <span class="ni-label">奶瓶</span>
+        </div>
+        <div class="nursery-item" onclick="r5Explore('photo')">
+          <span class="ni-emoji">🖼️</span>
+          <span class="ni-label">相框</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2: Key insertion -->
+    <div id="r5-phase2" class="phase-hidden" style="width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;gap:16px;">
+      <div class="torn-paper" style="text-align: center;">
+        <p style="font-weight: 700; margin-bottom: 8px;">📋 柚柚的一天</p>
+        <p style="font-size: 0.8rem; color: var(--ink-light); line-height: 1.7;">
+          ⛰️ 早上：出门遛弯看风景<br>
+          🏀 上午：玩球做运动<br>
+          🎿 下午：探索新世界<br>
+          💻 晚上：安静时间（爸爸工作）
+        </p>
+      </div>
+      <p style="font-size: 0.85rem; color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.5); font-weight: 700;">按作息顺序放入钥匙：</p>
+      <div class="key-slots" id="r5-slots">
+        <div class="key-slot" data-expect="mountain" onclick="r5InsertKey(0)">
+          <span class="ks-emoji">?</span>
+          <span class="ks-label">早上</span>
+        </div>
+        <div class="key-slot" data-expect="basketball" onclick="r5InsertKey(1)">
+          <span class="ks-emoji">?</span>
+          <span class="ks-label">上午</span>
+        </div>
+        <div class="key-slot" data-expect="skiing" onclick="r5InsertKey(2)">
+          <span class="ks-emoji">?</span>
+          <span class="ks-label">下午</span>
+        </div>
+        <div class="key-slot" data-expect="coding" onclick="r5InsertKey(3)">
+          <span class="ks-emoji">?</span>
+          <span class="ks-label">晚上</span>
+        </div>
+      </div>
+      <div id="r5-available-keys" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px;"></div>
+      <button class="btn-physical" style="margin-top: 8px;" onclick="r5Confirm()">开门！</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== VICTORY ==================== -->
+<div class="room" id="victory">
+  <div class="room-bg"></div>
+  <div class="victory-content">
+    <div class="victory-title">生日快乐，吴洋！🎂</div>
+    <div class="victory-sub">欢迎回家。</div>
+    <div class="victory-from">—— 永远爱你的壮壮 & 柚柚 ❤️</div>
+    <p style="font-size: 0.9rem; color: var(--ink-light); margin-bottom: 24px; animation: fadeUp 0.8s ease-out 0.5s forwards; opacity: 0;">🥤 冰箱里还有可乐，等你回来开</p>
+    <div class="victory-footer">
+      Game v1.0 | 新增1岁宝宝DLC | 可乐赞助<br>
+      Dev: 壮壮 | ©: forever
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== BITSY SCENE MANAGEMENT ====================
+let currentScene = 1;
+
+function showScene(n) {
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  document.getElementById('scene' + n).classList.add('active');
+  currentScene = n;
+  if (n === 2) initScene2();
+  if (n === 3) initScene3();
+}
+
+// ==================== BITSY SCENE 1: TERMINAL ====================
+const terminalLines = [
+  { text: '> 正在加载雪山模块... [██████░░] 85%', progress: true, final: '> 正在加载雪山模块... [████████] 100%' },
+  { text: '> 正在加载篮球引擎... [████████] 100%' },
+  { text: '> 检测到冰可乐补给... [████████] 100%' },
+  { text: '> 检测到最新款装备... [████████] 100%' },
+  { text: '> 检测到1岁幼崽信号... [████████] 100%' },
+  { text: '> 正在校准奶爸模式... [████████] 100%' },
+  { text: '> 欢迎来到 吴洋 OS v32.0', color: '#ffcc00' },
+  { text: '> 按任意键进入主程序...', blink: true }
+];
+
+let scene1Done = false;
+
+function initScene1() {
+  const terminal = document.getElementById('terminal-bitsy');
+  terminal.innerHTML = '';
+  let lineIndex = 0;
+  
+  function typeLine() {
+    if (lineIndex >= terminalLines.length) {
+      scene1Done = true;
+      return;
+    }
+    const lineData = terminalLines[lineIndex];
+    const div = document.createElement('div');
+    div.className = 'line';
+    terminal.appendChild(div);
+    
+    const fullText = lineData.text;
+    let charIdx = 0;
+    div.classList.add('visible');
+    if (lineData.color) div.style.color = lineData.color;
+    
+    function typeChar() {
+      if (charIdx <= fullText.length) {
+        div.textContent = fullText.substring(0, charIdx);
+        charIdx++;
+        const speed = lineData.progress ? 25 : 35;
+        setTimeout(typeChar, speed);
+      } else {
+        if (lineData.progress && lineData.final) {
+          setTimeout(() => {
+            div.textContent = lineData.final;
+            finishLine();
+          }, 300);
+        } else {
+          finishLine();
+        }
+      }
+    }
+    
+    function finishLine() {
+      if (lineData.blink) div.classList.add('blink-line');
+      lineIndex++;
+      setTimeout(typeLine, lineData.blink ? 0 : 200);
+    }
+    typeChar();
+  }
+  setTimeout(typeLine, 500);
+}
+
+document.getElementById('scene1').addEventListener('click', function() {
+  if (scene1Done) showScene(2);
+});
+document.getElementById('scene1').addEventListener('touchend', function(e) {
+  if (scene1Done) { e.preventDefault(); showScene(2); }
+});
+
+// ==================== BITSY SCENE 2: PIXEL ROOM ====================
+const C = {
+  BG: '#0a0a0a', WALL: '#1a1a2e', FLOOR: '#0f0f1a',
+  GREEN: '#2d6b5a', TEAL: '#1a4a4a', RED: '#cc3333',
+  WHITE: '#e8e8e8', YELLOW: '#ffcc00', DARK_GREEN: '#1a3d30',
+  MONITOR: '#0d2b0d', SKIN: '#ddb892', HAIR: '#2a2a2a',
+  COLA_DARK: '#8b1a1a', SNOW: '#c8dce8',
+  FRIDGE: '#3a7a6a', FRIDGE_DARK: '#2a5a4a'
+};
+
+let fridgeArea = { x: 0, y: 0, w: 0, h: 0 };
+
+function drawPixelRoom() {
+  const canvas = document.getElementById('room-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = 256, H = 256;
+  ctx.imageSmoothingEnabled = false;
+  
+  ctx.fillStyle = C.BG;
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = C.WALL;
+  ctx.fillRect(0, 0, W, 160);
+  ctx.fillStyle = '#1e1e34';
+  for (let y = 0; y < 160; y += 16) {
+    for (let x = 0; x < W; x += 32) {
+      ctx.fillRect(x + (y % 32 === 0 ? 0 : 16), y, 32, 1);
+    }
+  }
+  ctx.fillStyle = C.FLOOR;
+  ctx.fillRect(0, 160, W, 96);
+  ctx.fillStyle = '#141428';
+  for (let y = 160; y < H; y += 12) ctx.fillRect(0, y, W, 1);
+  for (let x = 0; x < W; x += 16) ctx.fillRect(x, 160, 1, 96);
+  
+  // Window
+  const winX = 30, winY = 30, winW = 80, winH = 60;
+  ctx.fillStyle = C.TEAL;
+  ctx.fillRect(winX - 3, winY - 3, winW + 6, winH + 6);
+  ctx.fillStyle = '#0a0a2a';
+  ctx.fillRect(winX, winY, winW, winH);
+  ctx.fillStyle = C.TEAL;
+  ctx.fillRect(winX + winW/2 - 1, winY, 2, winH);
+  drawSnowMountain(ctx, winX + 2, winY + 2, winW/2 - 4, winH - 4);
+  drawBasketballHoop(ctx, winX + winW/2 + 3, winY + 2, winW/2 - 5, winH - 4);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(winX + 5, winY + 5, 1, 1);
+  ctx.fillRect(winX + 15, winY + 10, 1, 1);
+  ctx.fillRect(winX + 55, winY + 7, 1, 1);
+  ctx.fillRect(winX + 68, winY + 12, 1, 1);
+  
+  // Desk
+  const deskX = 90, deskY = 110, deskW = 80, deskH = 50;
+  ctx.fillStyle = '#3d2b1f';
+  ctx.fillRect(deskX, deskY, deskW, 5);
+  ctx.fillStyle = '#2a1f15';
+  ctx.fillRect(deskX, deskY + 5, deskW, deskH - 5);
+  ctx.fillStyle = '#3d2b1f';
+  ctx.fillRect(deskX + 4, deskY + deskH, 4, 8);
+  ctx.fillRect(deskX + deskW - 8, deskY + deskH, 4, 8);
+  ctx.fillStyle = '#4a3525';
+  ctx.fillRect(deskX + 20, deskY + 15, 40, 20);
+  ctx.fillStyle = C.YELLOW;
+  ctx.fillRect(deskX + 38, deskY + 24, 4, 2);
+  
+  // Monitor
+  const monX = 108, monY = 78;
+  ctx.fillStyle = '#2a2a2a';
+  ctx.fillRect(monX, monY, 44, 32);
+  ctx.fillStyle = C.MONITOR;
+  ctx.fillRect(monX + 3, monY + 3, 38, 24);
+  ctx.fillStyle = '#33ff33';
+  ctx.fillRect(monX + 6, monY + 7, 20, 2);
+  ctx.fillRect(monX + 6, monY + 12, 28, 2);
+  ctx.fillRect(monX + 6, monY + 17, 15, 2);
+  ctx.fillStyle = C.YELLOW;
+  ctx.fillRect(monX + 24, monY + 17, 10, 2);
+  ctx.fillStyle = '#2a2a2a';
+  ctx.fillRect(monX + 18, monY + 32, 8, 3);
+  ctx.fillRect(monX + 14, monY + 35, 16, 2);
+  
+  // Cola can
+  drawColaCan(ctx, 155, 98);
+  
+  // Keyboard
+  ctx.fillStyle = '#3a3a3a';
+  ctx.fillRect(110, 105, 30, 6);
+  ctx.fillStyle = '#4a4a4a';
+  for (let i = 0; i < 7; i++) ctx.fillRect(112 + i * 4, 106, 3, 2);
+  for (let i = 0; i < 6; i++) ctx.fillRect(114 + i * 4, 109, 3, 1);
+  
+  // Character
+  drawCharacter(ctx, 120, 88);
+  
+  // Fridge
+  const fridgeX = 205, fridgeY = 80, fridgeW = 30, fridgeH = 78;
+  fridgeArea = { x: fridgeX, y: fridgeY, w: fridgeW, h: fridgeH };
+  drawFridge(ctx, fridgeX, fridgeY, fridgeW, fridgeH);
+  
+  // Floor items
+  drawSnowboard(ctx, 30, 185);
+  drawBabyBottle(ctx, 75, 195);
+  drawGamepad(ctx, 170, 200);
+  
+  // Position fridge hitbox
+  const hitbox = document.getElementById('fridge-hitbox');
+  const hint = document.getElementById('fridge-hint');
+  const scaleX = 100 / W, scaleY = 100 / H;
+  hitbox.style.left = (fridgeX * scaleX) + '%';
+  hitbox.style.top = (fridgeY * scaleY) + '%';
+  hitbox.style.width = (fridgeW * scaleX) + '%';
+  hitbox.style.height = (fridgeH * scaleY) + '%';
+  hitbox.style.animation = 'fridgePulse 2s ease-in-out infinite';
+  hint.style.left = ((fridgeX + fridgeW/2) * scaleX) + '%';
+  hint.style.top = ((fridgeY - 12) * scaleY) + '%';
+  hint.style.transform = 'translateX(-50%)';
+  hint.style.display = 'block';
+}
+
+function drawSnowMountain(ctx, x, y, w, h) {
+  ctx.fillStyle = '#2a4a5a';
+  ctx.beginPath();
+  ctx.moveTo(x, y + h);
+  ctx.lineTo(x + w * 0.3, y + h * 0.3);
+  ctx.lineTo(x + w * 0.5, y + h * 0.5);
+  ctx.lineTo(x + w * 0.7, y + h * 0.15);
+  ctx.lineTo(x + w, y + h);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = C.SNOW;
+  ctx.fillRect(x + Math.floor(w*0.27), y + Math.floor(h*0.3), 4, 2);
+  ctx.fillRect(x + Math.floor(w*0.25), y + Math.floor(h*0.32), 6, 2);
+  ctx.fillRect(x + Math.floor(w*0.67), y + Math.floor(h*0.15), 4, 2);
+  ctx.fillRect(x + Math.floor(w*0.65), y + Math.floor(h*0.17), 7, 2);
+  ctx.fillRect(x + Math.floor(w*0.64), y + Math.floor(h*0.19), 5, 2);
+}
+
+function drawBasketballHoop(ctx, x, y, w, h) {
+  ctx.fillStyle = '#e8e8e8';
+  ctx.fillRect(x + Math.floor(w*0.3), y + Math.floor(h*0.3), Math.floor(w*0.4), Math.floor(h*0.3));
+  ctx.fillStyle = C.RED;
+  ctx.fillRect(x + Math.floor(w*0.35), y + Math.floor(h*0.55), Math.floor(w*0.3), 2);
+  ctx.fillStyle = '#aaaaaa';
+  ctx.fillRect(x + Math.floor(w*0.38), y + Math.floor(h*0.58), 2, 8);
+  ctx.fillRect(x + Math.floor(w*0.48), y + Math.floor(h*0.58), 2, 8);
+  ctx.fillRect(x + Math.floor(w*0.58), y + Math.floor(h*0.58), 2, 8);
+  ctx.fillRect(x + Math.floor(w*0.36), y + Math.floor(h*0.62), Math.floor(w*0.28), 1);
+  ctx.fillRect(x + Math.floor(w*0.40), y + Math.floor(h*0.66), Math.floor(w*0.20), 1);
+  ctx.fillStyle = '#cc6600';
+  ctx.fillRect(x + Math.floor(w*0.1), y + Math.floor(h*0.7), 6, 6);
+  ctx.fillStyle = '#aa4400';
+  ctx.fillRect(x + Math.floor(w*0.1) + 2, y + Math.floor(h*0.7), 1, 6);
+  ctx.fillRect(x + Math.floor(w*0.1), y + Math.floor(h*0.7) + 2, 6, 1);
+}
+
+function drawColaCan(ctx, x, y) {
+  ctx.fillStyle = C.RED;
+  ctx.fillRect(x, y, 8, 14);
+  ctx.fillStyle = '#dd4444';
+  ctx.fillRect(x, y, 8, 2);
+  ctx.fillStyle = C.WHITE;
+  ctx.fillRect(x + 1, y + 6, 6, 1);
+  ctx.fillRect(x + 2, y + 5, 4, 1);
+  ctx.fillRect(x + 1, y + 7, 2, 1);
+  ctx.fillRect(x + 5, y + 7, 2, 1);
+  ctx.fillStyle = '#aaaaaa';
+  ctx.fillRect(x + 3, y - 1, 3, 2);
+}
+
+function drawCharacter(ctx, x, y) {
+  ctx.fillStyle = C.SKIN;
+  ctx.fillRect(x + 2, y - 18, 10, 10);
+  ctx.fillStyle = C.HAIR;
+  ctx.fillRect(x + 1, y - 20, 12, 4);
+  ctx.fillRect(x + 1, y - 18, 2, 4);
+  ctx.fillRect(x + 11, y - 18, 2, 4);
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(x + 4, y - 14, 2, 2);
+  ctx.fillRect(x + 8, y - 14, 2, 2);
+  ctx.fillStyle = C.GREEN;
+  ctx.fillRect(x, y - 6, 14, 14);
+  ctx.fillStyle = C.SKIN;
+  ctx.fillRect(x - 2, y - 4, 3, 8);
+  ctx.fillRect(x + 13, y - 4, 3, 8);
+  ctx.fillRect(x + 14, y - 2, 6, 3);
+  ctx.fillStyle = '#4a3525';
+  ctx.fillRect(x - 4, y - 8, 3, 20);
+  ctx.fillRect(x + 15, y - 8, 3, 20);
+  ctx.fillRect(x - 4, y - 8, 22, 3);
+  ctx.fillStyle = '#3d2b1f';
+  ctx.fillRect(x - 2, y + 8, 18, 4);
+  ctx.fillStyle = '#4a3525';
+  ctx.fillRect(x, y + 12, 3, 8);
+  ctx.fillRect(x + 12, y + 12, 3, 8);
+}
+
+function drawFridge(ctx, x, y, w, h) {
+  ctx.fillStyle = C.FRIDGE;
+  ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = C.FRIDGE_DARK;
+  ctx.fillRect(x, y, 2, h);
+  ctx.fillRect(x + w - 2, y, 2, h);
+  ctx.fillStyle = '#1a3a30';
+  ctx.fillRect(x + 2, y + Math.floor(h * 0.35), w - 4, 2);
+  ctx.fillStyle = C.WHITE;
+  ctx.fillRect(x + w - 6, y + 10, 2, 12);
+  ctx.fillRect(x + w - 6, y + Math.floor(h * 0.35) + 8, 2, 16);
+  ctx.fillStyle = '#4a9a8a';
+  ctx.fillRect(x + 2, y + 2, w - 4, 2);
+  ctx.fillStyle = C.RED;
+  ctx.fillRect(x + 8, y + Math.floor(h * 0.35) + 12, 4, 6);
+  ctx.fillStyle = C.WHITE;
+  ctx.fillRect(x + 9, y + Math.floor(h * 0.35) + 14, 2, 1);
+}
+
+function drawSnowboard(ctx, x, y) {
+  ctx.fillStyle = '#3388cc';
+  ctx.fillRect(x, y + 4, 40, 6);
+  ctx.fillRect(x - 2, y + 5, 2, 4);
+  ctx.fillRect(x + 40, y + 5, 2, 4);
+  ctx.fillStyle = C.WHITE;
+  ctx.fillRect(x + 10, y + 6, 8, 2);
+  ctx.fillStyle = C.YELLOW;
+  ctx.fillRect(x + 22, y + 6, 6, 2);
+  ctx.fillStyle = '#222222';
+  ctx.fillRect(x + 12, y + 2, 6, 3);
+  ctx.fillRect(x + 26, y + 2, 6, 3);
+}
+
+function drawBabyBottle(ctx, x, y) {
+  ctx.fillStyle = '#d4e8f0';
+  ctx.fillRect(x, y, 8, 16);
+  ctx.fillStyle = '#f8f8ff';
+  ctx.fillRect(x + 1, y + 6, 6, 9);
+  ctx.fillStyle = '#ffaa66';
+  ctx.fillRect(x + 2, y - 4, 4, 5);
+  ctx.fillRect(x + 3, y - 5, 2, 2);
+  ctx.fillStyle = '#88bbdd';
+  ctx.fillRect(x + 6, y + 4, 2, 1);
+  ctx.fillRect(x + 6, y + 8, 2, 1);
+  ctx.fillRect(x + 6, y + 12, 2, 1);
+}
+
+function drawGamepad(ctx, x, y) {
+  ctx.fillStyle = '#3a3a3a';
+  ctx.fillRect(x, y, 20, 12);
+  ctx.fillRect(x - 3, y + 3, 4, 6);
+  ctx.fillRect(x + 19, y + 3, 4, 6);
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(x + 3, y + 4, 2, 6);
+  ctx.fillRect(x + 1, y + 6, 6, 2);
+  ctx.fillStyle = C.RED;
+  ctx.fillRect(x + 14, y + 4, 2, 2);
+  ctx.fillStyle = C.GREEN;
+  ctx.fillRect(x + 12, y + 6, 2, 2);
+  ctx.fillStyle = C.YELLOW;
+  ctx.fillRect(x + 16, y + 6, 2, 2);
+}
+
+function initScene2() {
+  drawPixelRoom();
+  setTimeout(() => {
+    document.getElementById('speech-bubble').style.display = 'block';
+  }, 800);
+  document.getElementById('fridge-hitbox').addEventListener('click', function() {
+    showScene(3);
+  });
+  document.getElementById('fridge-hitbox').addEventListener('touchend', function(e) {
+    e.preventDefault();
+    showScene(3);
+  });
+}
+
+// ==================== BITSY SCENE 3: ITEM GET ====================
+const itemLines = [
+  { text: '> 获得道具：冰可乐（已冰镇）🥤', color: '#33ff33' },
+  { text: '> 获得道具：奶瓶（已消毒）🍼', color: '#33ff33' },
+  { text: '> 获得道具：尿不湿（柚柚专用）', color: '#33ff33' },
+  { text: '> 系统提示：主程序已就绪，是否进入？', color: '#ffcc00' }
+];
+
+function initScene3() {
+  const list = document.getElementById('item-list');
+  list.innerHTML = '';
+  let lineIdx = 0;
+  
+  function showItem() {
+    if (lineIdx >= itemLines.length) {
+      setTimeout(() => {
+        document.getElementById('enter-btn').style.display = 'inline-block';
+      }, 400);
+      return;
+    }
+    const data = itemLines[lineIdx];
+    const div = document.createElement('div');
+    div.className = 'item-line';
+    div.style.color = data.color;
+    list.appendChild(div);
+    let charIdx = 0;
+    div.classList.add('visible');
+    
+    function typeChar() {
+      if (charIdx <= data.text.length) {
+        div.textContent = data.text.substring(0, charIdx);
+        charIdx++;
+        setTimeout(typeChar, 30);
+      } else {
+        lineIdx++;
+        setTimeout(showItem, 500);
+      }
+    }
+    typeChar();
+  }
+  setTimeout(showItem, 400);
+}
+
+// ==================== TRANSITION: BITSY → ESCAPE ROOM ====================
+function startEscapeRoom() {
+  // Hide all bitsy scenes
+  document.querySelectorAll('.scene').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  // Show the pixel intro screen
+  document.getElementById('pixel-intro').classList.add('active');
+}
+
+// ==================== ESCAPE ROOM GAME STATE ====================
+const state = {
+  keys: [false, false, false, false],
+  currentRoom: 'pixel-intro',
+  r1: { selected: [], phase: 1, orderPicked: [] },
+  r2: { revealed: [false, false, false, false], attempts: 0 },
+  r3: { choices: { board: null, binding: null, lens: null, waterproof: null }, attempts: 0 },
+  r4: { bug: 0 },
+  r5: { scheduleFound: false, keysInserted: [], currentKeyIndex: 0 }
+};
+
+// ==================== UTILITIES ====================
+function showToast(msg, type = 'info', duration = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
+  requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+function goRoom(id) {
+  document.querySelectorAll('.room').forEach(r => r.classList.remove('active'));
+  const room = document.getElementById(id);
+  room.classList.add('active');
+  state.currentRoom = id;
+  updateProgress();
+  updateKeychain();
+  
+  const content = room.querySelector('.room-content');
+  if (content && id !== 'pixel-intro' && id !== 'victory') {
+    content.classList.add('entering');
+    content.classList.remove('entered');
+    setTimeout(() => {
+      content.classList.remove('entering');
+      content.classList.add('entered');
+    }, 50);
+  }
+}
+
+function updateProgress() {
+  const found = state.keys.filter(Boolean).length;
+  const pct = (found / 5) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function collectKey(index) {
+  state.keys[index] = true;
+  const el = document.getElementById('key' + (index + 1));
+  el.classList.add('found');
+  el.classList.add('key-get');
+  setTimeout(() => el.classList.remove('key-get'), 600);
+  updateProgress();
+}
+
+function shakeEl(el) {
+  el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 500);
+}
+
+function updateKeychain() {
+  const kc = document.getElementById('keychain');
+  const pb = document.getElementById('progressBar');
+  const isGame = !['pixel-intro', 'victory'].includes(state.currentRoom);
+  kc.style.display = isGame ? 'flex' : 'none';
+  pb.style.display = isGame ? 'block' : 'none';
+}
+
+// ==================== START GAME (from pixel intro) ====================
+function startGame() {
+  goRoom('room1');
+}
+
+// ==================== ROOM 1: MOUNTAIN ====================
+const R1_CORRECT = ['tent', 'oxygen', 'pole', 'flag'];
+const R1_ORDER = ['tent', 'oxygen', 'pole', 'flag'];
+
+function r1Select(el) {
+  if (state.r1.phase !== 1) return;
+  const item = el.dataset.item;
+  if (el.classList.contains('selected')) {
+    el.classList.remove('selected');
+    state.r1.selected = state.r1.selected.filter(i => i !== item);
+  } else {
+    if (state.r1.selected.length >= 4) {
+      showToast('最多选4样！', 'error');
+      return;
+    }
+    el.classList.add('selected');
+    state.r1.selected.push(item);
+  }
+}
+
+function r1ConfirmSelection() {
+  if (state.r1.selected.length !== 4) {
+    showToast('选满4样装备再确认', 'info');
+    return;
+  }
+  const allCorrect = state.r1.selected.every(i => R1_CORRECT.includes(i));
+  if (!allCorrect) {
+    const grid = document.getElementById('r1-grid');
+    state.r1.selected.forEach(item => {
+      if (!R1_CORRECT.includes(item)) {
+        const el = grid.querySelector(`[data-item="${item}"]`);
+        el.classList.remove('selected');
+        el.classList.add('wrong');
+        shakeEl(el);
+        setTimeout(() => el.classList.remove('wrong'), 1500);
+      }
+    });
+    state.r1.selected = state.r1.selected.filter(i => R1_CORRECT.includes(i));
+    const colaSelected = document.querySelector('[data-item="cola"].wrong');
+    if (colaSelected) {
+      showToast('你真的要背一箱可乐上5000米？🥤 精神可嘉但体力不允许', 'error', 3000);
+    } else {
+      showToast('这个带上雪山你是认真的吗？😂', 'error');
+    }
+    return;
+  }
+  state.r1.phase = 2;
+  document.getElementById('r1-phase1').classList.add('phase-hidden');
+  document.getElementById('r1-phase2').classList.remove('phase-hidden');
+  document.getElementById('r1-phase2').style.display = 'flex';
+  r1BuildPool();
+}
+
+const R1_LABELS = { tent: '⛺ 帐篷', oxygen: '🫁 氧气瓶', pole: '🥾 登山杖', flag: '🚩 登顶旗' };
+
+function r1BuildPool() {
+  const pool = document.getElementById('r1-item-pool');
+  pool.innerHTML = '';
+  const remaining = R1_CORRECT.filter(i => !state.r1.orderPicked.includes(i));
+  remaining.sort(() => Math.random() - 0.5);
+  remaining.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'btn-ghost';
+    btn.textContent = R1_LABELS[item];
+    btn.onclick = () => r1PickOrder(item);
+    pool.appendChild(btn);
+  });
+}
+
+function r1PickOrder(item) {
+  const slotIndex = state.r1.orderPicked.length;
+  if (slotIndex >= 4) return;
+  state.r1.orderPicked.push(item);
+  const slots = document.querySelectorAll('#r1-order .order-slot');
+  const slot = slots[slotIndex];
+  slot.querySelector('.slot-text').textContent = R1_LABELS[item];
+  slot.classList.add('filled');
+  r1BuildPool();
+}
+
+function r1ConfirmOrder() {
+  if (state.r1.orderPicked.length !== 4) {
+    showToast('把4样装备都排上', 'info');
+    return;
+  }
+  const correct = R1_ORDER.every((item, i) => state.r1.orderPicked[i] === item);
+  if (correct) {
+    showToast('🏔️ 登顶成功！获得雪山钥匙', 'success');
+    collectKey(0);
+    setTimeout(() => cokeTransition('room2'), 1500);
+  } else {
+    showToast('顺序不对，想想到了营地先做什么？', 'error');
+    state.r1.orderPicked = [];
+    document.querySelectorAll('#r1-order .order-slot').forEach(s => {
+      s.classList.remove('filled');
+      s.querySelector('.slot-text').textContent = ['到达后第一件事', '适应环境', '开始攀登', '到达顶峰'][parseInt(s.dataset.slot) - 1];
+    });
+    r1BuildPool();
+  }
+}
+
+// ==================== ROOM 2: BASKETBALL ====================
+const R2_ANSWER = [0, 5, 0, 9];
+
+function r2RevealClue(el, index) {
+  if (state.r2.revealed[index]) return;
+  state.r2.revealed[index] = true;
+  el.classList.add('revealed');
+}
+
+function r2Spin(el) {
+  let val = parseInt(el.dataset.val);
+  val = (val + 1) % 10;
+  el.dataset.val = val;
+  el.textContent = val;
+  el.style.transform = 'scale(1.1)';
+  setTimeout(() => el.style.transform = '', 100);
+}
+
+function r2Submit() {
+  const digits = document.querySelectorAll('#r2-lock .padlock-digit');
+  const code = Array.from(digits).map(d => parseInt(d.dataset.val));
+  const correct = code.every((v, i) => v === R2_ANSWER[i]);
+  
+  if (correct) {
+    showToast('🏀 更衣柜打开了！获得篮球钥匙', 'success');
+    collectKey(1);
+    setTimeout(() => cokeTransition('room3'), 1500);
+  } else {
+    state.r2.attempts++;
+    shakeEl(document.getElementById('r2-lock'));
+    if (state.r2.attempts >= 2) {
+      showToast('提示：点击线索看清楚再试', 'info');
+    } else {
+      showToast('密码不对，再试试', 'error');
+    }
+  }
+}
+
+// ==================== ROOM 3: SKIING ====================
+const R3_ANSWERS = { board: 'B', binding: 'C', lens: 'B', waterproof: 'C' };
+
+function r3Pick(el) {
+  const group = el.parentElement.dataset.group;
+  el.parentElement.querySelectorAll('.config-opt').forEach(o => {
+    o.classList.remove('selected');
+    o.classList.remove('wrong-highlight');
+  });
+  el.classList.add('selected');
+  state.r3.choices[group] = el.dataset.val;
+}
+
+function r3Submit() {
+  const { board, binding, lens, waterproof } = state.r3.choices;
+  if (!board || !binding || !lens || !waterproof) {
+    showToast('每项都要选哦', 'info');
+    return;
+  }
+  const allCorrect = board === R3_ANSWERS.board && binding === R3_ANSWERS.binding && 
+                     lens === R3_ANSWERS.lens && waterproof === R3_ANSWERS.waterproof;
+  if (allCorrect) {
+    showToast('🎿 完美配置！滑完这趟值得开一罐冰可乐 🥤', 'success', 3000);
+    collectKey(2);
+    setTimeout(() => cokeTransition('room4'), 1500);
+  } else {
+    state.r3.attempts++;
+    if (state.r3.attempts >= 3) {
+      Object.keys(R3_ANSWERS).forEach(group => {
+        if (state.r3.choices[group] !== R3_ANSWERS[group]) {
+          const container = document.querySelector(`[data-group="${group}"]`);
+          const wrongOpt = container.querySelector(`[data-val="${state.r3.choices[group]}"]`);
+          if (wrongOpt) wrongOpt.classList.add('wrong-highlight');
+        }
+      });
+      showToast('红色的选错了，50cm新雪+暴风雪想想？', 'error');
+    } else {
+      showToast('这个配置去野雪你会有麻烦的，再想想', 'error');
+      shakeEl(document.getElementById('r3-panel'));
+    }
+  }
+}
+
+// ==================== ROOM 4: CODING ====================
+const R4_BUGS = [
+  {
+    check: (input) => input.includes('32') || input === 'yang.age = 32' || input === 'yang.age=32',
+    success: [
+      { text: '  yang.age = 32  ✓', cls: 'success' },
+      { text: '  Person initialized: 吴洋, 32岁', cls: 'success' },
+      { text: '', cls: '' },
+      { text: '❌ Bug 2/3: ImportError', cls: 'error' },
+      { text: '  module \'cola\' not found', cls: 'error' },
+      { text: '  yang.favorite_drink = ???', cls: 'error' },
+      { text: '  # 最爱喝什么？安装它！', cls: 'highlight' },
+    ],
+    hint: '输入他的年龄数字'
+  },
+  {
+    check: (input) => {
+      const lower = input.toLowerCase();
+      return lower.includes('cola') || lower.includes('可乐') || lower.includes('coke') ||
+             lower.includes('pip install') || lower.includes('import');
+    },
+    success: [
+      { text: '  $ pip install cola', cls: 'success' },
+      { text: '  Successfully installed cola-32.0 🥤', cls: 'success' },
+      { text: '  yang.favorite_drink = "可乐"  ✓', cls: 'success' },
+      { text: '', cls: '' },
+      { text: '❌ Bug 3/3: ValueError', cls: 'error' },
+      { text: '  def compile_gift():', cls: '' },
+      { text: '      gift = ???', cls: 'error' },
+      { text: '  # 最好的礼物是什么？', cls: 'highlight' },
+    ],
+    hint: '他最爱喝的'
+  },
+  {
+    check: (input) => {
+      const lower = input.toLowerCase();
+      return lower.includes('爱') || lower.includes('love') || lower.includes('快乐') || 
+             lower.includes('happiness') || lower.includes('family') || lower.includes('家') ||
+             lower.includes('陪伴') || lower.includes('happy') || lower.includes('birthday') ||
+             lower.includes('生日') || lower.includes('回家') || lower.includes('柚柚') ||
+             lower.includes('壮壮');
+    },
+    success: [
+      { text: '  gift = "爱与陪伴"  ✓', cls: 'success' },
+      { text: '', cls: '' },
+      { text: '  ===========================', cls: 'success' },
+      { text: '  Compiling birthday.exe... ', cls: 'success' },
+      { text: '  █████████████████ 100%', cls: 'success' },
+      { text: '  ✨ System ready!', cls: 'success' },
+      { text: '  print("生日快乐，吴洋！")', cls: 'highlight' },
+      { text: '  ===========================', cls: 'success' },
+    ],
+    hint: '什么东西最珍贵？'
+  }
+];
+
+document.getElementById('r4-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') r4SubmitInput();
+});
+
+function r4SubmitInput() {
+  const input = document.getElementById('r4-input');
+  const value = input.value.trim();
+  if (!value) return;
+  
+  const bug = R4_BUGS[state.r4.bug];
+  const body = document.getElementById('r4-body');
+  
+  const userLine = document.createElement('div');
+  userLine.className = 'terminal-line';
+  userLine.textContent = `$> ${value}`;
+  body.appendChild(userLine);
+  
+  if (bug.check(value)) {
+    bug.success.forEach((line, i) => {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'terminal-line ' + line.cls;
+        el.textContent = line.text;
+        body.appendChild(el);
+        body.scrollTop = body.scrollHeight;
+      }, i * 200);
+    });
+    state.r4.bug++;
+    input.value = '';
+    if (state.r4.bug >= 3) {
+      setTimeout(() => {
+        showToast('💻 系统启动成功！获得代码钥匙', 'success');
+        collectKey(3);
+        setTimeout(() => cokeTransition('room5'), 1500);
+      }, bug.success.length * 200 + 500);
+    }
+  } else {
+    const errLine = document.createElement('div');
+    errLine.className = 'terminal-line error';
+    errLine.textContent = `  SyntaxError: invalid input. ${bug.hint}`;
+    body.appendChild(errLine);
+  }
+  input.value = '';
+  body.scrollTop = body.scrollHeight;
+}
+
+// ==================== ROOM 5: DAD ====================
+const R5_EXPLORE_MSGS = {
+  monitor: { emoji: '📺', msg: '监视器里是柚柚在睡觉... zzz 💤', found: false },
+  fridge: { emoji: '🧊', msg: '🥤🥤🥤🥤🥤 五罐冰可乐整整齐齐！这冰箱是你承包的吧', found: false },
+  calendar: { emoji: '📅', msg: '找到了！柚柚的作息时间表 📋', found: true },
+  toy: { emoji: '🧸', msg: '嘎嘎鸭和小熊，都是柚柚的宝贝', found: false },
+  bottle: { emoji: '🍼', msg: '奶瓶还是温的，柚柚刚喝完（父女同款干饭人）', found: false },
+  photo: { emoji: '🖼️', msg: '全家福！柚柚手里拿着爸爸的可乐罐当玩具 😂', found: false },
+};
+
+let fridgeClicks = 0;
+const FRIDGE_MSGS = [
+  '🥤🥤🥤🥤🥤 五罐冰可乐整整齐齐！这冰箱是你承包的吧',
+  '又开冰箱？可乐还在，没人偷喝 😏',
+  '柚柚：爸爸你怎么老开冰箱',
+  '可乐库存：4/5 请及时补货',
+  '你知道的太多了……这里没有线索啦！',
+];
+
+function r5Explore(item) {
+  const data = R5_EXPLORE_MSGS[item];
+  const el = event.currentTarget;
+  el.classList.add('found');
+  
+  if (data.found && !state.r5.scheduleFound) {
+    state.r5.scheduleFound = true;
+    showToast(data.msg, 'success', 2000);
+    setTimeout(() => {
+      document.getElementById('r5-phase1').classList.add('phase-hidden');
+      document.getElementById('r5-phase2').classList.remove('phase-hidden');
+      document.getElementById('r5-phase2').style.display = 'flex';
+      r5BuildKeys();
+    }, 1500);
+  } else if (item === 'fridge') {
+    showToast(FRIDGE_MSGS[fridgeClicks % FRIDGE_MSGS.length], 'info', 2500);
+    fridgeClicks++;
+  } else {
+    showToast(data.msg, 'info', 2000);
+  }
+}
+
+const R5_KEY_DATA = [
+  { id: 'mountain', emoji: '🏔️', label: '雪山' },
+  { id: 'basketball', emoji: '🏀', label: '篮球' },
+  { id: 'skiing', emoji: '🎿', label: '滑雪' },
+  { id: 'coding', emoji: '💻', label: '代码' },
+];
+const R5_CORRECT_ORDER = ['mountain', 'basketball', 'skiing', 'coding'];
+
+function r5BuildKeys() {
+  const container = document.getElementById('r5-available-keys');
+  container.innerHTML = '';
+  const remaining = R5_KEY_DATA.filter(k => !state.r5.keysInserted.includes(k.id));
+  remaining.forEach(key => {
+    const btn = document.createElement('button');
+    btn.className = 'btn-ghost';
+    btn.textContent = key.emoji + ' ' + key.label;
+    btn.onclick = () => r5SelectKey(key.id);
+    container.appendChild(btn);
+  });
+}
+
+function r5SelectKey(keyId) {
+  const slotIndex = state.r5.keysInserted.length;
+  if (slotIndex >= 4) return;
+  state.r5.keysInserted.push(keyId);
+  const slot = document.querySelectorAll('#r5-slots .key-slot')[slotIndex];
+  const keyData = R5_KEY_DATA.find(k => k.id === keyId);
+  slot.querySelector('.ks-emoji').textContent = keyData.emoji;
+  slot.classList.add('filled');
+  r5BuildKeys();
+}
+
+function r5Confirm() {
+  if (state.r5.keysInserted.length !== 4) {
+    showToast('把4把钥匙都放进去', 'info');
+    return;
+  }
+  const correct = state.r5.keysInserted.every((k, i) => k === R5_CORRECT_ORDER[i]);
+  if (correct) {
+    showToast('🍼 爸爸回来了！柚柚好开心！', 'success', 2500);
+    setTimeout(() => {
+      document.getElementById('progressBar').style.width = '100%';
+      goRoom('victory');
+      launchConfetti();
+    }, 2000);
+  } else {
+    showToast('顺序不对哦，看看作息表的时间', 'error');
+    state.r5.keysInserted = [];
+    document.querySelectorAll('#r5-slots .key-slot').forEach(s => {
+      s.classList.remove('filled');
+      s.querySelector('.ks-emoji').textContent = '?';
+    });
+    r5BuildKeys();
+  }
+}
+
+// ==================== COKE TRANSITION ====================
+const COKE_MSGS = [
+  '口渴了吧？先来一口 🥤',
+  '补充能量中...',
+  '可乐加载 99%...',
+  '快乐水+1',
+  '开盖，呲——🥤',
+  '今日已摄入可乐: ████████',
+];
+let cokeIndex = 0;
+
+function cokeTransition(nextRoom) {
+  const overlay = document.getElementById('cokeTransition');
+  const textEl = overlay.querySelector('.coke-text');
+  textEl.textContent = COKE_MSGS[cokeIndex % COKE_MSGS.length];
+  textEl.style.opacity = '0';
+  textEl.style.animation = 'none';
+  cokeIndex++;
+  overlay.classList.add('show');
+  requestAnimationFrame(() => {
+    textEl.style.animation = 'fadeUp 0.4s ease-out 0.3s forwards';
+  });
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    goRoom(nextRoom);
+  }, 1800);
+}
+
+// ==================== COKE EASTER EGGS ====================
+const COKE_EASTER_MSGS = [
+  '冒泡中... 呲呲呲 🥤',
+  '今日第3罐，但谁在数呢',
+  'cola.energy += 100',
+  '可乐：写代码的必需燃料',
+  '柚柚说：爸爸又在喝那个黑色的水',
+  'HP +999  可乐之力！',
+];
+let cokeEggIndex = 0;
+
+function cokeEasterEgg() {
+  showToast(COKE_EASTER_MSGS[cokeEggIndex % COKE_EASTER_MSGS.length], 'info', 2000);
+  cokeEggIndex++;
+}
+
+// ==================== VICTORY ====================
+function launchConfetti() {
+  const colors = ['#ffd700', '#e85d3a', '#4caf50', '#2196f3', '#ff69b4', '#ff6b35'];
+  for (let i = 0; i < 60; i++) {
+    setTimeout(() => {
+      const conf = document.createElement('div');
+      conf.className = 'confetti-piece';
+      conf.style.left = Math.random() * 100 + 'vw';
+      conf.style.background = colors[Math.floor(Math.random() * colors.length)];
+      conf.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      conf.style.width = (Math.random() * 8 + 6) + 'px';
+      conf.style.height = (Math.random() * 8 + 6) + 'px';
+      conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      conf.style.animationDelay = '0s';
+      document.body.appendChild(conf);
+      setTimeout(() => conf.remove(), 4000);
+    }, i * 50);
+  }
+}
+
+// ==================== INIT ====================
+window.addEventListener('DOMContentLoaded', function() {
+  initScene1();
+  updateKeychain();
+});
+</script>
+</body>
+</html>
