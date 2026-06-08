@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星辰贸易 — 合同管理</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--accent:#0052CC;--yellow:#E8D44D;--bg:#F5F5F0;--text:#1A2A40;--border:#1A2A40;--muted:#666;--green:#2E8B57;--danger:#D32F2F;--card:#fff}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+/* Top Bar */
+.topbar{background:var(--yellow);border-bottom:3px solid var(--accent);padding:12px 24px;display:flex;align-items:center;gap:24px}
+.topbar h1{font-size:1rem;font-weight:900;color:var(--accent);letter-spacing:1px}
+.topbar nav{display:flex;gap:4px}
+.topbar nav button{background:none;border:2px solid transparent;padding:6px 16px;font-size:.8rem;font-weight:700;cursor:pointer;color:var(--accent)}
+.topbar nav button.active{border-color:var(--accent);background:var(--card)}
+/* Main */
+.page{display:none;max-width:960px;margin:20px auto;padding:0 20px}
+.page.active{display:block}
+/* Form */
+.sec{margin-bottom:16px}
+.sec-title{font-size:.8rem;font-weight:800;color:var(--accent);text-transform:uppercase;margin-bottom:8px;border-bottom:2px solid var(--accent);padding-bottom:4px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
+.row.s1{grid-template-columns:1fr}
+.row.s3{grid-template-columns:1fr 1fr 1fr}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:.7rem;font-weight:700;color:var(--accent);text-transform:uppercase}
+.fg input,.fg select{border:2px solid var(--border);padding:7px 10px;font-size:.82rem;background:var(--card)}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--accent)}
+/* Table */
+.tbl{width:100%;border-collapse:collapse;font-size:.78rem;margin:8px 0}
+.tbl th{background:var(--accent);color:#fff;padding:7px 8px;font-size:.7rem;text-transform:uppercase;font-weight:700;text-align:left}
+.tbl td{border:1px solid #ddd;padding:6px 8px}
+.tbl input,.tbl select{border:1px solid #ccc;padding:4px 6px;font-size:.78rem;width:100%}
+/* Buttons */
+.btn{background:var(--accent);color:#fff;border:none;padding:8px 18px;font-weight:700;font-size:.8rem;cursor:pointer}
+.btn:hover{opacity:.9}
+.btn-s{background:var(--card);border:2px solid var(--accent);color:var(--accent);padding:6px 14px;font-weight:700;font-size:.78rem;cursor:pointer}
+.btn-link{background:var(--yellow);border:2px solid var(--accent);color:var(--accent);padding:6px 14px;font-weight:700;font-size:.78rem;cursor:pointer}
+.add-btn{background:none;border:2px dashed var(--accent);color:var(--accent);padding:6px 14px;font-weight:700;font-size:.78rem;cursor:pointer;width:100%;margin-top:6px}
+/* Toggle */
+.tog{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.78rem;font-weight:600}
+.tog .dot{width:14px;height:14px;border:2px solid var(--accent);display:inline-block}
+.tog.on .dot{background:var(--accent)}
+/* Order tab */
+.sub-tabs{display:flex;gap:4px;margin-bottom:12px}
+.sub-tabs button{background:none;border:2px solid transparent;padding:5px 14px;font-size:.76rem;font-weight:700;cursor:pointer;color:var(--accent)}
+.sub-tabs button.active{border-color:var(--accent);background:var(--card)}
+.otbl{width:100%;border-collapse:collapse;font-size:.72rem}
+.otbl th{background:var(--accent);color:#fff;padding:6px 7px;font-weight:700;text-align:left;white-space:nowrap}
+.otbl td{border-bottom:1px solid #eee;padding:5px 7px}
+.otbl tr:hover{background:#f0f0ea}
+.del-btn{background:none;border:none;cursor:pointer;font-size:.72rem;font-weight:600}
+/* Summary bar */
+.summary{padding:8px 14px;border:2px solid var(--accent);background:var(--yellow);display:flex;gap:18px;flex-wrap:wrap;align-items:center;font-size:.74rem;margin-bottom:10px}
+.summary span.label{font-weight:700;color:var(--accent)}
+.summary span.val{font-weight:900;color:var(--accent);margin-left:4px}
+/* Actions row */
+.actions{display:flex;gap:10px;margin-top:14px;align-items:center}
+/* Print */
+#pdf-box{display:none}
+@page{margin:0}
+@media print{body>*:not(#pdf-box){display:none!important}#pdf-box{display:block!important;margin:0;padding:0}}
+</style>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js">
+// ========== MANAGE TAB ==========
+document.getElementById('t_clients').onclick=()=>{
+  document.getElementById('t_clients').classList.add('active');
+  document.getElementById('t_products').classList.remove('active');
+  document.getElementById('manageClients').style.display='block';
+  document.getElementById('manageProducts').style.display='none';
+};
+document.getElementById('t_products').onclick=()=>{
+  document.getElementById('t_products').classList.add('active');
+  document.getElementById('t_clients').classList.remove('active');
+  document.getElementById('manageProducts').style.display='block';
+  document.getElementById('manageClients').style.display='none';
+};
+
+function renderClients(){
+  const body=document.getElementById('clientBody');
+  body.innerHTML=clients.map((c,i)=>`<tr>
+    <td><input class="ce" data-i="${i}" data-f="name" value="${c.name||''}" style="width:100%;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="ce" data-i="${i}" data-f="agent" value="${c.agent||''}" style="width:80px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="ce" data-i="${i}" data-f="phone" value="${c.phone||''}" style="width:100px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="ce" data-i="${i}" data-f="address" value="${c.address||''}" style="width:140px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="ce" data-i="${i}" data-f="products_note" value="${c.products_note||''}" style="width:140px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="ce" data-i="${i}" data-f="bank_name" value="${c.bank_name||''}" style="width:100px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="ce" data-i="${i}" data-f="bank_account" value="${c.bank_account||''}" style="width:120px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><button class="del-btn" style="color:var(--danger)" onclick="delClient(${i})">删除</button></td>
+  </tr>`).join('');
+  // Bind change events
+  body.querySelectorAll('.ce').forEach(inp=>{
+    inp.onchange=()=>{
+      const idx=+inp.dataset.i;const field=inp.dataset.f;
+      clients[idx][field]=inp.value;
+      DB.set('clients',clients);fillAll();
+    };
+  });
+}
+function delClient(idx){
+  if(!confirm('确定删除 '+clients[idx].name+' ？'))return;
+  clients.splice(idx,1);DB.set('clients',clients);renderClients();fillAll();
+}
+document.getElementById('addClientBtn').onclick=()=>{
+  clients.push({id:DB.nextId('clients'),name:'',agent:'',phone:'',address:'',bank_name:'',bank_account:''});
+  DB.set('clients',clients);renderClients();fillAll();
+};
+
+function renderProducts(){
+  const body=document.getElementById('productBody');
+  body.innerHTML=products.map((p,i)=>`<tr>
+    <td><input class="pe" data-i="${i}" data-f="product_id" value="${p.product_id||''}" style="width:70px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="pe" data-i="${i}" data-f="desc" value="${p.desc||''}" style="width:200px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td style="white-space:nowrap"><span style="font-size:.72rem;color:var(--accent);font-weight:700">RMB </span><input class="pe" data-i="${i}" data-f="sell_prices" value="${p.sell_prices||''}" style="width:150px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td style="white-space:nowrap"><span style="font-size:.72rem;color:var(--accent);font-weight:700">RMB </span><input class="pe" data-i="${i}" data-f="buy_prices" value="${p.buy_prices||''}" style="width:150px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><button class="del-btn" style="color:var(--danger)" onclick="delProduct(${i})">删除</button></td>
+  </tr>`).join('');
+  body.querySelectorAll('.pe').forEach(inp=>{
+    inp.onchange=()=>{
+      const idx=+inp.dataset.i;const field=inp.dataset.f;
+      products[idx][field]=inp.value;
+      DB.set('products',products);refreshProductSelects();
+    };
+  });
+}
+function delProduct(idx){
+  if(!confirm('确定删除 '+products[idx].product_id+' ？'))return;
+  products.splice(idx,1);DB.set('products',products);renderProducts();refreshProductSelects();
+}
+document.getElementById('addProductBtn').onclick=()=>{
+  products.push({id:DB.nextId('products'),product_id:'',desc:'',sell_prices:'',buy_prices:''});
+  DB.set('products',products);renderProducts();refreshProductSelects();
+};
+
+function refreshProductSelects(){
+  document.querySelectorAll('.psel').forEach(sel=>{
+    const cur=sel.value;
+    sel.innerHTML='<option value="">--</option>'+products.map((p,i)=>`<option value="${i}">${p.product_id} ${(p.desc||'').slice(0,15)}</option>`).join('');
+    sel.value=cur;
+  });
+}
+
+// Render on manage tab open
+const origNavHandler=document.querySelectorAll('.topbar nav button')[3];
+const origClick=origNavHandler.onclick;
+document.querySelectorAll('.topbar nav button')[3].addEventListener('click',()=>{renderClients();renderProducts();});
+
+</script>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>星辰贸易</h1>
+  <nav>
+    <button class="active" id="nav-sale">出货合同</button>
+    <button id="nav-pur">采购进货</button>
+    <button id="nav-orders">订单记录</button>
+    <button id="nav-manage">供应商/产品</button>
+  </nav>
+  <button onclick="if(confirm('确定重置所有数据？')){DB.clear();location.reload();}" style="margin-left:auto;background:none;border:1px solid var(--accent);color:var(--accent);padding:4px 10px;font-size:.7rem;cursor:pointer;font-weight:600">重置数据</button>
+</div>
+
+<!-- ====== 出货合同 ====== -->
+<div class="page active" id="pg-sale">
+  <div class="sec">
+    <div class="sec-title">客户信息</div>
+    <div class="row">
+      <div class="fg"><label>客户</label><select id="s_client"><option value="">--选择客户--</option></select></div>
+      <div class="fg"><label>合同编号</label><input id="s_no" readonly></div>
+    </div>
+    <div class="row s3">
+      <div class="fg"><label>对接人</label><input id="s_agent"></div>
+      <div class="fg"><label>电话</label><input id="s_phone"></div>
+      <div class="fg"><label>签署日期</label><input type="date" id="s_date"></div>
+    </div>
+    <div class="row s1">
+      <div class="fg"><label>收货地址</label><input id="s_addr"></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-title">产品明细</div>
+    <table class="tbl"><thead><tr><th>物料号</th><th>描述</th><th>数量</th><th>不含税价</th><th>含税(13%)</th><th>小计</th><th></th></tr></thead><tbody id="s_tbody"></tbody></table>
+    <button class="add-btn" id="s_addRow">＋ 添加产品</button>
+    <div style="text-align:right;margin-top:8px;font-weight:800;font-size:.9rem;color:var(--accent)">合计：<span id="s_total">¥0.00</span></div>
+  </div>
+  <div class="sec">
+    <div class="row s3">
+      <div class="fg"><label>支付方式</label><select id="s_pay"><option value="bank">银行转账/电汇</option><option value="credit">先货后款(30天)</option><option value="partial">预付50%+发货前付清</option></select></div>
+      <div class="fg" style="justify-content:flex-end"><span class="tog" id="s_inv"><span class="dot"></span> 开发票</span></div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn" id="s_pdf">生成PDF</button>
+    <button class="btn-s" id="s_save">保存</button>
+    <button class="btn-link" id="s_linkPur">🔗 关联采购</button>
+  </div>
+</div>
+
+<!-- ====== 采购进货 ====== -->
+<div class="page" id="pg-pur">
+  <div class="sec">
+    <div class="sec-title">供应商信息</div>
+    <div class="row s3">
+      <div class="fg"><label>供应商</label><select id="p_supplier"><option value="">--选择--</option></select></div>
+      <div class="fg"><label>对接人</label><input id="p_contact"></div>
+      <div class="fg"><label>日期</label><input type="date" id="p_date"></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-title">产品明细</div>
+    <table class="tbl"><thead><tr><th>物料号</th><th>描述</th><th>数量</th><th>不含税价</th><th>含税(13%)</th><th>小计</th><th></th></tr></thead><tbody id="p_tbody"></tbody></table>
+    <button class="add-btn" id="p_addRow">＋ 添加产品</button>
+    <div style="text-align:right;margin-top:8px;font-weight:800;font-size:.9rem;color:var(--accent)">合计：<span id="p_total">¥0.00</span></div>
+  </div>
+  <div class="sec">
+    <div class="row">
+      <div class="fg"><label>备注</label><input id="p_remark"></div>
+      <div class="fg" style="justify-content:flex-end"><span class="tog" id="p_inv"><span class="dot"></span> 发票</span></div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn" id="p_save">保存采购</button>
+    <button class="btn-s" id="p_clear">清空</button>
+    <button class="btn-link" id="p_linkSale">🔗 关联出货</button>
+  </div>
+</div>
+
+<!-- ====== 订单记录 ====== -->
+<div class="page" id="pg-orders">
+  <div class="sub-tabs">
+    <button class="active" id="t_sale">出货记录</button>
+    <button id="t_pur">采购记录</button>
+    <button class="btn-s" id="exportBtn" style="margin-left:auto">📥 导出Excel</button>
+  </div>
+  <div class="summary" id="summaryBar">
+    <div><span class="label">全部总额</span><span class="val" id="sumAll">¥0.00</span></div>
+    <div style="border-left:1.5px solid var(--accent);padding-left:12px"><span class="label">已选金额</span><span class="val" id="sumSel">¥0.00</span></div>
+    <div style="border-left:1.5px solid var(--accent);padding-left:12px"><span class="label">已选成本</span><span class="val" id="sumCost">¥0.00</span></div>
+    <div style="border-left:1.5px solid var(--accent);padding-left:12px"><span class="label">已选利润</span><span class="val" id="sumProfit" style="color:var(--green)">¥0.00</span></div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="otbl"><thead id="o_head"></thead><tbody id="o_body"></tbody></table>
+  </div>
+  <div id="o_empty" style="display:none;text-align:center;padding:40px;color:var(--muted)">暂无记录</div>
+</div>
+
+
+<!-- Link Panel -->
+<div id="linkPanel" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:3px solid var(--accent);box-shadow:0 -4px 20px rgba(0,0,0,.15);z-index:999;max-height:45vh;overflow-y:auto;padding:16px 24px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <h3 style="font-size:.85rem;font-weight:800;color:var(--accent)" id="linkPanelTitle">选择记录</h3>
+    <button onclick="closeLinkPanel()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--accent);font-weight:700">×</button>
+  </div>
+  <div id="linkPanelCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;"></div>
+</div>
+
+<!-- ====== 供应商/产品管理 ====== -->
+<div class="page" id="pg-manage">
+  <div class="sub-tabs">
+    <button class="active" id="t_clients">客户/供应商</button>
+    <button id="t_products">产品库</button>
+  </div>
+  <div id="manageClients">
+    <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center">
+      <h3 style="font-size:.85rem;font-weight:800;color:var(--accent)">客户/供应商列表</h3>
+      <button class="btn-s" id="addClientBtn">＋ 新增</button>
+    </div>
+    <table class="otbl" id="clientTable">
+      <thead><tr><th>公司名称</th><th>对接人</th><th>电话</th><th>地址</th><th>常买产品</th><th>开户行</th><th>账号</th><th></th></tr></thead>
+      <tbody id="clientBody"></tbody>
+    </table>
+  </div>
+  <div id="manageProducts" style="display:none">
+    <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center">
+      <h3 style="font-size:.85rem;font-weight:800;color:var(--accent)">产品库</h3>
+      <button class="btn-s" id="addProductBtn">＋ 新增</button>
+    </div>
+    <table class="otbl" id="productTable">
+      <thead><tr><th>物料号</th><th>产品描述</th><th>卖出单价（含13%增值税）</th><th>买入单价（含13%增值税）</th><th></th></tr></thead>
+      <tbody id="productBody"></tbody>
+    </table>
+  </div>
+</div>
+<div id="pdf-box"></div>
+
+<script>
+// ========== DB ==========
+const _mem={};
+const DB={
+  get(k){try{const s=localStorage.getItem('demo_'+k);return s?JSON.parse(s):(_mem[k]||[]);}catch(e){return _mem[k]||[];}},
+  set(k,v){_mem[k]=v;try{localStorage.setItem('demo_'+k,JSON.stringify(v));}catch(e){}},
+  nextId(k){const d=this.get(k);return d.length?Math.max(...d.map(x=>x.id||0))+1:1;},
+  clear(){try{Object.keys(localStorage).filter(k=>k.startsWith('demo_')).forEach(k=>localStorage.removeItem(k));}catch(e){}_mem.clients=null;_mem.products=null;_mem.orders=null;_mem.purchases=null;}
+};
+
+// ========== STATE ==========
+let clients=DB.get('clients');
+let products=DB.get('products');
+
+// ========== SEED DATA ==========
+if(!clients.length){
+  clients=[
+{id:1,name:'杭州创新贸易有限公司',agent:'王经理',phone:'',address:'',bank_name:'',bank_account:'',products_note:'SF7063 有机溶剂清洗剂'},
+{id:2,name:'深圳前海新材料有限公司',agent:'李总',phone:'',address:'',bank_name:'',bank_account:'',products_note:'LOCTITE 480/603/648'},
+{id:3,name:'优供达',agent:'陈工',phone:'',address:'',bank_name:'',bank_account:'',products_note:'SF7063 有机溶剂清洗剂'},
+{id:4,name:'苏州正方机电有限公司',agent:'赵主管',phone:'',address:'',bank_name:'',bank_account:'',products_note:'LOCTITE 7218 防磨涂层'},
+{id:5,name:'广州南方化工有限公司',agent:'周经理',phone:'',address:'',bank_name:'',bank_account:'',products_note:'LOCTITE 480 瞬干胶'},
+{id:6,name:'北京朝阳新材料有限公司',agent:'林经理',phone:'13912345678',address:'浦东新区科苑路100号',bank_name:'中国工商银行上海徐汇支行',bank_account:'62200000000098765432',products_note:'243/603/648等'},
+{id:7,name:'武汉光谷实业有限公司',agent:'吴主管',phone:'',address:'',bank_name:'',bank_account:'',products_note:'243/603/648等'},
+{id:8,name:'江苏恒源材料有限公司',agent:'孙经理',phone:'',address:'',bank_name:'',bank_account:'',products_note:'243 螺纹锁固胶'},
+{id:9,name:'天津华远工贸有限公司',agent:'钱主管',phone:'',address:'',bank_name:'',bank_account:'',products_note:'SF7063 有机溶剂清洗剂'},
+{id:10,name:'成都西南科技有限公司',agent:'郑工',phone:'',address:'',bank_name:'',bank_account:'',products_note:'SF7063 有机溶剂清洗剂'}
+];
+  DB.set('clients',clients);
+}
+if(!products.length){
+  products=[
+{id:1,product_id:'243',desc:'LOCTITE 乐泰 螺纹锁固胶 高粘度中强度型 243 250ml',sell_prices:'180.46, 181.93, 184.19',buy_prices:'168.37, 172.89, 175.15'},
+{id:2,product_id:'480',desc:'LOCTITE 480 20g 瞬干胶',sell_prices:'50.29',buy_prices:'44.66, 47.46'},
+{id:3,product_id:'603',desc:'LOCTITE 603 250ml 圆柱固持胶',sell_prices:'237.30',buy_prices:'221.48'},
+{id:4,product_id:'648',desc:'LOCTITE 648 50ml 固持胶',sell_prices:'90.40',buy_prices:'84.75'},
+{id:5,product_id:'7063',desc:'TE 乐泰 SF7063 有机溶剂清洗剂',sell_prices:'77.41, 80.23, 86.70',buy_prices:'72.32, 74.58, 79.60, 83.00'},
+{id:6,product_id:'7218',desc:'LOCTITE 7218 防磨涂层 10kg',sell_prices:'1800.00',buy_prices:'1620.00'}
+];
+  DB.set('products',products);
+}
+
+// ========== NAV ==========
+const pages=['sale','pur','orders','manage'];
+document.querySelectorAll('.topbar nav button').forEach((btn,i)=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('.topbar nav button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('pg-'+pages[i]).classList.add('active');
+    if(pages[i]==='orders')loadOrders('sale');if(pages[i]==='manage'){renderClients();renderProducts();}
+  };
+});
+
+// ========== HELPERS ==========
+function today(){return new Date().toISOString().split('T')[0];}
+function genNo(){const d=today().replace(/-/g,'');const orders=DB.get('orders').filter(o=>o.contract_no&&o.contract_no.startsWith(d));return d+String(orders.length+1).padStart(2,'0');}
+function numCN(n){const digits='零壹贰叁肆伍陆柒捌玖';const units=['','拾','佰','仟'];const bigs=['','万','亿'];n=Math.round(n*100);if(n===0)return'零元整';const yuan=Math.floor(n/100),jiao=Math.floor(n%100/10),fen=n%10;let r='';if(yuan>0){const s=String(yuan);let yStr='';for(let i=0;i<s.length;i++){const d=+s[i],pos=s.length-1-i,u=pos%4,b=Math.floor(pos/4);if(d===0){if(yStr&&!yStr.endsWith('零'))yStr+='零';}else{yStr+=digits[d]+units[u];}if(u===0&&b>0)yStr+=bigs[b];}r=yStr.replace(/零+$/,'')+'元';}if(jiao===0&&fen===0)r+='整';else{if(jiao>0)r+=digits[jiao]+'角';if(fen>0)r+=digits[fen]+'分';}return r;}
+function fillSelect(sel,items,textFn){sel.innerHTML='<option value="">--选择--</option>'+items.map((it,i)=>`<option value="${i}">${textFn(it)}</option>`).join('');}
+
+// ========== FILL SELECTS ==========
+function fillAll(){
+  fillSelect(document.getElementById('s_client'),clients,c=>c.name);
+  fillSelect(document.getElementById('p_supplier'),clients,c=>c.name);
+}
+fillAll();
+
+// ========== SALE CLIENT SELECT ==========
+document.getElementById('s_client').onchange=function(){
+  const c=clients[+this.value];
+  if(c){document.getElementById('s_agent').value=c.agent||'';document.getElementById('s_phone').value=c.phone||'';document.getElementById('s_addr').value=c.address||'';}
+};
+
+// ========== PRODUCT ROW (shared) ==========
+function makeRow(tbody,calcFn){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><select class="psel"><option value="">--</option>${products.map((p,i)=>`<option value="${i}">${p.product_id} ${(p.desc||'').slice(0,12)}</option>`).join('')}</select></td><td><input class="di" style="min-width:120px"></td><td><input class="qi" type="number" min="0" style="width:60px"></td><td><input class="pi" type="number" step="0.01" style="width:80px"></td><td><input class="ti" readonly style="width:80px;background:#f5f5f0"></td><td><span class="si">0.00</span></td><td><button class="del-btn" style="color:var(--danger)">×</button></td>`;
+  tbody.appendChild(tr);
+  const psel=tr.querySelector('.psel'),di=tr.querySelector('.di'),qi=tr.querySelector('.qi'),pi=tr.querySelector('.pi'),ti=tr.querySelector('.ti'),si=tr.querySelector('.si');
+  psel.onchange=()=>{if(psel.value!==''){const p=products[+psel.value];di.value=p.desc;const sp=p.sell_prices?p.sell_prices.split(',')[0].trim():'';if(sp&&!pi.value){pi.value=(+sp/1.13).toFixed(2);}calc();}};
+  const calc=()=>{const q=+qi.value||0,price=+pi.value||0;const tax=(price*1.13).toFixed(2);ti.value=tax;si.textContent=(q*+tax).toFixed(2);calcFn();};
+  qi.oninput=calc;pi.oninput=calc;
+  tr.querySelector('.del-btn').onclick=()=>{tr.remove();calcFn();};
+  return tr;
+}
+function fillRow(tr,data,calcFn){
+  if(data.product_id){const idx=products.findIndex(p=>p.product_id===data.product_id);if(idx>-1)tr.querySelector('.psel').value=idx;}
+  tr.querySelector('.di').value=data.desc||'';
+  tr.querySelector('.qi').value=data.qty||'';
+  tr.querySelector('.pi').value=data.price_notax||'';
+  const tax=(+(data.price_notax||0)*1.13).toFixed(2);
+  tr.querySelector('.ti').value=data.price_tax||tax;
+  tr.querySelector('.si').textContent=data.subtotal||(+(data.qty||0)*+(data.price_tax||tax)).toFixed(2);
+  calcFn();
+}
+
+// ========== SALE PRODUCTS ==========
+const sTb=document.getElementById('s_tbody');
+function calcSale(){let t=0;sTb.querySelectorAll('.si').forEach(s=>t+=+s.textContent);document.getElementById('s_total').textContent='¥'+t.toFixed(2);}
+document.getElementById('s_addRow').onclick=()=>makeRow(sTb,calcSale);
+makeRow(sTb,calcSale); // default 1 row
+document.getElementById('s_no').value=genNo();
+document.getElementById('s_date').value=today();
+
+// ========== PURCHASE PRODUCTS ==========
+const pTb=document.getElementById('p_tbody');
+function calcPur(){let t=0;pTb.querySelectorAll('.si').forEach(s=>t+=+s.textContent);document.getElementById('p_total').textContent='¥'+t.toFixed(2);}
+document.getElementById('p_addRow').onclick=()=>makeRow(pTb,calcPur);
+makeRow(pTb,calcPur);
+document.getElementById('p_date').value=today();
+
+// ========== TOGGLES ==========
+document.querySelectorAll('.tog').forEach(t=>t.onclick=()=>t.classList.toggle('on'));
+
+// ========== GATHER DATA ==========
+function gatherSale(){
+  const prods=[];sTb.querySelectorAll('tr').forEach(tr=>{
+    const sel=tr.querySelector('.psel');const pid=sel.value!==''?products[+sel.value]?.product_id:'';
+    prods.push({product_id:pid,desc:tr.querySelector('.di').value,qty:+(tr.querySelector('.qi').value)||0,price_notax:+(tr.querySelector('.pi').value)||0,price_tax:+(tr.querySelector('.ti').value)||0,subtotal:+(tr.querySelector('.si').textContent)||0});
+  });
+  const total=prods.reduce((s,p)=>s+p.subtotal,0);
+  const ci=+document.getElementById('s_client').value;
+  return{contract_no:document.getElementById('s_no').value,sign_date:document.getElementById('s_date').value,client_name:ci!==''&&clients[ci]?clients[ci].name:'',agent_name:document.getElementById('s_agent').value,phone:document.getElementById('s_phone').value,address:document.getElementById('s_addr').value,products:prods,total_amount:total,pay_method:document.getElementById('s_pay').value,invoice:document.getElementById('s_inv').classList.contains('on')?1:0};
+}
+function gatherPur(){
+  const prods=[];pTb.querySelectorAll('tr').forEach(tr=>{
+    const sel=tr.querySelector('.psel');const pid=sel.value!==''?products[+sel.value]?.product_id:'';
+    prods.push({product_id:pid,desc:tr.querySelector('.di').value,qty:+(tr.querySelector('.qi').value)||0,price_notax:+(tr.querySelector('.pi').value)||0,price_tax:+(tr.querySelector('.ti').value)||0,subtotal:+(tr.querySelector('.si').textContent)||0});
+  });
+  const total=prods.reduce((s,p)=>s+p.subtotal,0);
+  const si=+document.getElementById('p_supplier').value;
+  return{supplier:si!==''&&clients[si]?clients[si].name:'',contact:document.getElementById('p_contact').value,receive_date:document.getElementById('p_date').value,products:prods,total_amount:total,invoice:document.getElementById('p_inv').classList.contains('on')?1:0,remark:document.getElementById('p_remark').value};
+}
+
+// ========== SAVE ==========
+document.getElementById('s_save').onclick=()=>{
+  const data=gatherSale();if(!data.client_name){alert('请选择客户');return;}
+  data.order_type='sale';data.created_at=new Date().toISOString();data.invoiced=data.invoice;if(window._purLinkedSale){data.linked_sale=window._purLinkedSale;data.linked_sale_id=window._purLinkedSaleId;}if(window._saleLinkedPur){data.linked_purchase=window._saleLinkedPur;data.linked_purchase_id=window._saleLinkedPurId;}
+  let orders=DB.get('orders');
+  if(window._editingSaleId){data.id=window._editingSaleId;const idx=orders.findIndex(x=>x.id===window._editingSaleId);if(idx>-1){data.paid=orders[idx].paid;orders[idx]=data;}else{orders.unshift(data);}window._editingSaleId=null;}
+  else{data.id=DB.nextId('orders');data.paid=0;orders.unshift(data);}
+  DB.set('orders',orders);alert('已保存');resetSale();
+};
+document.getElementById('p_save').onclick=()=>{
+  const data=gatherPur();if(!data.supplier){alert('请选择供应商');return;}
+  data.created_at=new Date().toISOString();data.invoiced=data.invoice;if(window._purLinkedSale){data.linked_sale=window._purLinkedSale;data.linked_sale_id=window._purLinkedSaleId;}
+  let purs=DB.get('purchases');
+  if(window._editingPurId){data.id=window._editingPurId;const idx=purs.findIndex(x=>x.id===window._editingPurId);if(idx>-1){data.paid=purs[idx].paid;purs[idx]=data;}else{purs.unshift(data);}window._editingPurId=null;}
+  else{data.id=DB.nextId('purchases');data.paid=0;purs.unshift(data);}
+  DB.set('purchases',purs);alert('已保存');resetPur();
+};
+
+function resetSale(){window._saleLinkedPur=null;window._saleLinkedPurId=null;sTb.innerHTML='';makeRow(sTb,calcSale);document.getElementById('s_no').value=genNo();document.getElementById('s_date').value=today();['s_agent','s_phone','s_addr'].forEach(id=>document.getElementById(id).value='');document.getElementById('s_client').value='';document.getElementById('s_inv').classList.remove('on');calcSale();}
+function resetPur(){window._purLinkedSale=null;window._purLinkedSaleId=null;pTb.innerHTML='';makeRow(pTb,calcPur);document.getElementById('p_date').value=today();['p_contact','p_remark'].forEach(id=>document.getElementById(id).value='');document.getElementById('p_supplier').value='';document.getElementById('p_inv').classList.remove('on');calcPur();}
+document.getElementById('p_clear').onclick=resetPur;
+
+// ========== LINK 关联 ==========
+document.getElementById('s_linkPur').onclick=()=>{
+  const purs=DB.get('purchases');if(!purs.length){alert('暂无采购记录');return;}
+  openLinkPanel('采购记录',purs,'pur');
+};
+document.getElementById('p_linkSale').onclick=()=>{
+  const orders=DB.get('orders').filter(o=>o.order_type==='sale');if(!orders.length){alert('暂无出货记录');return;}
+  openLinkPanel('出货合同',orders,'sale');
+};
+
+// ========== ORDERS TAB ==========
+let currentOrderTab='sale';
+document.getElementById('t_sale').onclick=()=>{currentOrderTab='sale';document.getElementById('t_sale').classList.add('active');document.getElementById('t_pur').classList.remove('active');loadOrders('sale');};
+document.getElementById('t_pur').onclick=()=>{currentOrderTab='purchase';document.getElementById('t_pur').classList.add('active');document.getElementById('t_sale').classList.remove('active');loadOrders('purchase');};
+
+function loadOrders(type){
+  const head=document.getElementById('o_head');
+  const body=document.getElementById('o_body');
+  if(type==='sale'){
+    head.innerHTML='<tr><th><input type="checkbox" id="chkAll" onchange="toggleAll(this)"></th><th>合同编号</th><th>产品信息</th><th>单价(含13%税)</th><th>数量</th><th>单位</th><th>总价</th><th>成本</th><th>利润</th><th>付款</th><th>发票</th><th>对接人</th><th>公司</th><th>关联采购</th><th></th></tr>';
+    const orders=DB.get('orders').filter(o=>o.order_type==='sale');
+    if(!orders.length){body.innerHTML='';document.getElementById('o_empty').style.display='block';updateSummary();return;}
+    document.getElementById('o_empty').style.display='none';
+    body.innerHTML=orders.map(o=>{
+      const prods=o.products||[];
+      const ps=prods.map(p=>`${(p.desc||'').slice(0,12)}×${p.qty}`).join(', ');
+      const firstP=prods[0]||{};
+      const totalQty=prods.reduce((s,p)=>s+(p.qty||0),0);
+      const cost=getCost(prods);
+      const profit=o.total_amount-cost;
+      return`<tr style="cursor:pointer" onclick="editSaleOrder(${o.id})"><td onclick="event.stopPropagation()"><input type="checkbox" class="ochk" data-amt="${o.total_amount}" data-cost="${cost}" data-profit="${profit}" onchange="updateSummary()"></td><td style="font-weight:700;font-size:.72rem">${o.contract_no}</td><td style="font-size:.7rem;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ps}</td><td>¥${(firstP.price_tax||0).toFixed(2)}</td><td>${totalQty}</td><td>支</td><td style="font-weight:700">¥${Number(o.total_amount).toFixed(2)}</td><td style="color:var(--muted);font-size:.7rem">¥${cost.toFixed(2)}</td><td style="font-weight:700;color:${profit>=0?'var(--green)':'var(--danger)'}">${profit>=0?'+':''}¥${profit.toFixed(2)}</td><td><button class="del-btn" style="color:${o.paid?'var(--green)':'var(--muted)'}" onclick="event.stopPropagation();togField('orders',${o.id},'paid')">${o.paid?'✓已付':'✗未付'}</button></td><td><button class="del-btn" style="color:${o.invoiced?'var(--green)':'var(--muted)'}" onclick="event.stopPropagation();togField('orders',${o.id},'invoiced')">${o.invoiced?'✓已开':'✗未开'}</button></td><td>${o.agent_name||''}</td><td style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${o.client_name||''}">${o.client_name||''}</td><td style="font-size:.68rem" onclick="event.stopPropagation();if(o.linked_purchase_id)editPurOrder(o.linked_purchase_id)"><span style="cursor:${o.linked_purchase?'pointer':'default'};color:${o.linked_purchase?'var(--accent)':'var(--muted)'};text-decoration:${o.linked_purchase?'underline':'none'}">${o.linked_purchase||'—'}</span></td><td onclick="event.stopPropagation()"><button class="del-btn" style="color:var(--danger)" onclick="delOrder(${o.id})">删除</button></td></tr>`;
+    }).join('');
+    updateSummary();
+  }else{
+    head.innerHTML='<tr><th>日期</th><th>产品信息</th><th>单价(含13%税)</th><th>数量</th><th>单位</th><th>总价</th><th>付款</th><th>发票</th><th>对接人</th><th>公司</th><th>关联出货</th><th></th></tr>';
+    const purs=DB.get('purchases');
+    if(!purs.length){body.innerHTML='';document.getElementById('o_empty').style.display='block';return;}
+    document.getElementById('o_empty').style.display='none';
+    body.innerHTML=purs.map(p=>{
+      const prods=p.products||[];
+      const ps=prods.map(pp=>`${pp.product_id||''} ${(pp.desc||'').slice(0,12)}`).join(', ');
+      const firstP=prods[0]||{};
+      const totalQty=prods.reduce((s,pp)=>s+(pp.qty||0),0);
+      return`<tr style="cursor:pointer" onclick="editPurOrder(${p.id})"><td>${p.receive_date||''}</td><td style="font-size:.7rem">${ps}</td><td>¥${(firstP.price_tax||firstP.unit_price||0).toFixed(2)}</td><td>${totalQty}</td><td>支</td><td style="font-weight:700">¥${Number(p.total_amount).toFixed(2)}</td><td><button class="del-btn" style="color:${p.paid?'var(--green)':'var(--muted)'}" onclick="event.stopPropagation();togField('purchases',${p.id},'paid')">${p.paid?'✓已付':'✗未付'}</button></td><td><button class="del-btn" style="color:${p.invoiced?'var(--green)':'var(--muted)'}" onclick="event.stopPropagation();togField('purchases',${p.id},'invoiced')">${p.invoiced?'✓已开':'✗未开'}</button></td><td>${p.contact||''}</td><td style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.supplier||''}">${p.supplier||''}</td><td style="font-size:.68rem" onclick="event.stopPropagation();if(p.linked_sale_id)editSaleOrder(p.linked_sale_id)"><span style="cursor:${p.linked_sale?'pointer':'default'};color:${p.linked_sale?'var(--accent)':'var(--muted)'};text-decoration:${p.linked_sale?'underline':'none'}">${p.linked_sale||'—'}</span></td><td onclick="event.stopPropagation()"><button class="del-btn" style="color:var(--danger)" onclick="delPur(${p.id})">删除</button></td></tr>`;
+    }).join('');
+  }
+}
+
+function getCost(prods){
+  const purs=DB.get('purchases');let cost=0;
+  prods.forEach(p=>{
+    if(!p.product_id)return;
+    for(const pu of purs){
+      const match=(pu.products||[]).find(pp=>pp.product_id===p.product_id);
+      if(match){cost+=(match.price_tax||match.unit_price||0)*(p.qty||0);return;}
+    }
+  });
+  return cost;
+}
+
+function toggleAll(el){document.querySelectorAll('.ochk').forEach(c=>{c.checked=el.checked;});updateSummary();}
+function updateSummary(){
+  let all=0,sel=0,selCost=0,selProfit=0;
+  document.querySelectorAll('.ochk').forEach(c=>{
+    const amt=+c.dataset.amt||0;all+=amt;
+    if(c.checked){sel+=amt;selCost+=+c.dataset.cost||0;selProfit+=+c.dataset.profit||0;}
+  });
+  document.getElementById('sumAll').textContent='¥'+all.toFixed(2);
+  document.getElementById('sumSel').textContent='¥'+sel.toFixed(2);
+  document.getElementById('sumCost').textContent='¥'+selCost.toFixed(2);
+  document.getElementById('sumProfit').textContent='¥'+selProfit.toFixed(2);
+  document.getElementById('sumProfit').style.color=selProfit>=0?'var(--green)':'var(--danger)';
+}
+
+function togField(table,id,field){
+  let data=DB.get(table);const item=data.find(x=>x.id===id);
+  if(item){item[field]=item[field]?0:1;DB.set(table,data);loadOrders(currentOrderTab);}
+}
+
+// ========== PDF ==========
+document.getElementById('s_pdf').onclick=()=>{
+  const data=gatherSale();if(!data.client_name){alert('请选择客户');return;}
+  genPDF(data);
+};
+
+function genPDF(data){
+  const pay={bank:'银行转账/电汇，款到发货',credit:'先货后款(30天)',partial:'预付50%+发货前付清'};
+  let rows='';data.products.forEach((p,i)=>rows+=`<tr><td style="text-align:center;border:1px solid #000;padding:5px">${i+1}</td><td style="text-align:center;border:1px solid #000;padding:5px">${p.product_id||''}</td><td style="border:1px solid #000;padding:5px">${p.desc||''}</td><td style="text-align:center;border:1px solid #000;padding:5px">${p.qty}支</td><td style="text-align:right;border:1px solid #000;padding:5px">${p.price_tax.toFixed(2)}</td><td style="text-align:right;border:1px solid #000;padding:5px">￥${p.subtotal.toFixed(2)}</td></tr>`);
+  function formatD(d){if(!d)return'';const[y,m,dd]=d.split('-');return`${y}年${+m}月${+dd}日`;}
+  const html=`<div style="font-family:'SimSun','STSong',serif;font-size:12px;color:#000;width:210mm;min-height:297mm;padding:18mm 22mm;line-height:1.8;"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;"><div style="font-size:18px;font-weight:900;letter-spacing:2px;">星辰贸易</div><div style="font-size:11px;">合同编号：${data.contract_no}</div></div><h1 style="text-align:center;font-size:20px;font-weight:bold;margin:16px 0 4px;letter-spacing:8px;">销 售 合 同</h1><p style="text-align:center;font-size:11px;margin-bottom:20px;">（2025v3版）</p><p><strong>甲方（卖方）：</strong>上海星辰贸易有限公司</p><p style="margin-bottom:14px;"><strong>乙方（买方）：</strong>${data.client_name}</p><p style="text-indent:2em;margin-bottom:16px;">鉴于甲乙双方本着平等互利的原则，就乙方购买甲方产品事宜，经友好协商，达成如下合同条款：</p><h3 style="font-size:13px;margin-bottom:8px;">一、产品信息</h3><table style="width:100%;border-collapse:collapse;font-size:11px;"><thead><tr style="background:#f5f5f5;"><th style="border:1px solid #000;padding:5px">序号</th><th style="border:1px solid #000;padding:5px">物料号</th><th style="border:1px solid #000;padding:5px">描述</th><th style="border:1px solid #000;padding:5px">数量</th><th style="border:1px solid #000;padding:5px">单价(RMB含13%增值税)</th><th style="border:1px solid #000;padding:5px">合计金额</th></tr></thead><tbody>${rows}</tbody></table><table style="width:100%;border-collapse:collapse;font-size:11px;margin-top:-1px;"><tr><td style="border:1px solid #000;padding:5px 8px">总计金额（大写）：${numCN(data.total_amount)}</td></tr><tr><td style="border:1px solid #000;padding:5px 8px">交货地点：${data.address}</td></tr><tr><td style="border:1px solid #000;padding:5px 8px">收货人：${data.agent_name}　　联系电话：${data.phone}</td></tr></table><p style="font-size:10px;margin-top:6px;text-indent:2em;color:#333;">买方应确保其通过口头或书面形式向卖方告知的收货人信息（包含姓名、地址以及联系电话等）准确无误，产品的交付应在订单中已经指明的交货地点与买方事先已经指定的人员进行，如买方指定的收货人变更的，亦视为买方收货。</p><h3 style="font-size:13px;margin:14px 0 6px;">二、支付方式</h3><p style="text-indent:2em;font-size:11px;">${pay[data.pay_method]||data.pay_method}</p><h3 style="font-size:13px;margin:14px 0 6px;">三、货物的交付</h3><p style="text-indent:2em;font-size:10px;">货到当日买方应指派专人负责接收货物，接收货物时应认真核对货物品名、品牌、型号、数量、包装、外观、剩余有效期等是否无误及完好，买方确认无误及完好后应给予卖方书面签收。卖方提供包括但不限于纸质签单、商城线上确认、微信小程序、手机动态验证码等方式与买方进行货物交付的签收确认活动，除双方另有约定外，卖方有权采取以上任意方式进行货物的签收确认。如货物在到达指定收货地点后，买方未通过以上方式在合理期间（货到指定地点之日起7个自然日）内进行签收或提出异议的，合理期间经过后即视为买方已完成签收。买方对产品质量、交付等有异议的，应当在合理期限内与卖方联系，卖方应当及时响应和处理。如卖方采取手机动态验证码的方式进行签收确认，买方的授权业务代表或收货人的手机号均可以作为验证码的接收方，任何一方均可以通过以上验证码进行相应订单的签收确认。买方的授权业务代表或买方指定的收货人将该验证码告知卖方的行为即视为买方已对相关货物进行签收确认。</p><h3 style="font-size:13px;margin:14px 0 6px;">四、货物质量标准及售后服务</h3><p style="text-indent:2em;font-size:10px;">卖方所提供的产品按照产品技术资料（TDS）中所述的质量标准执行。如产品质量确实存在问题的，买方应在签收后7个自然日内通知卖方，如在签收后7个自然日内仍未通知卖方的，视为买方所收到的货物质量、数量、包装等各方面均符合合同约定。</p><h3 style="font-size:13px;margin:14px 0 6px;">五、争议解决方式</h3><p style="text-indent:2em;font-size:10px;margin-bottom:20px;">本合同适用中华人民共和国法律。履行本合同发生争议的，应通过协商解决，协商不成，由合同签订地人民法院管辖。</p><div style="page-break-before:always;"></div><p style="text-align:center;font-size:11px;margin-bottom:16px;">[以下无正文，为合同的签署内容]</p><div style="display:flex;gap:16px;margin-top:16px;"><div style="flex:1;border:1px solid #000;padding:10px;font-size:10px;"><p style="font-weight:bold;margin-bottom:6px;">甲方</p><table style="font-size:10px;width:100%;border-collapse:collapse;"><tr><td style="width:70px;padding:3px 0;">名称</td><td>上海星辰贸易有限公司</td></tr><tr><td style="padding:3px 0;">&nbsp;</td><td style="height:50px;"><div style="width:65px;height:65px;border:1px dashed #999;display:inline-flex;align-items:center;justify-content:center;color:#999;font-size:9px;float:right;">公章</div></td></tr><tr><td style="padding:3px 0;">&nbsp;</td><td>代理人签字：</td></tr><tr><td style="padding:3px 0;">&nbsp;</td><td style="text-align:right;">${formatD(data.sign_date)}</td></tr><tr><td style="padding:3px 0;">地址</td><td>上海市浦东新区张江路888号A座501</td></tr><tr><td style="padding:3px 0;">委托代理人</td><td>Zhang Ming</td></tr><tr><td style="padding:3px 0;">代理人电话</td><td>13800138000</td></tr><tr><td style="padding:3px 0;">代理人邮箱</td><td>demo@example.com</td></tr><tr><td style="padding:3px 0;">开户银行</td><td>中国建设银行上海浦东支行</td></tr><tr><td style="padding:3px 0;">账号</td><td>31050100000012345678</td></tr></table></div><div style="flex:1;border:1px solid #000;padding:10px;font-size:10px;"><p style="font-weight:bold;margin-bottom:6px;">乙方</p><table style="font-size:10px;width:100%;border-collapse:collapse;"><tr><td style="width:70px;padding:3px 0;">名称</td><td>${data.client_name}</td></tr><tr><td style="padding:3px 0;">&nbsp;</td><td style="height:50px;"><div style="width:65px;height:65px;border:1px dashed #999;display:inline-flex;align-items:center;justify-content:center;color:#999;font-size:9px;float:right;">公章</div></td></tr><tr><td style="padding:3px 0;">&nbsp;</td><td>代理人签字：</td></tr><tr><td style="padding:3px 0;">&nbsp;</td><td style="text-align:right;">${formatD(data.sign_date)}</td></tr><tr><td style="padding:3px 0;">地址</td><td>${data.address}</td></tr><tr><td style="padding:3px 0;">委托代理人</td><td>${data.agent_name}</td></tr><tr><td style="padding:3px 0;">代理人电话</td><td>${data.phone}</td></tr></table></div></div></div>`;
+  const c=document.getElementById('pdf-box');c.innerHTML=html;c.style.display='block';
+  setTimeout(()=>{const oldTitle=document.title;document.title=' ';window.print();document.title=oldTitle;setTimeout(()=>c.style.display='none',500);},300);
+}
+
+
+function delOrder(id){if(!confirm('确定删除这条出货记录？'))return;let orders=DB.get('orders');orders=orders.filter(x=>x.id!==id);DB.set('orders',orders);loadOrders('sale');}
+function delPur(id){if(!confirm('确定删除这条采购记录？'))return;let purs=DB.get('purchases');purs=purs.filter(x=>x.id!==id);DB.set('purchases',purs);loadOrders('purchase');}
+
+
+// ========== EXPORT EXCEL ==========
+document.getElementById('exportBtn').onclick=()=>{
+  const orders=DB.get('orders').filter(o=>o.order_type==='sale');
+  const purs=DB.get('purchases');
+  // Sheet 1: 出货记录
+  const saleRows=[['合同编号','日期','客户','对接人','产品信息','数量','单价(含税)','总价','成本','利润','付款','发票','关联采购']];
+  orders.forEach(o=>{
+    const prods=o.products||[];
+    const ps=prods.map(p=>`${p.product_id||''} ${(p.desc||'').slice(0,20)}×${p.qty}`).join('; ');
+    const totalQty=prods.reduce((s,p)=>s+(p.qty||0),0);
+    const firstP=prods[0]||{};
+    const cost=getCost(prods);
+    const profit=o.total_amount-cost;
+    saleRows.push([o.contract_no,o.sign_date,o.client_name,o.agent_name||'',ps,totalQty,firstP.price_tax||0,o.total_amount,cost,profit,o.paid?'已付':'未付',o.invoiced?'已开':'未开',o.linked_purchase||'']);
+  });
+  // Sheet 2: 采购记录
+  const purRows=[['日期','供应商','对接人','产品信息','数量','单价(含税)','总价','付款','发票','关联出货']];
+  purs.forEach(p=>{
+    const prods=p.products||[];
+    const ps=prods.map(pp=>`${pp.product_id||''} ${(pp.desc||'').slice(0,20)}×${pp.qty}`).join('; ');
+    const totalQty=prods.reduce((s,pp)=>s+(pp.qty||0),0);
+    const firstP=prods[0]||{};
+    purRows.push([p.receive_date||'',p.supplier,p.contact||'',ps,totalQty,firstP.price_tax||firstP.unit_price||0,p.total_amount,p.paid?'已付':'未付',p.invoiced?'已开':'未开',p.linked_sale||'']);
+  });
+  const wb=XLSX.utils.book_new();
+  const ws1=XLSX.utils.aoa_to_sheet(saleRows);
+  const ws2=XLSX.utils.aoa_to_sheet(purRows);
+  XLSX.utils.book_append_sheet(wb,ws1,'出货记录');
+  XLSX.utils.book_append_sheet(wb,ws2,'采购记录');
+  XLSX.writeFile(wb,'CLEF订单记录_'+new Date().toISOString().split('T')[0]+'.xlsx');
+};
+// ========== LINK PANEL ==========
+let linkPanelType='';
+function openLinkPanel(title,data,type){
+  linkPanelType=type;
+  document.getElementById('linkPanelTitle').textContent='选择'+title;
+  const cards=document.getElementById('linkPanelCards');
+  cards.innerHTML=data.slice(0,12).map((item,i)=>{
+    const prods=item.products||[];
+    const ps=prods.map(p=>`${p.product_id||''} ${(p.desc||'').slice(0,10)}×${p.qty}`).join(', ');
+    const name=type==='pur'?item.supplier:item.client_name;
+    const date=type==='pur'?item.receive_date:(item.sign_date||'');
+    const no=type==='sale'?item.contract_no:'';
+    return`<div onclick="pickLink(${i})" style="border:2px solid var(--accent);padding:10px 12px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='var(--yellow)'" onmouseout="this.style.background='var(--card)'">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-weight:800;color:var(--accent);font-size:.78rem;">${no||name}</span>
+        <span style="font-size:.7rem;color:var(--muted)">${date}</span>
+      </div>
+      <div style="font-size:.72rem;color:var(--text);margin-bottom:4px;">${name}${no?' · '+name:''}</div>
+      <div style="font-size:.7rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ps}</div>
+      <div style="font-weight:700;font-size:.8rem;margin-top:4px;color:var(--accent);">¥${Number(item.total_amount).toFixed(2)}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('linkPanel').style.display='block';
+  window._linkData=data;
+}
+function closeLinkPanel(){document.getElementById('linkPanel').style.display='none';}
+function pickLink(idx){
+  const item=window._linkData[idx];if(!item)return;
+  if(linkPanelType==='pur'){
+    // Linking a purchase to current sale form
+    sTb.innerHTML='';
+    (item.products||[]).forEach(pp=>{const tr=makeRow(sTb,calcSale);fillRow(tr,pp,calcSale);});
+    calcSale();
+    // Store link reference
+    window._saleLinkedPur=item.supplier+' '+item.receive_date;
+    window._saleLinkedPurId=item.id;
+  }else{
+    // Linking a sale to current purchase form
+    pTb.innerHTML='';
+    (item.products||[]).forEach(pp=>{const tr=makeRow(pTb,calcPur);fillRow(tr,pp,calcPur);});
+    calcPur();
+    window._purLinkedSale=item.contract_no;
+    window._purLinkedSaleId=item.id;
+  }
+  closeLinkPanel();
+}
+// ========== EDIT FROM ORDERS ==========
+function editSaleOrder(id){
+  const o=DB.get('orders').find(x=>x.id===id);if(!o)return;
+  // Switch to sale tab
+  document.querySelectorAll('.topbar nav button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.topbar nav button')[0].classList.add('active');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pg-sale').classList.add('active');
+  // Fill form
+  const ci=clients.findIndex(c=>c.name===o.client_name);
+  if(ci>-1){document.getElementById('s_client').value=ci;document.getElementById('s_client').onchange();}
+  document.getElementById('s_no').value=o.contract_no||'';
+  document.getElementById('s_date').value=o.sign_date||'';
+  document.getElementById('s_agent').value=o.agent_name||'';
+  document.getElementById('s_phone').value=o.phone||'';
+  document.getElementById('s_addr').value=o.address||'';
+  document.getElementById('s_pay').value=o.pay_method||'bank';
+  if(o.invoice||o.invoiced)document.getElementById('s_inv').classList.add('on');else document.getElementById('s_inv').classList.remove('on');
+  // Fill products
+  sTb.innerHTML='';
+  (o.products||[]).forEach(pp=>{const tr=makeRow(sTb,calcSale);fillRow(tr,pp,calcSale);});
+  calcSale();
+  // Mark editing
+  window._editingSaleId=id;
+  window._saleLinkedPur=o.linked_purchase||null;
+  window._saleLinkedPurId=o.linked_purchase_id||null;
+}
+function editPurOrder(id){
+  const p=DB.get('purchases').find(x=>x.id===id);if(!p)return;
+  // Switch to purchase tab
+  document.querySelectorAll('.topbar nav button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.topbar nav button')[1].classList.add('active');
+  document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active'));
+  document.getElementById('pg-pur').classList.add('active');
+  // Fill form
+  const si=clients.findIndex(c=>c.name===p.supplier);
+  if(si>-1)document.getElementById('p_supplier').value=si;
+  document.getElementById('p_contact').value=p.contact||'';
+  document.getElementById('p_date').value=p.receive_date||'';
+  document.getElementById('p_remark').value=p.remark||'';
+  if(p.invoice||p.invoiced)document.getElementById('p_inv').classList.add('on');else document.getElementById('p_inv').classList.remove('on');
+  // Fill products
+  pTb.innerHTML='';
+  (p.products||[]).forEach(pp=>{const tr=makeRow(pTb,calcPur);fillRow(tr,pp,calcPur);});
+  calcPur();
+  // Mark editing
+  window._editingPurId=id;
+  window._purLinkedSale=p.linked_sale||null;
+  window._purLinkedSaleId=p.linked_sale_id||null;
+}
+
+// ========== MANAGE TAB ==========
+document.getElementById('t_clients').onclick=()=>{
+  document.getElementById('t_clients').classList.add('active');
+  document.getElementById('t_products').classList.remove('active');
+  document.getElementById('manageClients').style.display='block';
+  document.getElementById('manageProducts').style.display='none';
+};
+document.getElementById('t_products').onclick=()=>{
+  document.getElementById('t_products').classList.add('active');
+  document.getElementById('t_clients').classList.remove('active');
+  document.getElementById('manageProducts').style.display='block';
+  document.getElementById('manageClients').style.display='none';
+};
+
+function renderClients(){
+  const body=document.getElementById('clientBody');
+  body.innerHTML=clients.map((c,i)=>`<tr>
+    <td><input class="ce" data-i="${i}" data-f="name" value="${c.name||''}" style="width:100%;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="ce" data-i="${i}" data-f="agent" value="${c.agent||''}" style="width:80px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="ce" data-i="${i}" data-f="phone" value="${c.phone||''}" style="width:100px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="ce" data-i="${i}" data-f="address" value="${c.address||''}" style="width:140px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="ce" data-i="${i}" data-f="products_note" value="${c.products_note||''}" style="width:140px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="ce" data-i="${i}" data-f="bank_name" value="${c.bank_name||''}" style="width:100px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="ce" data-i="${i}" data-f="bank_account" value="${c.bank_account||''}" style="width:120px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><button class="del-btn" style="color:var(--danger)" onclick="delClient(${i})">删除</button></td>
+  </tr>`).join('');
+  // Bind change events
+  body.querySelectorAll('.ce').forEach(inp=>{
+    inp.onchange=()=>{
+      const idx=+inp.dataset.i;const field=inp.dataset.f;
+      clients[idx][field]=inp.value;
+      DB.set('clients',clients);fillAll();
+    };
+  });
+}
+function delClient(idx){
+  if(!confirm('确定删除 '+clients[idx].name+' ？'))return;
+  clients.splice(idx,1);DB.set('clients',clients);renderClients();fillAll();
+}
+document.getElementById('addClientBtn').onclick=()=>{
+  clients.push({id:DB.nextId('clients'),name:'',agent:'',phone:'',address:'',bank_name:'',bank_account:''});
+  DB.set('clients',clients);renderClients();fillAll();
+};
+
+function renderProducts(){
+  const body=document.getElementById('productBody');
+  body.innerHTML=products.map((p,i)=>`<tr>
+    <td><input class="pe" data-i="${i}" data-f="product_id" value="${p.product_id||''}" style="width:70px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="pe" data-i="${i}" data-f="desc" value="${p.desc||''}" style="width:200px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td style="white-space:nowrap"><span style="font-size:.72rem;color:var(--accent);font-weight:700">RMB </span><input class="pe" data-i="${i}" data-f="sell_prices" value="${p.sell_prices||''}" style="width:150px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td style="white-space:nowrap"><span style="font-size:.72rem;color:var(--accent);font-weight:700">RMB </span><input class="pe" data-i="${i}" data-f="buy_prices" value="${p.buy_prices||''}" style="width:150px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><button class="del-btn" style="color:var(--danger)" onclick="delProduct(${i})">删除</button></td>
+  </tr>`).join('');
+  body.querySelectorAll('.pe').forEach(inp=>{
+    inp.onchange=()=>{
+      const idx=+inp.dataset.i;const field=inp.dataset.f;
+      products[idx][field]=inp.value;
+      DB.set('products',products);refreshProductSelects();
+    };
+  });
+}
+function delProduct(idx){
+  if(!confirm('确定删除 '+products[idx].product_id+' ？'))return;
+  products.splice(idx,1);DB.set('products',products);renderProducts();refreshProductSelects();
+}
+document.getElementById('addProductBtn').onclick=()=>{
+  products.push({id:DB.nextId('products'),product_id:'',desc:'',sell_prices:'',buy_prices:''});
+  DB.set('products',products);renderProducts();refreshProductSelects();
+};
+
+function refreshProductSelects(){
+  document.querySelectorAll('.psel').forEach(sel=>{
+    const cur=sel.value;
+    sel.innerHTML='<option value="">--</option>'+products.map((p,i)=>`<option value="${i}">${p.product_id} ${(p.desc||'').slice(0,15)}</option>`).join('');
+    sel.value=cur;
+  });
+}
+
+// Render on manage tab open
+const origNavHandler=document.querySelectorAll('.topbar nav button')[3];
+const origClick=origNavHandler.onclick;
+document.querySelectorAll('.topbar nav button')[3].addEventListener('click',()=>{renderClients();renderProducts();});
+
+</script>
+</body>
+</html>
