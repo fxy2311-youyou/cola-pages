@@ -358,46 +358,13 @@ function sortSkills() {
 <!-- ===== Workflow 规则 ===== -->
 <div class="section">
   <div class="section-title"><span class="icon">📐</span> Cola 工作流规则 (Workflow)</div>
-  
-  <div style="margin-bottom:20px;">
-    <h3 style="font-size:14px;font-weight:700;margin-bottom:8px;">📌 核心规则</h3>
-    <table>
-      <thead><tr><th>#</th><th>规则</th><th>内容</th></tr></thead>
-      <tbody>
-        <tr><td>1</td><td><strong>版本管理</strong></td><td>所有文件迭代必须新建文件，不覆盖原文件。命名：<code>文件名-vN.html</code></td></tr>
-        <tr><td>2</td><td><strong>先确认方向再动手</strong></td><td>用户让查资料/做研究前，先说清方向+具体要查什么，等用户确认后再动手</td></tr>
-        <tr><td>3</td><td><strong>交付说明</strong></td><td>每次给文件时必须说明：①改了什么 ②怎么用 ③已知限制</td></tr>
-        <tr><td>4</td><td><strong>Obsidian同步</strong></td><td>最终版内容同步到 <code>Obsidian/Cola/</code> 文件夹，放之前跟用户确认</td></tr>
-        <tr><td>5</td><td><strong>Dashboard更新</strong></td><td>部署新页面→立刻更新dashboard；本地生成文件→放一起更新或用户要求时更新</td></tr>
-        <tr><td>6</td><td><strong>称呼</strong></td><td>聊天时叫用户“sisi”</td></tr>
-        <tr><td>7</td><td><strong>数据脱敏</strong></td><td>公司名/人名/电话/银行/地址/seed data全部替换，grep验证0残留</td></tr>
-        <tr><td>8</td><td><strong>新Skill同步</strong></td><td>安装新skill后必须加到dashboard的Skills表里</td></tr>
-      </tbody>
-    </table>
+  <div style="background:#f8f9fa;border-radius:10px;padding:20px 24px;margin-top:8px;">
+    <p style="font-size:13px;color:#555;margin:0 0 12px 0;">规则源文件（直接点击打开编辑）：</p>
+    <p style="margin:0 0 8px 0;"><a class="link" href="file:///Users/sherryfan/cola/outputs/版本管理与交付流程.md" style="font-size:14px;font-weight:600;">📄 ~/cola/outputs/版本管理与交付流程.md</a></p>
+    <p style="font-size:12px;color:#888;margin:0;">原始位置：<code>~/.cola/memory-bank/notes/version-management-workflow.md</code></p>
   </div>
 
-  <div style="margin-bottom:20px;">
-    <h3 style="font-size:14px;font-weight:700;margin-bottom:8px;">🛠️ 具体执行</h3>
-    <table>
-      <thead><tr><th>#</th><th>项目</th><th>详情</th></tr></thead>
-      <tbody>
-        <tr><td>1</td><td><strong>命名规则</strong></td><td><code>&lt;原文件名&gt;-v&lt;N&gt;.html</code>，例：<code>clef-v1.html → clef-v2.html → clef-v3.html</code></td></tr>
-        <tr><td>2</td><td><strong>操作步骤</strong></td><td>cp当前最新版到新文件名 → 在新文件上做修改 → 永远不动旧版本</td></tr>
-        <tr><td>3</td><td><strong>记录</strong></td><td>每个版本在对应task文件中注明改了什么</td></tr>
-        <tr><td>4</td><td><strong>适用范围</strong></td><td>HTML页面、任何“出新版”的文件、Markdown大改</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div style="margin-bottom:20px;">
-    <h3 style="font-size:14px;font-weight:700;margin-bottom:8px;">📚 交付说明示例</h3>
-    <div style="background:#f8f9fa;border-radius:8px;padding:14px 16px;font-size:12px;color:#444;line-height:1.7;border-left:3px solid var(--accent,#1976d2);">
-      这次改了：①产品库全部换成假名 ②合同甲方个人信息删除<br>
-      注意：如果你之前在同一个浏览器打开过旧版，需要清一下浏览器缓存（F12 → Application → Local Storage → Clear），否则会显示旧数据。别人打开不受影响。
-    </div>
-  </div>
-
-  <div>
+  <div style="margin-top:20px;">
     <h3 style="font-size:14px;font-weight:700;margin-bottom:8px;">⭐ 值得参考的HTML</h3>
     <table>
       <thead><tr><th>#</th><th>链接</th><th>说明</th><th>参考点</th></tr></thead>
@@ -405,10 +372,6 @@ function sortSkills() {
         <tr><td>1</td><td><a class="link" href="https://esthersjw.github.io/cola-ob-sharing/cola-ob-sharing.html" target="_blank">打开 ↗</a></td><td>ESTHER不二 分享会——做自媒体先找到自己</td><td>品牌色+深色面板节奏、三视角切换、卡片组件布局、CTA结尾</td></tr>
       </tbody>
     </table>
-  </div>
-
-  <div class="tip-box" style="margin-top:16px;">
-    <strong>💡 源文件：</strong><code>~/.cola/memory-bank/notes/version-management-workflow.md</code>（symlink: <code>~/cola/outputs/版本管理与交付流程.md</code>）
   </div>
 </div>
 
