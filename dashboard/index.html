@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目版本管理面板</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fa; color: #1a1a1a; padding: 24px; line-height: 1.6; }
+.container { max-width: 1000px; margin: 0 auto; }
+h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+.subtitle { color: #666; font-size: 14px; margin-bottom: 32px; }
+.section { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.section-title .icon { font-size: 20px; }
+.badge { display: inline-block; background: #e8f5e9; color: #2e7d32; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+.badge-local { background: #e3f2fd; color: #1565c0; }
+.badge-removed { background: #fce4ec; color: #c62828; }
+
+/* Table */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th { text-align: left; padding: 10px 12px; background: #fafafa; border-bottom: 1px solid #eee; font-weight: 600; color: #555; }
+tbody td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+tbody tr:hover { background: #fafbfc; }
+.link { color: #1976d2; text-decoration: none; font-weight: 500; }
+.link:hover { text-decoration: underline; }
+.path { font-family: 'SF Mono', Menlo, monospace; font-size: 12px; color: #666; word-break: break-all; }
+.change-note { font-size: 12px; color: #444; }
+.status-live { color: #2e7d32; font-weight: 600; }
+.status-removed { color: #c62828; font-weight: 600; }
+
+/* Changelog */
+.changelog { list-style: none; }
+.changelog li { padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+.changelog li:last-child { border-bottom: none; }
+.changelog .date { font-weight: 600; color: #1976d2; margin-right: 8px; }
+.changelog .action { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 6px; }
+
+/* Tips */
+.tip-box { background: #fffde7; border: 1px solid #fff9c4; border-radius: 8px; padding: 14px 16px; font-size: 13px; margin-top: 16px; }
+.tip-box strong { color: #f57f17; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  body { padding: 12px; }
+  .section { padding: 16px; }
+  table { font-size: 12px; }
+  thead th, tbody td { padding: 8px 6px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>📋 项目版本管理面板</h1>
+<p class="subtitle">合同管理系统 & 相关项目 — 部署状态 / 本地文件 / 变更记录</p>
+
+<!-- ===== 线上部署 ===== -->
+<div class="section">
+  <div class="section-title"><span class="icon">🌐</span> 线上部署（GitHub Pages）</div>
+  <table>
+    <thead>
+      <tr><th>名称</th><th>链接</th><th>内容</th><th>状态</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>contract-system</strong></td>
+        <td><a class="link" href="https://fxy2311-youyou.github.io/cola-pages/contract-system/" target="_blank">打开 ↗</a></td>
+        <td>合同管理系统-项目介绍页 v3</td>
+        <td><span class="status-live">● 在线</span></td>
+      </tr>
+      <tr>
+        <td><strong>contract-use</strong></td>
+        <td><a class="link" href="https://fxy2311-youyou.github.io/cola-pages/contract-use/" target="_blank">打开 ↗</a></td>
+        <td>合同系统脱敏Demo版（可操作）</td>
+        <td><span class="status-live">● 在线</span></td>
+      </tr>
+      <tr>
+        <td><strong>wuyang-birthday</strong></td>
+        <td><a class="link" href="https://fxy2311-youyou.github.io/cola-pages/wuyang-birthday/" target="_blank">打开 ↗</a></td>
+        <td>生日密室逃脱互动页</td>
+        <td><span class="status-live">● 在线</span></td>
+      </tr>
+      <tr>
+        <td><s>clef-intro</s></td>
+        <td>—</td>
+        <td>项目介绍页v3（旧slug，已合并到contract-system）</td>
+        <td><span class="status-removed">✕ 已删除</span></td>
+      </tr>
+      <tr>
+        <td><s>contract-system-demo</s></td>
+        <td>—</td>
+        <td>脱敏Demo v1（已被contract-use替代）</td>
+        <td><span class="status-removed">✕ 已删除</span></td>
+      </tr>
+      <tr>
+        <td><s>contract-system-v1</s></td>
+        <td>—</td>
+        <td>脱敏Demo（Cola生成版，已删）</td>
+        <td><span class="status-removed">✕ 已删除</span></td>
+      </tr>
+      <tr>
+        <td><s>contract-system-v2</s></td>
+        <td>—</td>
+        <td>脱敏Demo（用户上传版，已合并到contract-use）</td>
+        <td><span class="status-removed">✕ 已删除</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="tip-box">
+    <strong>💡 管理方法：</strong>在 <a class="link" href="https://github.com/fxy2311-youyou/cola-pages/tree/gh-pages" target="_blank">GitHub仓库 gh-pages分支</a> 中操作。新建文件夹+index.html = 上线，Delete directory = 下线。
+  </div>
+</div>
+
+<!-- ===== 本地文件 ===== -->
+<div class="section">
+  <div class="section-title"><span class="icon">💻</span> 本地文件清单</div>
+  <table>
+    <thead>
+      <tr><th>文件</th><th>路径</th><th>说明</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>clef-v12.html</strong> <span class="badge badge-local">源文件</span></td>
+        <td class="path">~/Desktop/clef-v12.html</td>
+        <td class="change-note">合同系统最新完整版（未脱敏），含对象分类列、公司名全显、溢出处理</td>
+      </tr>
+      <tr>
+        <td><strong>clef-v11.html</strong></td>
+        <td class="path">~/cola/outputs/合同模板+订单系统联动表单/</td>
+        <td class="change-note">v11版本（56KB），v12的前一版</td>
+      </tr>
+      <tr>
+        <td><strong>clef-v7 ~ v9</strong></td>
+        <td class="path">~/cola/outputs/合同模板+订单系统联动表单/</td>
+        <td class="change-note">历史版本，保留备查</td>
+      </tr>
+      <tr>
+        <td><strong>合同管理系统项目介绍-v3.html</strong></td>
+        <td class="path">~/cola/outputs/CLEF合同系统项目介绍文档/</td>
+        <td class="change-note">项目介绍页最终版，已部署为 contract-system</td>
+      </tr>
+      <tr>
+        <td><strong>合同管理系统项目介绍-v2.html</strong></td>
+        <td class="path">~/cola/outputs/CLEF合同系统项目介绍文档/</td>
+        <td class="change-note">v2版，2×2横排+6张对话截图</td>
+      </tr>
+      <tr>
+        <td><strong>版本管理与交付流程.md</strong></td>
+        <td class="path">~/cola/outputs/版本管理与交付流程.md</td>
+        <td class="change-note">Cola工作流程规则（symlink到memory bank）</td>
+      </tr>
+      <tr>
+        <td><strong>HANDOVER.md</strong></td>
+        <td class="path">~/cola/outputs/HANDOVER.md</td>
+        <td class="change-note">本次会话工作交接文档</td>
+      </tr>
+      <tr>
+        <td><strong>千人活动执行手册.md</strong></td>
+        <td class="path">~/Library/.../obsisi-2/Cola/千人活动执行手册.md</td>
+        <td class="change-note">千人活动执行手册v2最终版（Obsidian）</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== 变更日志 ===== -->
+<div class="section">
+  <div class="section-title"><span class="icon">📝</span> 版本变更日志</div>
+  <ul class="changelog">
+    <li><span class="date">06-09</span><span class="action">部署</span> contract-use 上线（用户自行修改的脱敏版，80KB）</li>
+    <li><span class="date">06-09</span><span class="action">恢复</span> contract-system 误删后恢复</li>
+    <li><span class="date">06-09</span><span class="action">删除</span> contract-system-v2、contract-system-v1、contract-system-demo 清理</li>
+    <li><span class="date">06-09</span><span class="action">脱敏</span> 基于v12制作脱敏版：产品→胶水1号/器材2号，价格→132-145，甲方个人信息删除</li>
+    <li><span class="date">06-08</span><span class="action">改名</span> clef-intro → contract-system（不暴露CLEF缩写）</li>
+    <li><span class="date">06-08</span><span class="action">部署</span> 项目介绍v3上线（删除chat-preview和chat-pitfall截图）</li>
+    <li><span class="date">06-08</span><span class="action">完成</span> 千人活动执行手册v2整合完毕</li>
+    <li><span class="date">06-07</span><span class="action">创建</span> 项目介绍页v2（2×2横排布局+对话截图嵌入）</li>
+    <li><span class="date">06-06</span><span class="action">部署</span> wuyang-birthday 生日互动页上线</li>
+  </ul>
+</div>
+
+<!-- ===== 快捷操作指南 ===== -->
+<div class="section">
+  <div class="section-title"><span class="icon">⚡</span> 快捷操作指南</div>
+  <table>
+    <thead>
+      <tr><th>操作</th><th>方法</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>上传新页面</td>
+        <td>GitHub仓库 → gh-pages分支 → Add file → 输入 <code>文件夹名/index.html</code> → 粘贴内容 → Commit</td>
+      </tr>
+      <tr>
+        <td>删除页面</td>
+        <td>进入文件夹 → 点 <code>...</code> → Delete directory → Commit</td>
+      </tr>
+      <tr>
+        <td>更新页面</td>
+        <td>找到对应 index.html → 编辑 → 粘贴新内容 → Commit</td>
+      </tr>
+      <tr>
+        <td>查看链接</td>
+        <td><code>https://fxy2311-youyou.github.io/cola-pages/文件夹名/</code></td>
+      </tr>
+      <tr>
+        <td>清除浏览器缓存</td>
+        <td>F12 → Application → Local Storage → 当前网址 → Clear → 刷新</td>
+      </tr>
+      <tr>
+        <td>Mac显示隐藏文件</td>
+        <td><code>Cmd + Shift + .</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+</body>
+</html>
