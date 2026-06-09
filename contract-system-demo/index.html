@@ -80,13 +80,14 @@ document.getElementById('t_products').onclick=()=>{
 function renderClients(){
   const body=document.getElementById('clientBody');
   body.innerHTML=clients.map((c,i)=>`<tr>
-    <td><input class="ce" data-i="${i}" data-f="name" value="${c.name||''}" style="width:100%;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td><input class="ce" data-i="${i}" data-f="agent" value="${c.agent||''}" style="width:80px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td><input class="ce" data-i="${i}" data-f="phone" value="${c.phone||''}" style="width:100px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td><input class="ce" data-i="${i}" data-f="address" value="${c.address||''}" style="width:140px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td><input class="ce" data-i="${i}" data-f="products_note" value="${c.products_note||''}" style="width:140px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td><input class="ce" data-i="${i}" data-f="bank_name" value="${c.bank_name||''}" style="width:100px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td><input class="ce" data-i="${i}" data-f="bank_account" value="${c.bank_account||''}" style="width:120px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><select class="ce" data-i="${i}" data-f="role" style="border:1px solid #ddd;padding:4px 6px;font-size:.78rem"><option value="客户" ${(c.role||'')==='客户'?'selected':''}>客户</option><option value="供货方" ${(c.role||'')==='供货方'?'selected':''}>供货方</option></select></td>
+    <td><input class="ce" data-i="${i}" data-f="name" value="${c.name||''}" style="min-width:180px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="ce" data-i="${i}" data-f="agent" value="${c.agent||''}" style="width:60px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem;overflow:hidden;text-overflow:ellipsis"></td>
+    <td><input class="ce" data-i="${i}" data-f="phone" value="${c.phone||''}" style="width:80px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem;overflow:hidden;text-overflow:ellipsis"></td>
+    <td><input class="ce" data-i="${i}" data-f="address" value="${c.address||''}" style="width:80px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem;overflow:hidden;text-overflow:ellipsis"></td>
+    <td><input class="ce" data-i="${i}" data-f="products_note" value="${c.products_note||''}" style="width:80px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem;overflow:hidden;text-overflow:ellipsis"></td>
+    <td><input class="ce" data-i="${i}" data-f="bank_name" value="${c.bank_name||''}" style="width:70px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem;overflow:hidden;text-overflow:ellipsis"></td>
+    <td><input class="ce" data-i="${i}" data-f="bank_account" value="${c.bank_account||''}" style="width:80px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem;overflow:hidden;text-overflow:ellipsis"></td>
     <td><button class="del-btn" style="color:var(--danger)" onclick="delClient(${i})">删除</button></td>
   </tr>`).join('');
   // Bind change events
@@ -112,8 +113,8 @@ function renderProducts(){
   body.innerHTML=products.map((p,i)=>`<tr>
     <td><input class="pe" data-i="${i}" data-f="product_id" value="${p.product_id||''}" style="width:70px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
     <td><input class="pe" data-i="${i}" data-f="desc" value="${p.desc||''}" style="width:200px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td style="white-space:nowrap"><span style="font-size:.72rem;color:var(--accent);font-weight:700">RMB </span><input class="pe" data-i="${i}" data-f="sell_prices" value="${p.sell_prices||''}" style="width:150px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td style="white-space:nowrap"><span style="font-size:.72rem;color:var(--accent);font-weight:700">RMB </span><input class="pe" data-i="${i}" data-f="buy_prices" value="${p.buy_prices||''}" style="width:150px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="pe" data-i="${i}" data-f="sell_prices" value="${p.sell_prices||''}" style="width:150px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="pe" data-i="${i}" data-f="buy_prices" value="${p.buy_prices||''}" style="width:150px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
     <td><button class="del-btn" style="color:var(--danger)" onclick="delProduct(${i})">删除</button></td>
   </tr>`).join('');
   body.querySelectorAll('.pe').forEach(inp=>{
@@ -158,7 +159,7 @@ document.querySelectorAll('.topbar nav button')[3].addEventListener('click',()=>
     <button id="nav-orders">订单记录</button>
     <button id="nav-manage">供应商/产品</button>
   </nav>
-  <button onclick="if(confirm('确定重置所有数据？')){DB.clear();location.reload();}" style="margin-left:auto;background:none;border:1px solid var(--accent);color:var(--accent);padding:4px 10px;font-size:.7rem;cursor:pointer;font-weight:600">重置数据</button>
+  
 </div>
 
 <!-- ====== 出货合同 ====== -->
@@ -267,7 +268,7 @@ document.querySelectorAll('.topbar nav button')[3].addEventListener('click',()=>
       <button class="btn-s" id="addClientBtn">＋ 新增</button>
     </div>
     <table class="otbl" id="clientTable">
-      <thead><tr><th>公司名称</th><th>对接人</th><th>电话</th><th>地址</th><th>常买产品</th><th>开户行</th><th>账号</th><th></th></tr></thead>
+      <thead><tr><th>对象</th><th>公司名称</th><th>对接人</th><th>电话</th><th>地址</th><th>常买产品</th><th>开户行</th><th>账号</th><th></th></tr></thead>
       <tbody id="clientBody"></tbody>
     </table>
   </div>
@@ -288,10 +289,10 @@ document.querySelectorAll('.topbar nav button')[3].addEventListener('click',()=>
 // ========== DB ==========
 const _mem={};
 const DB={
-  get(k){try{const s=localStorage.getItem('demo_'+k);return s?JSON.parse(s):(_mem[k]||[]);}catch(e){return _mem[k]||[];}},
-  set(k,v){_mem[k]=v;try{localStorage.setItem('demo_'+k,JSON.stringify(v));}catch(e){}},
+  get(k){try{const s=localStorage.getItem('clef_'+k);return s?JSON.parse(s):(_mem[k]||[]);}catch(e){return _mem[k]||[];}},
+  set(k,v){_mem[k]=v;try{localStorage.setItem('clef_'+k,JSON.stringify(v));}catch(e){}},
   nextId(k){const d=this.get(k);return d.length?Math.max(...d.map(x=>x.id||0))+1:1;},
-  clear(){try{Object.keys(localStorage).filter(k=>k.startsWith('demo_')).forEach(k=>localStorage.removeItem(k));}catch(e){}_mem.clients=null;_mem.products=null;_mem.orders=null;_mem.purchases=null;}
+  clear(){try{Object.keys(localStorage).filter(k=>k.startsWith('clef_')).forEach(k=>localStorage.removeItem(k));}catch(e){}_mem.clients=null;_mem.products=null;_mem.orders=null;_mem.purchases=null;}
 };
 
 // ========== STATE ==========
@@ -301,27 +302,27 @@ let products=DB.get('products');
 // ========== SEED DATA ==========
 if(!clients.length){
   clients=[
-{id:1,name:'杭州创新贸易有限公司',agent:'王经理',phone:'',address:'',bank_name:'',bank_account:'',products_note:'SF7063 有机溶剂清洗剂'},
-{id:2,name:'深圳前海新材料有限公司',agent:'李总',phone:'',address:'',bank_name:'',bank_account:'',products_note:'LOCTITE 480/603/648'},
-{id:3,name:'优供达',agent:'陈工',phone:'',address:'',bank_name:'',bank_account:'',products_note:'SF7063 有机溶剂清洗剂'},
-{id:4,name:'苏州正方机电有限公司',agent:'赵主管',phone:'',address:'',bank_name:'',bank_account:'',products_note:'LOCTITE 7218 防磨涂层'},
-{id:5,name:'广州南方化工有限公司',agent:'周经理',phone:'',address:'',bank_name:'',bank_account:'',products_note:'LOCTITE 480 瞬干胶'},
-{id:6,name:'北京朝阳新材料有限公司',agent:'林经理',phone:'13912345678',address:'浦东新区科苑路100号',bank_name:'中国工商银行上海徐汇支行',bank_account:'62200000000098765432',products_note:'243/603/648等'},
-{id:7,name:'武汉光谷实业有限公司',agent:'吴主管',phone:'',address:'',bank_name:'',bank_account:'',products_note:'243/603/648等'},
-{id:8,name:'江苏恒源材料有限公司',agent:'孙经理',phone:'',address:'',bank_name:'',bank_account:'',products_note:'243 螺纹锁固胶'},
-{id:9,name:'天津华远工贸有限公司',agent:'钱主管',phone:'',address:'',bank_name:'',bank_account:'',products_note:'SF7063 有机溶剂清洗剂'},
-{id:10,name:'成都西南科技有限公司',agent:'郑工',phone:'',address:'',bank_name:'',bank_account:'',products_note:'SF7063 有机溶剂清洗剂'}
+{id:1,name:'杭州创新贸易有限公司',agent:'王经理',phone:'',address:'',bank_name:'',bank_account:'',products_note:'C001 清洗剂1号'},
+{id:2,name:'深圳前海新材料有限公司',agent:'李总',phone:'',address:'',bank_name:'',bank_account:'',products_note:'G002/Q001/Q002'},
+{id:3,name:'优供达',agent:'陈工',phone:'',address:'',bank_name:'',bank_account:'',products_note:'C001 清洗剂1号'},
+{id:4,name:'苏州正方机电有限公司',agent:'赵主管',phone:'',address:'',bank_name:'',bank_account:'',products_note:'T001 涂层材料1号'},
+{id:5,name:'广州南方化工有限公司',agent:'周经理',phone:'',address:'',bank_name:'',bank_account:'',products_note:'G002 工业胶水2号'},
+{id:6,name:'北京朝阳新材料有限公司',agent:'林经理',phone:'13912345678',address:'浦东新区科苑路100号',bank_name:'中国工商银行上海徐汇支行',bank_account:'62200000000098765432',products_note:'G001/Q001/Q002等'},
+{id:7,name:'武汉光谷实业有限公司',agent:'吴主管',phone:'',address:'',bank_name:'',bank_account:'',products_note:'G001/Q001/Q002等'},
+{id:8,name:'江苏恒源材料有限公司',agent:'孙经理',phone:'',address:'',bank_name:'',bank_account:'',products_note:'G001 工业胶水1号'},
+{id:9,name:'天津华远工贸有限公司',agent:'钱主管',phone:'',address:'',bank_name:'',bank_account:'',products_note:'C001 清洗剂1号'},
+{id:10,name:'成都西南科技有限公司',agent:'郑工',phone:'',address:'',bank_name:'',bank_account:'',products_note:'C001 清洗剂1号'}
 ];
   DB.set('clients',clients);
 }
 if(!products.length){
   products=[
-{id:1,product_id:'243',desc:'LOCTITE 乐泰 螺纹锁固胶 高粘度中强度型 243 250ml',sell_prices:'180.46, 181.93, 184.19',buy_prices:'168.37, 172.89, 175.15'},
-{id:2,product_id:'480',desc:'LOCTITE 480 20g 瞬干胶',sell_prices:'50.29',buy_prices:'44.66, 47.46'},
-{id:3,product_id:'603',desc:'LOCTITE 603 250ml 圆柱固持胶',sell_prices:'237.30',buy_prices:'221.48'},
-{id:4,product_id:'648',desc:'LOCTITE 648 50ml 固持胶',sell_prices:'90.40',buy_prices:'84.75'},
-{id:5,product_id:'7063',desc:'TE 乐泰 SF7063 有机溶剂清洗剂',sell_prices:'77.41, 80.23, 86.70',buy_prices:'72.32, 74.58, 79.60, 83.00'},
-{id:6,product_id:'7218',desc:'LOCTITE 7218 防磨涂层 10kg',sell_prices:'1800.00',buy_prices:'1620.00'}
+{id:1,product_id:'G001',desc:'工业胶水1号 250ml',sell_prices:'132, 133, 134',buy_prices:'120, 121, 122'},
+{id:2,product_id:'G002',desc:'工业胶水2号 20g',sell_prices:'135, 136',buy_prices:'123, 124'},
+{id:3,product_id:'Q001',desc:'精密器材1号 250ml',sell_prices:'137, 138',buy_prices:'125, 126'},
+{id:4,product_id:'Q002',desc:'精密器材2号 50ml',sell_prices:'139, 140',buy_prices:'127, 128'},
+{id:5,product_id:'C001',desc:'清洗剂1号 500ml',sell_prices:'141, 142, 143',buy_prices:'129, 130, 131'},
+{id:6,product_id:'T001',desc:'涂层材料1号 10kg',sell_prices:'144, 145',buy_prices:'132, 133'}
 ];
   DB.set('products',products);
 }
@@ -684,13 +685,14 @@ document.getElementById('t_products').onclick=()=>{
 function renderClients(){
   const body=document.getElementById('clientBody');
   body.innerHTML=clients.map((c,i)=>`<tr>
-    <td><input class="ce" data-i="${i}" data-f="name" value="${c.name||''}" style="width:100%;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td><input class="ce" data-i="${i}" data-f="agent" value="${c.agent||''}" style="width:80px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td><input class="ce" data-i="${i}" data-f="phone" value="${c.phone||''}" style="width:100px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td><input class="ce" data-i="${i}" data-f="address" value="${c.address||''}" style="width:140px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td><input class="ce" data-i="${i}" data-f="products_note" value="${c.products_note||''}" style="width:140px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td><input class="ce" data-i="${i}" data-f="bank_name" value="${c.bank_name||''}" style="width:100px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td><input class="ce" data-i="${i}" data-f="bank_account" value="${c.bank_account||''}" style="width:120px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><select class="ce" data-i="${i}" data-f="role" style="border:1px solid #ddd;padding:4px 6px;font-size:.78rem"><option value="客户" ${(c.role||'')==='客户'?'selected':''}>客户</option><option value="供货方" ${(c.role||'')==='供货方'?'selected':''}>供货方</option></select></td>
+    <td><input class="ce" data-i="${i}" data-f="name" value="${c.name||''}" style="min-width:180px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="ce" data-i="${i}" data-f="agent" value="${c.agent||''}" style="width:60px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem;overflow:hidden;text-overflow:ellipsis"></td>
+    <td><input class="ce" data-i="${i}" data-f="phone" value="${c.phone||''}" style="width:80px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem;overflow:hidden;text-overflow:ellipsis"></td>
+    <td><input class="ce" data-i="${i}" data-f="address" value="${c.address||''}" style="width:80px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem;overflow:hidden;text-overflow:ellipsis"></td>
+    <td><input class="ce" data-i="${i}" data-f="products_note" value="${c.products_note||''}" style="width:80px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem;overflow:hidden;text-overflow:ellipsis"></td>
+    <td><input class="ce" data-i="${i}" data-f="bank_name" value="${c.bank_name||''}" style="width:70px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem;overflow:hidden;text-overflow:ellipsis"></td>
+    <td><input class="ce" data-i="${i}" data-f="bank_account" value="${c.bank_account||''}" style="width:80px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem;overflow:hidden;text-overflow:ellipsis"></td>
     <td><button class="del-btn" style="color:var(--danger)" onclick="delClient(${i})">删除</button></td>
   </tr>`).join('');
   // Bind change events
@@ -716,8 +718,8 @@ function renderProducts(){
   body.innerHTML=products.map((p,i)=>`<tr>
     <td><input class="pe" data-i="${i}" data-f="product_id" value="${p.product_id||''}" style="width:70px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
     <td><input class="pe" data-i="${i}" data-f="desc" value="${p.desc||''}" style="width:200px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td style="white-space:nowrap"><span style="font-size:.72rem;color:var(--accent);font-weight:700">RMB </span><input class="pe" data-i="${i}" data-f="sell_prices" value="${p.sell_prices||''}" style="width:150px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
-    <td style="white-space:nowrap"><span style="font-size:.72rem;color:var(--accent);font-weight:700">RMB </span><input class="pe" data-i="${i}" data-f="buy_prices" value="${p.buy_prices||''}" style="width:150px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="pe" data-i="${i}" data-f="sell_prices" value="${p.sell_prices||''}" style="width:150px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
+    <td><input class="pe" data-i="${i}" data-f="buy_prices" value="${p.buy_prices||''}" style="width:150px;border:1px solid #ddd;padding:4px 6px;font-size:.78rem"></td>
     <td><button class="del-btn" style="color:var(--danger)" onclick="delProduct(${i})">删除</button></td>
   </tr>`).join('');
   body.querySelectorAll('.pe').forEach(inp=>{
