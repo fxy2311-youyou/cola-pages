@@ -221,89 +221,156 @@ tbody tr:hover { background: #fafbfc; }
 <!-- ===== Cola Skills ===== -->
 <div class="section">
   <div class="section-title"><span class="icon">🧩</span> Cola Skills（已用到的技能）</div>
-  <table>
+  <div style="margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+    <select id="skill-filter" onchange="filterSkills()" style="font-size:12px;padding:6px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer;">
+      <option value="all">全部频率</option>
+      <option value="高频">高频</option>
+      <option value="中频">中频</option>
+      <option value="低频">低频</option>
+      <option value="自动">自动</option>
+    </select>
+    <select id="skill-sort" onchange="sortSkills()" style="font-size:12px;padding:6px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer;">
+      <option value="default">默认排序</option>
+      <option value="freq-desc">频率 ↓ 高到低</option>
+      <option value="freq-asc">频率 ↑ 低到高</option>
+      <option value="name-asc">名称 A→Z</option>
+      <option value="name-desc">名称 Z→A</option>
+    </select>
+    <span style="font-size:11px;color:#888;" id="skill-count">12 项</span>
+  </div>
+  <table id="skills-table">
     <thead>
-      <tr><th>#</th><th>Skill</th><th>功能</th><th>使用场景</th></tr>
+      <tr><th>#</th><th>Skill</th><th>功能</th><th>使用场景</th><th>使用频率</th></tr>
     </thead>
-    <tbody>
-      <tr>
+    <tbody id="skills-body">
+      <tr data-freq="高频" data-freq-val="5" data-name="cola-design">
         <td>1</td>
         <td><strong>cola-design</strong></td>
         <td>官方设计系统，含品牌DNA、场景规范、HTML模板</td>
         <td>项目介绍页、工作流页面、所有前端设计</td>
+        <td><span class="badge" style="background:#fce4ec;color:#c62828;">高频</span></td>
       </tr>
-      <tr>
+      <tr data-freq="高频" data-freq-val="5" data-name="deploy">
         <td>2</td>
         <td><strong>deploy</strong></td>
         <td>部署静态网站到 GitHub Pages</td>
         <td>所有页面上线、更新、删除</td>
+        <td><span class="badge" style="background:#fce4ec;color:#c62828;">高频</span></td>
       </tr>
-      <tr>
+      <tr data-freq="中频" data-freq-val="3" data-name="gh-cli">
         <td>3</td>
         <td><strong>gh-cli</strong></td>
         <td>GitHub CLI 全功能参考（仓库/PR/Actions等）</td>
         <td>Git操作、仓库管理</td>
+        <td><span class="badge" style="background:#fff3e0;color:#e65100;">中频</span></td>
       </tr>
-      <tr>
+      <tr data-freq="低频" data-freq-val="1" data-name="cola-skill-creator">
         <td>4</td>
         <td><strong>cola-skill-creator</strong></td>
         <td>创建新Skill、改进现有Skill</td>
         <td>自定义工作流模板</td>
+        <td><span class="badge" style="background:#e3f2fd;color:#1565c0;">低频</span></td>
       </tr>
-      <tr>
+      <tr data-freq="中频" data-freq-val="3" data-name="pdf">
         <td>5</td>
         <td><strong>pdf</strong></td>
         <td>读PDF、合并、拆分、填表、OCR</td>
         <td>合同 PDF 生成和模板处理</td>
+        <td><span class="badge" style="background:#fff3e0;color:#e65100;">中频</span></td>
       </tr>
-      <tr>
+      <tr data-freq="中频" data-freq-val="3" data-name="xlsx">
         <td>6</td>
         <td><strong>xlsx</strong></td>
         <td>读写Excel、数据清洗、公式、图表</td>
         <td>订单数据导入导出、历史数据迁移</td>
+        <td><span class="badge" style="background:#fff3e0;color:#e65100;">中频</span></td>
       </tr>
-      <tr>
+      <tr data-freq="自动" data-freq-val="4" data-name="apple-calendar">
         <td>7</td>
         <td><strong>apple-calendar</strong></td>
         <td>macOS日历读写、事件管理</td>
         <td>每日早报、日程提醒</td>
+        <td><span class="badge" style="background:#e8f5e9;color:#2e7d32;">自动</span></td>
       </tr>
-      <tr>
+      <tr data-freq="低频" data-freq-val="1" data-name="spotify-player">
         <td>8</td>
         <td><strong>spotify-player</strong></td>
         <td>Spotify播放/搜索</td>
         <td>听歌</td>
+        <td><span class="badge" style="background:#e3f2fd;color:#1565c0;">低频</span></td>
       </tr>
-      <tr>
+      <tr data-freq="高频" data-freq-val="5" data-name="obsidian">
         <td>9</td>
         <td><strong>obsidian</strong></td>
         <td>Obsidian笔记管理（Markdown）</td>
         <td>文档存储、最终版同步、素材管理</td>
+        <td><span class="badge" style="background:#fce4ec;color:#c62828;">高频</span></td>
       </tr>
-      <tr>
+      <tr data-freq="自动" data-freq-val="4" data-name="self-improvement">
         <td>10</td>
         <td><strong>self-improvement</strong></td>
         <td>捕捉错误、记录教训、持续改进</td>
         <td>避免重复犯错</td>
+        <td><span class="badge" style="background:#e8f5e9;color:#2e7d32;">自动</span></td>
       </tr>
-      <tr>
+      <tr data-freq="自动" data-freq-val="4" data-name="channel-plugins">
         <td>11</td>
         <td><strong>channel-plugins</strong></td>
         <td>微信插件管理（启用/禁用/登录）</td>
         <td>微信消息推送、早报</td>
+        <td><span class="badge" style="background:#e8f5e9;color:#2e7d32;">自动</span></td>
       </tr>
-      <tr>
+      <tr data-freq="自动" data-freq-val="4" data-name="follow-builders">
         <td>12</td>
         <td><strong>follow-builders</strong></td>
         <td>AI行业动态监控（X + YouTube）</td>
         <td>每日AI资讯推送</td>
+        <td><span class="badge" style="background:#e8f5e9;color:#2e7d32;">自动</span></td>
       </tr>
     </tbody>
   </table>
   <div class="tip-box">
-    <strong>💡 说明：</strong>Skills是Cola的专业技能包，每个都有对应的SKILL.md文件定义使用规则。存放在 <code>~/.cola/resources/skills/</code> 目录下。
+    <strong>💡 说明：</strong>Skills是Cola的专业技能包。频率说明：<strong>高频</strong>=几乎每次都用，<strong>中频</strong>=需要时用，<strong>低频</strong>=偶尔用，<strong>自动</strong>=定时/后台自动触发。存放在 <code>~/.cola/resources/skills/</code>
   </div>
 </div>
+
+<script>
+function filterSkills() {
+  const val = document.getElementById('skill-filter').value;
+  const rows = document.querySelectorAll('#skills-body tr');
+  let count = 0;
+  rows.forEach((row, i) => {
+    const freq = row.getAttribute('data-freq');
+    if (val === 'all' || freq === val) {
+      row.style.display = '';
+      count++;
+      row.querySelector('td').textContent = count;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+  document.getElementById('skill-count').textContent = count + ' 项';
+}
+
+function sortSkills() {
+  const val = document.getElementById('skill-sort').value;
+  const tbody = document.getElementById('skills-body');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  
+  rows.sort((a, b) => {
+    if (val === 'freq-desc') return parseInt(b.dataset.freqVal) - parseInt(a.dataset.freqVal);
+    if (val === 'freq-asc') return parseInt(a.dataset.freqVal) - parseInt(b.dataset.freqVal);
+    if (val === 'name-asc') return a.dataset.name.localeCompare(b.dataset.name);
+    if (val === 'name-desc') return b.dataset.name.localeCompare(a.dataset.name);
+    return 0;
+  });
+  
+  rows.forEach((row, i) => {
+    row.querySelector('td').textContent = i + 1;
+    tbody.appendChild(row);
+  });
+}
+</script>
 
 <!-- ===== 快捷操作指南 ===== -->
 <div class="section">
