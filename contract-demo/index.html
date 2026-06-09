@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星辰贸易 — 合同管理系统</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --accent: #0052CC; --orange: #F1752D; --bg: #FAFBFC; --dark: #1A2A40; --muted: #666; --card: #fff; }
+body { font-family: -apple-system, 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--dark); }
+
+/* ====== HOME PAGE ====== */
+.home-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 60px 24px 40px;
+}
+.home-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.home-header h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--dark);
+  margin-bottom: 12px;
+}
+.home-header p {
+  font-size: 15px;
+  color: var(--muted);
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 800px;
+  width: 100%;
+  margin-bottom: 48px;
+}
+.feat-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 24px 20px;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.feat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+}
+.feat-emoji { font-size: 32px; display: block; margin-bottom: 12px; }
+.feat-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.feat-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.enter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 36px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  text-decoration: none;
+}
+.enter-btn:hover { background: #003d99; transform: scale(1.02); }
+.enter-btn:active { transform: scale(0.98); }
+.home-footer {
+  margin-top: 40px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* ====== APP PAGE ====== */
+.app-page {
+  display: none;
+  width: 100%;
+  min-height: 100vh;
+}
+.app-page.active { display: block; }
+.home-page.hidden { display: none; }
+.back-bar {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+.back-btn {
+  font-size: 13px;
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+.back-btn:hover { text-decoration: underline; }
+.app-frame {
+  width: 100%;
+  height: calc(100vh - 45px);
+  border: none;
+}
+
+@media (max-width: 600px) {
+  .features-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+  .home-page { padding: 40px 16px 30px; }
+  .feat-card { padding: 18px 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div class="home-page" id="homePage">
+  <div class="home-header">
+    <h1>📋 合同管理系统</h1>
+    <p>一个用AI搭建的贸易合同+订单管理工具。选客户、填产品、自动算价、一键生成PDF合同。</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feat-card">
+      <span class="feat-emoji">📄</span>
+      <div class="feat-title">出货合同</div>
+      <div class="feat-desc">选客户→自动填信息→选产品→算含税价→导出PDF</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-emoji">📦</span>
+      <div class="feat-title">采购进货</div>
+      <div class="feat-desc">选供应商→填对接人→保存记录→关联出货合同</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-emoji">📊</span>
+      <div class="feat-title">订单记录</div>
+      <div class="feat-desc">全部汇总、利润实时看、勾选加总、导出Excel</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-emoji">🏭</span>
+      <div class="feat-title">供应商产品库</div>
+      <div class="feat-desc">表格维护信息，改了全局联动，不用到处改</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-emoji">🔗</span>
+      <div class="feat-title">关联功能</div>
+      <div class="feat-desc">采购和出货互相对应，进了什么货卖给谁一目了然</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-emoji">⚡</span>
+      <div class="feat-title">效率提升</div>
+      <div class="feat-desc">出合同 30min→3min，月底对账 半天→1分钟</div>
+    </div>
+  </div>
+
+  <button class="enter-btn" onclick="enterApp()">进入系统 →</button>
+  <div class="home-footer">Demo版 · 数据为演示用途 · 存储在本地浏览器中</div>
+</div>
+
+<!-- APP -->
+<div class="app-page" id="appPage">
+  <div class="back-bar">
+    <button class="back-btn" onclick="goHome()">← 返回主页</button>
+  </div>
+  <iframe class="app-frame" id="appFrame" src="about:blank"></iframe>
+</div>
+
+<script>
+function enterApp() {
+  document.getElementById('homePage').classList.add('hidden');
+  document.getElementById('appPage').classList.add('active');
+  document.getElementById('appFrame').src = 'https://fxy2311-youyou.github.io/cola-pages/contract-use/';
+}
+function goHome() {
+  document.getElementById('appPage').classList.remove('active');
+  document.getElementById('homePage').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
