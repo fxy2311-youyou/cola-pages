@@ -2,381 +2,628 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cola Design System — Playground</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cola Design System Playground</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&family=Fira+Code:wght@400&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Fira+Code:wght@400;500&family=Fraunces:ital,wght@1,400;1,700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
 <style>
-:root {
-  --orange: #F1752D;
-  --orange-deep: #D45A1A;
-  --orange-light: #FFE0CC;
-  --ink: #1A1A2E;
-  --ink-light: #4A4A5A;
-  --ink-faint: #8A8A9A;
-  --cream: #FFF8F0;
-  --cream-dark: #faf6eb;
-  --blue: #2B7FD8;
-  --blue-light: rgba(43,127,216,0.08);
-  --yellow: #F4D758;
-  --yellow-light: rgba(244,215,88,0.15);
-  --red: #E84A5F;
-  --brown: #8B4513;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Sans SC', -apple-system, sans-serif; font-size: 16px; line-height: 1.7; color: var(--ink); background: var(--cream); }
-::selection { background: var(--orange-light); }
+:root{--orange:#F1752D;--dark:#1A1A2E;--cream:#FFF8F0;--light-orange:#FFE0CC;--deep-orange:#D45A1A;--brown:#8B4513}
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:#FFE0CC;color:#1a1a1a}
+body{font-family:'Noto Sans SC',system-ui,sans-serif;background:var(--cream);color:var(--dark);font-size:16px;line-height:1.6}
+.container{max-width:1300px;margin:0 auto;padding:0 2rem}
 
 /* NAV */
-.nav { position: sticky; top: 0; z-index: 100; background: rgba(255,248,240,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0,0,0,0.05); padding: 14px 24px; }
-.nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-.nav-title { font-family: 'Fraunces', serif; font-weight: 900; font-size: 1.1rem; color: var(--orange); }
-.nav-links { display: flex; gap: 20px; font-size: 0.8rem; }
-.nav-links a { color: var(--ink-light); text-decoration: none; font-weight: 500; }
-.nav-links a:hover { color: var(--orange); }
+nav{position:sticky;top:0;z-index:100;background:var(--dark);padding:12px 2rem;display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+nav a{color:#fff;text-decoration:none;font-size:.78rem;padding:6px 14px;border-radius:20px;white-space:nowrap;font-family:'Fira Code',monospace;text-transform:uppercase;letter-spacing:.5px;transition:background .2s}
+nav a:hover,nav a.active{background:var(--orange)}
 
-/* CONTAINER */
-.container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+/* SECTIONS */
+section{padding:clamp(60px,8vh,120px) 0}
+.section-title{font-family:'Noto Serif SC',serif;font-weight:900;font-size:clamp(1.6rem,4vw,2.6rem);margin-bottom:2rem;position:relative;padding-left:20px}
+.section-title::before{content:'';position:absolute;left:0;top:.15em;width:6px;height:1.2em;background:var(--orange);border-radius:3px}
 
-/* SECTION DIVIDER */
-.pg-section { padding: 80px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
-.pg-section:last-child { border-bottom: none; }
-.pg-label { font-family: 'Fira Code', monospace; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--orange); margin-bottom: 8px; }
-.pg-title { font-family: 'Noto Serif SC', serif; font-weight: 900; font-size: clamp(1.4rem, 3vw, 2rem); margin-bottom: 12px; }
-.pg-desc { font-size: 0.9rem; color: var(--ink-light); margin-bottom: 40px; max-width: 600px; }
+/* DEMO CARDS */
+.demo-card{background:#fff;border-radius:16px;padding:clamp(20px,2.5vw,32px);margin-bottom:1.5rem;box-shadow:0 2px 16px rgba(26,26,46,.06);overflow:hidden}
+.demo-card__label{font-family:'Fira Code',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--brown);margin-bottom:12px;display:inline-block;background:var(--light-orange);padding:3px 10px;border-radius:4px}
+.demo-card__name{font-family:'Noto Serif SC',serif;font-weight:700;font-size:1.1rem;margin-bottom:16px}
+.demo-box{border:1.5px dashed rgba(26,26,46,.1);border-radius:10px;padding:20px;min-height:120px;position:relative;overflow:hidden}
 
-/* HERO */
-.hero-section { min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 100px 24px 80px; }
-.hero-section h1 { font-family: 'Noto Serif SC', serif; font-weight: 900; font-size: clamp(2.4rem, 6vw, 4rem); margin-bottom: 16px; }
-.hero-section h1 .hl { color: var(--orange); }
-.hero-section p { font-size: 1.05rem; color: var(--ink-light); max-width: 500px; }
-.hero-badge { margin-top: 24px; font-family: 'Fira Code', monospace; font-size: 0.72rem; background: var(--orange-light); color: var(--orange-deep); padding: 6px 16px; border-radius: 20px; }
+/* Section 1: Colors */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
+.swatch{border-radius:12px;padding:20px;min-height:100px;display:flex;flex-direction:column;justify-content:flex-end;font-family:'Fira Code',monospace;font-size:.78rem;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.swatch span{opacity:.85;margin-top:4px}
 
-/* COLOR SWATCHES */
-.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; }
-.swatch { border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-.swatch-color { height: 80px; }
-.swatch-info { background: #fff; padding: 10px 12px; }
-.swatch-name { font-size: 0.8rem; font-weight: 700; }
-.swatch-val { font-family: 'Fira Code', monospace; font-size: 0.7rem; color: var(--ink-faint); }
+/* Section 2: Typography */
+.typo-row{margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(26,26,46,.06)}
+.typo-row:last-child{border-bottom:none}
+.typo-label{font-family:'Fira Code',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--brown);margin-bottom:6px}
 
-/* TYPOGRAPHY */
-.type-row { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid rgba(0,0,0,0.04); }
-.type-row:last-child { border-bottom: none; }
-.type-label { font-family: 'Fira Code', monospace; font-size: 0.68rem; color: var(--ink-faint); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.1em; }
+/* Layouts Grid */
+.layouts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:1.5rem}
+@media(max-width:900px){.layouts-grid{grid-template-columns:1fr}}
 
-/* CARDS GRID */
-.cards-demo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-@media (max-width: 768px) { .cards-demo { grid-template-columns: 1fr; } }
+/* Mini demos */
+.mini-hero{display:grid;grid-template-columns:1fr .5fr;gap:12px;align-items:center;min-height:80px}
+.mini-hero .text h3{font-family:'Noto Serif SC',serif;font-size:.95rem;font-weight:900}
+.mini-hero .visual{background:var(--light-orange);border-radius:8px;height:60px}
 
-/* Card A - Magazine */
-.magazine-card { background: #fff; border-radius: 14px; padding: 32px 24px 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
-.magazine-card .card-title { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 900; line-height: 1.15; color: var(--ink); min-height: 80px; }
-.magazine-card .card-desc { font-size: 0.8rem; color: var(--ink-light); margin-top: 12px; }
-.magazine-card .card-aux { font-size: 0.7rem; color: var(--orange); margin-top: 8px; display: block; font-weight: 500; }
+.mini-sticky{display:grid;grid-template-columns:.3fr 1fr;gap:12px;min-height:80px}
+.mini-sticky .side{position:sticky;top:0;font-family:'Fraunces',serif;font-style:italic;font-size:1.4rem;color:var(--orange)}
+.mini-sticky .content{font-size:.8rem;color:#555}
 
-/* Card B - Number */
-.number-card { position: relative; padding: 28px 24px; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
-.number-card .card-number { position: absolute; top: -10px; right: 10px; font-family: 'Fraunces', serif; font-size: 5rem; font-weight: 900; color: var(--blue-light); line-height: 1; pointer-events: none; }
-.number-card .card-title { font-family: 'Noto Serif SC', serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; position: relative; }
-.number-card .card-desc { font-size: 0.82rem; color: var(--ink-light); position: relative; }
+.mini-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mini-cards .card{background:var(--light-orange);border-radius:8px;padding:12px;text-align:center;font-size:.72rem;font-family:'Fira Code',monospace}
 
-/* Card C - Tag */
-.tag-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
-.tag-card .card-pill { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 500; margin-bottom: 14px; background: rgba(43,127,216,0.1); color: var(--blue); }
-.tag-card .card-title { font-family: 'Noto Serif SC', serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
-.tag-card .card-desc { font-size: 0.82rem; color: var(--ink-light); }
+.mini-steps{padding-left:30px;position:relative}
+.mini-steps::before{content:'';position:absolute;left:10px;top:8px;bottom:8px;width:2px;border-left:2px dashed var(--dark)}
+.mini-step{position:relative;margin-bottom:12px;font-size:.8rem}
+.mini-step::before{content:'';position:absolute;left:-26px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--orange)}
 
-/* LAYOUTS DEMO */
-.layout-demo { background: #fff; border-radius: 14px; padding: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 24px; }
-.layout-demo-label { font-family: 'Fira Code', monospace; font-size: 0.68rem; color: var(--orange); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
-.layout-demo-title { font-family: 'Noto Serif SC', serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 8px; }
-.layout-demo-desc { font-size: 0.82rem; color: var(--ink-light); }
+.mini-timeline{position:relative;padding:0 30px}
+.mini-timeline::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;background:rgba(241,117,45,.2)}
+.tl-item{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:10px;font-size:.75rem}
+.tl-item.reverse{direction:rtl}
+.tl-item .tl-box{background:var(--cream);padding:8px;border-radius:6px}
 
-/* Steps Demo */
-.steps-demo { display: flex; flex-direction: column; gap: 24px; padding-left: 50px; position: relative; }
-.steps-demo::before { content: ''; position: absolute; left: 18px; top: 10px; bottom: 10px; width: 2px; border-left: 2px dashed var(--ink); opacity: 0.15; }
-.step-demo-item { position: relative; }
-.step-demo-num { position: absolute; left: -50px; width: 36px; height: 36px; border-radius: 50%; background: var(--orange); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.9rem; }
-.step-demo-item h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
-.step-demo-item p { font-size: 0.82rem; color: var(--ink-light); }
+.mini-dark{background:var(--dark);color:#e2e8f0;border-radius:10px;padding:20px;text-align:center;font-family:'Fraunces',serif;font-style:italic;font-size:.9rem}
 
-/* Dark Panel */
-.dark-panel { background: #151821; color: #e2e8f0; border-radius: 16px; padding: 48px 40px; text-align: center; }
-.dark-panel .quote { font-family: 'Noto Serif SC', serif; font-size: 1.3rem; font-weight: 700; line-height: 1.6; color: #fff; }
-.dark-panel .quote-attr { font-size: 0.8rem; color: var(--orange); margin-top: 12px; }
+.mini-hsteps{display:grid;grid-template-columns:repeat(3,1fr);position:relative;text-align:center;gap:0;padding-top:20px}
+.mini-hsteps::before{content:'';position:absolute;top:30px;left:30px;right:30px;height:2px;background:linear-gradient(90deg,var(--dark),var(--orange))}
+.mini-hsteps .dot{width:24px;height:24px;border-radius:50%;background:var(--orange);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.65rem;font-family:'Fraunces',serif;position:relative;z-index:1;margin:0 auto 6px}
+.mini-hsteps .step-label{font-size:.68rem}
 
-/* Horizontal Steps */
-.h-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; }
-.h-steps::before { content: ''; position: absolute; top: 22px; left: 22px; right: 22px; height: 3px; background: linear-gradient(90deg, var(--ink), var(--orange)); border-radius: 2px; }
-.h-step { text-align: center; }
-.h-step-dot { width: 44px; height: 44px; border-radius: 50%; background: var(--orange); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-weight: 700; position: relative; z-index: 1; margin-bottom: 12px; }
-.h-step h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; }
-.h-step p { font-size: 0.75rem; color: var(--ink-light); }
+.mini-centered{display:flex;align-items:center;justify-content:center;min-height:80px}
+.mini-centered .ccard{background:var(--cream);border-radius:12px;padding:16px 24px;box-shadow:0 2px 12px rgba(0,0,0,.06);text-align:center;font-family:'Noto Serif SC',serif;font-size:.85rem}
 
-/* SCENE CARDS */
-.scene-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-@media (max-width: 600px) { .scene-grid { grid-template-columns: 1fr; } }
-.scene-card { background: #fff; border-radius: 14px; padding: 28px 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); border-left: 4px solid var(--orange); }
-.scene-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
-.scene-card p { font-size: 0.82rem; color: var(--ink-light); margin-bottom: 10px; }
-.scene-card .scene-file { font-family: 'Fira Code', monospace; font-size: 0.7rem; color: var(--ink-faint); }
+.mini-vertical{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+.mini-vertical .avatar{width:40px;height:40px;border-radius:50%;background:var(--orange);opacity:.7}
+.mini-vertical h4{font-family:'Noto Serif SC',serif;font-size:.85rem}
+.mini-vertical .tags{display:flex;gap:4px}
+.mini-vertical .tag{font-size:.6rem;background:var(--light-orange);padding:2px 8px;border-radius:10px}
 
-/* TEMPLATE CARDS */
-.tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
-.tpl-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.05); text-align: center; }
-.tpl-card .emoji { font-size: 32px; margin-bottom: 10px; display: block; }
-.tpl-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
-.tpl-card p { font-size: 0.75rem; color: var(--ink-light); }
+.mini-autogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px}
+.mini-autogrid .ag-card{background:var(--light-orange);border-radius:6px;padding:10px;text-align:center;font-size:.6rem;font-family:'Fira Code',monospace}
 
-/* CHECKLIST */
-.checklist-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-@media (max-width: 768px) { .checklist-section { grid-template-columns: 1fr; } }
-.check-group { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.04); }
-.check-group h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-.check-group ul { list-style: none; }
-.check-group li { font-size: 0.78rem; color: var(--ink-light); padding: 5px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
-.check-group li:last-child { border-bottom: none; }
-.p0 { border-top: 3px solid #c62828; }
-.p1 { border-top: 3px solid var(--orange); }
-.p2 { border-top: 3px solid var(--blue); }
+.mini-accent{background:var(--orange);color:#fff;border-radius:10px;padding:20px;text-align:center}
+.mini-accent h4{font-family:'Noto Serif SC',serif;margin-bottom:4px}
+.mini-accent p{font-size:.78rem;opacity:.9}
+
+.mini-hscroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory}
+.mini-hscroll::-webkit-scrollbar{height:4px}
+.mini-hscroll::-webkit-scrollbar-thumb{background:var(--orange);border-radius:2px}
+.mini-hscroll .hs-card{flex:0 0 120px;scroll-snap-align:start;background:var(--cream);border-radius:8px;padding:12px;font-size:.7rem}
+.mini-hscroll .hs-card .yr{font-family:'Fraunces',serif;color:var(--orange);font-size:1rem}
+
+.mini-split{display:grid;grid-template-columns:1fr 1fr;min-height:80px;border-radius:10px;overflow:hidden}
+.mini-split .left{background:var(--cream);display:flex;align-items:center;justify-content:center;font-family:'Noto Serif SC',serif;font-size:.85rem;padding:12px}
+.mini-split .right{background:var(--light-orange);padding:12px;font-size:.72rem;display:flex;align-items:center}
+
+.mini-tabs .tab-bar{display:flex;gap:2px;border-bottom:2px solid #eee;margin-bottom:10px}
+.mini-tabs .tab-btn{padding:6px 12px;border:none;background:transparent;cursor:pointer;font-size:.72rem;font-family:'Fira Code',monospace;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s}
+.mini-tabs .tab-btn.active{border-bottom-color:var(--orange);color:var(--orange);font-weight:600}
+.mini-tabs .tab-panel{display:none;font-size:.78rem;padding:8px 0}
+.mini-tabs .tab-panel.active{display:block}
+
+.mini-canvas{background:#fff;border-radius:8px;height:80px;background-image:radial-gradient(circle,rgba(241,117,45,.15) 1px,transparent 1px);background-size:16px 16px;position:relative}
+.mini-canvas .node{position:absolute;background:var(--light-orange);border-radius:6px;padding:4px 8px;font-size:.6rem;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+
+/* Section 4: Scenes */
+.scenes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem}
+
+.scene-tutorial{background:var(--cream);border-radius:10px;padding:20px}
+.scene-tutorial .num{font-family:'Fraunces',serif;font-size:1.5rem;color:var(--orange);opacity:.5}
+.scene-tutorial h4{font-family:'Noto Serif SC',serif;font-size:.9rem;margin:4px 0 8px}
+.scene-tutorial p{font-size:.75rem;color:#555}
+
+.scene-landing{background:var(--dark);border-radius:10px;padding:20px;color:#fff;text-align:center}
+.scene-landing h4{font-family:'Noto Serif SC',serif;font-size:1rem;margin-bottom:8px}
+.scene-landing .cta{display:inline-block;background:var(--orange);color:#fff;padding:6px 16px;border-radius:20px;font-size:.75rem;margin-top:8px}
+
+.scene-app{border:1px solid #eee;border-radius:10px;overflow:hidden}
+.scene-app .app-header{background:#fff;padding:8px 12px;border-bottom:1px solid #eee;display:flex;gap:8px;font-size:.68rem;font-family:'Fira Code',monospace}
+.scene-app .app-header span{padding:4px 10px;border-radius:12px;cursor:pointer}
+.scene-app .app-header span.active{background:var(--orange);color:#fff}
+.scene-app .app-body{padding:12px;font-size:.75rem;min-height:60px}
+
+.scene-card-34{aspect-ratio:3/4;max-width:180px;background:var(--cream);border-radius:12px;padding:20px;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 4px 16px rgba(0,0,0,.08);margin:0 auto}
+.scene-card-34 h4{font-family:'Noto Serif SC',serif;font-size:1.1rem;line-height:1.3;margin-bottom:6px}
+.scene-card-34 p{font-size:.7rem;color:#555}
+
+/* Section 5: Templates */
+.templates-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem}
+.tpl-preview{border-radius:10px;overflow:hidden;min-height:160px;position:relative;padding:16px}
+.tpl-label{position:absolute;top:8px;right:8px;font-family:'Fira Code',monospace;font-size:.6rem;background:rgba(26,26,46,.8);color:#fff;padding:2px 8px;border-radius:4px}
+
+.tpl-tutorial{background:var(--cream);border:1px solid var(--light-orange)}
+.tpl-tutorial .tpl-num{font-family:'Fraunces',serif;font-size:2rem;color:var(--orange);opacity:.3}
+.tpl-tutorial h4{font-family:'Noto Serif SC',serif;font-size:.9rem;margin:4px 0}
+.tpl-tutorial p{font-size:.72rem;color:#555}
+
+.tpl-landing{background:var(--dark);color:#fff}
+.tpl-landing h4{font-family:'Noto Serif SC',serif;font-size:1rem;text-align:center;margin-top:16px}
+.tpl-landing .hero-bar{height:40px;background:linear-gradient(135deg,var(--orange),var(--deep-orange));border-radius:8px;margin-bottom:12px}
+.tpl-landing .cta-btn{display:block;width:fit-content;margin:12px auto 0;background:var(--orange);color:#fff;padding:5px 14px;border-radius:16px;font-size:.7rem}
+
+.tpl-app{background:#fff;border:1px solid #eee}
+.tpl-app .top-bar{height:28px;background:var(--dark);border-radius:6px 6px 0 0;display:flex;align-items:center;padding:0 10px;gap:4px}
+.tpl-app .top-bar .dot{width:6px;height:6px;border-radius:50%;background:#555}
+.tpl-app .app-content{padding:12px;font-size:.72rem}
+
+.tpl-cards{background:var(--cream)}
+.tpl-cards .card-34{aspect-ratio:3/4;max-width:120px;background:#fff;border-radius:10px;margin:0 auto;padding:14px;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.tpl-cards .card-34 h5{font-family:'Noto Serif SC',serif;font-size:.8rem}
+
+.tpl-chat{background:var(--cream)}
+.tpl-chat .bubble{padding:8px 12px;border-radius:12px;font-size:.72rem;margin-bottom:6px;max-width:75%}
+.tpl-chat .bubble.cola{background:var(--orange);color:#fff;border-bottom-left-radius:4px}
+.tpl-chat .bubble.user{background:#fff;margin-left:auto;border-bottom-right-radius:4px}
+
+.tpl-founder{background:var(--dark);color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.tpl-founder .quote-mark{font-family:'Fraunces',serif;font-size:3rem;color:var(--orange);line-height:1;opacity:.6}
+.tpl-founder p{font-family:'Noto Serif SC',serif;font-size:.85rem;margin:8px 0;max-width:220px}
+.tpl-founder .sig{font-family:'Caveat',cursive;font-size:1rem;color:var(--orange)}
+
+.tpl-xinji{background:linear-gradient(135deg,var(--cream),#fff);border:1px solid var(--light-orange)}
+.tpl-xinji .date{font-family:'Fira Code',monospace;font-size:.65rem;color:var(--brown);margin-bottom:8px}
+.tpl-xinji h4{font-family:'Caveat',cursive;font-size:1.3rem;color:var(--dark);margin-bottom:6px}
+.tpl-xinji p{font-size:.75rem;color:#555;line-height:1.7}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="nav">
-  <div class="nav-inner">
-    <span class="nav-title">Cola Design Playground</span>
-    <div class="nav-links">
-      <a href="#colors">色彩</a>
-      <a href="#typography">字体</a>
-      <a href="#cards">卡片</a>
-      <a href="#layouts">布局</a>
-      <a href="#scenes">场景</a>
-      <a href="#templates">模板</a>
-      <a href="#checklist">质检</a>
-    </div>
-  </div>
+<!-- Navigation -->
+<nav>
+<a href="#colors">COLORS</a>
+<a href="#typography">TYPOGRAPHY</a>
+<a href="#layouts">LAYOUTS</a>
+<a href="#scenes">SCENES</a>
+<a href="#templates">TEMPLATES</a>
 </nav>
 
-<!-- HERO -->
-<section class="hero-section">
-  <h1>Cola <span class="hl">Design</span> System</h1>
-  <p>品牌DNA + 4种场景规范 + 15种布局 + 20+组件 + 7个模板 + 质检清单</p>
-  <span class="hero-badge">cola-design skill · v1.0</span>
+<!-- Section 1: Brand Colors -->
+<section id="colors">
+<div class="container">
+<h2 class="section-title">Brand Colors</h2>
+<div class="swatches">
+<div class="swatch" style="background:#F1752D;color:#fff"><strong>橙</strong><span>#F1752D</span></div>
+<div class="swatch" style="background:#1A1A2E;color:#fff"><strong>深灰</strong><span>#1A1A2E</span></div>
+<div class="swatch" style="background:#FFF8F0;color:#1A1A2E;border:1px solid #eee"><strong>暖白</strong><span>#FFF8F0</span></div>
+<div class="swatch" style="background:#FFE0CC;color:#1A1A2E"><strong>浅橙</strong><span>#FFE0CC</span></div>
+<div class="swatch" style="background:#D45A1A;color:#fff"><strong>深橙</strong><span>#D45A1A</span></div>
+<div class="swatch" style="background:#8B4513;color:#fff"><strong>棕</strong><span>#8B4513</span></div>
+</div>
+</div>
 </section>
 
-<!-- COLORS -->
-<section class="pg-section" id="colors">
-  <div class="container">
-    <span class="pg-label">01 — Brand Colors</span>
-    <h2 class="pg-title">品牌色彩系统</h2>
-    <p class="pg-desc">三色为核心，扩展色辅助。橙色60%、深灰30%、暖白10%。</p>
-    <div class="swatches">
-      <div class="swatch"><div class="swatch-color" style="background:#F1752D;"></div><div class="swatch-info"><div class="swatch-name">主橙</div><div class="swatch-val">#F1752D</div></div></div>
-      <div class="swatch"><div class="swatch-color" style="background:#1A1A2E;"></div><div class="swatch-info"><div class="swatch-name">深灰</div><div class="swatch-val">#1A1A2E</div></div></div>
-      <div class="swatch"><div class="swatch-color" style="background:#FFF8F0;"></div><div class="swatch-info"><div class="swatch-name">暖白</div><div class="swatch-val">#FFF8F0</div></div></div>
-      <div class="swatch"><div class="swatch-color" style="background:#FFE0CC;"></div><div class="swatch-info"><div class="swatch-name">浅橙</div><div class="swatch-val">#FFE0CC</div></div></div>
-      <div class="swatch"><div class="swatch-color" style="background:#D45A1A;"></div><div class="swatch-info"><div class="swatch-name">深橙</div><div class="swatch-val">#D45A1A</div></div></div>
-      <div class="swatch"><div class="swatch-color" style="background:#8B4513;"></div><div class="swatch-info"><div class="swatch-name">棕</div><div class="swatch-val">#8B4513</div></div></div>
-    </div>
-  </div>
+<!-- Section 2: Typography -->
+<section id="typography" style="background:#fff">
+<div class="container">
+<h2 class="section-title">Typography</h2>
+<div class="typo-row">
+<div class="typo-label">Hero大标题 — Noto Serif SC 900, clamp(2.8rem–5.5rem)</div>
+<div style="font-family:'Noto Serif SC',serif;font-weight:900;font-size:clamp(2.8rem,7vw,5.5rem);line-height:1.1;color:var(--dark)">设计系统</div>
+</div>
+<div class="typo-row">
+<div class="typo-label">Section标题 — Noto Serif SC 900, clamp(1.6rem–2.6rem)</div>
+<div style="font-family:'Noto Serif SC',serif;font-weight:900;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--dark)">品牌基因与视觉语言</div>
+</div>
+<div class="typo-row">
+<div class="typo-label">英文装饰 — Fraunces italic</div>
+<div style="font-family:'Fraunces',serif;font-style:italic;font-size:1.8rem;color:var(--orange)">Design with Soul</div>
+</div>
+<div class="typo-row">
+<div class="typo-label">标签/Caps — Fira Code, uppercase, letter-spacing</div>
+<div style="font-family:'Fira Code',monospace;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--brown)">COMPONENT · LAYOUT · BRAND</div>
+</div>
+<div class="typo-row">
+<div class="typo-label">正文 — Noto Sans SC 400, 16px</div>
+<div style="font-family:'Noto Sans SC',sans-serif;font-size:16px;color:var(--dark);max-width:600px">Cola的设计理念是温暖、有灵魂、有人情味。我们相信技术产品也能有温度，像一个伙伴而不是工具。</div>
+</div>
+<div class="typo-row">
+<div class="typo-label">手写装饰 — Caveat 700</div>
+<div style="font-family:'Caveat',cursive;font-weight:700;font-size:1.6rem;color:var(--deep-orange)">hello, this is Cola ♡</div>
+</div>
+</div>
 </section>
 
-<!-- TYPOGRAPHY -->
-<section class="pg-section" id="typography">
-  <div class="container">
-    <span class="pg-label">02 — Typography</span>
-    <h2 class="pg-title">字体层次</h2>
-    <p class="pg-desc">标题用衬线，正文用无衬线。字号对比极端——大的要很大，小的要真的小。</p>
-    <div class="type-row">
-      <div class="type-label">Hero 大标题 · Noto Serif SC · 900</div>
-      <div style="font-family:'Noto Serif SC',serif;font-weight:900;font-size:clamp(2rem,5vw,3.5rem);line-height:1.2;">用AI做了个合同管理系统</div>
-    </div>
-    <div class="type-row">
-      <div class="type-label">Section 标题 · Noto Serif SC · 900</div>
-      <div style="font-family:'Noto Serif SC',serif;font-weight:900;font-size:clamp(1.4rem,3vw,2.2rem);">一个产品的完整旅程</div>
-    </div>
-    <div class="type-row">
-      <div class="type-label">英文装饰 · Fraunces italic · 400</div>
-      <div style="font-family:'Fraunces',serif;font-style:italic;font-size:1.3rem;color:var(--orange);">Product Showcase Methodology</div>
-    </div>
-    <div class="type-row">
-      <div class="type-label">标签/Caps · Fira Code · 400</div>
-      <div style="font-family:'Fira Code',monospace;font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orange);">Live Demo · Case Study · Workflow</div>
-    </div>
-    <div class="type-row">
-      <div class="type-label">正文 · Noto Sans SC · 400</div>
-      <div style="font-size:1rem;color:var(--ink-light);">这段是正文示例。用无衬线字体保证可读性，行高1.7，颜色不用纯黑而是带暖调的深色。</div>
-    </div>
-    <div class="type-row">
-      <div class="type-label">手写装饰 · Caveat · 700</div>
-      <div style="font-family:'Caveat',cursive;font-size:1.4rem;color:var(--orange);">—— 4步，不写一行代码 ✦</div>
-    </div>
-  </div>
+<!-- Section 3: Layouts -->
+<section id="layouts">
+<div class="container">
+<h2 class="section-title">15 Layouts</h2>
+<div class="layouts-grid">
+
+<!-- Layout 1: Hero双栏不对称 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 01</span>
+<div class="demo-card__name">Hero双栏不对称</div>
+<div class="demo-box">
+<div class="mini-hero">
+<div class="text"><span style="font-family:'Fira Code',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--brown)">CATEGORY</span><h3>创造有温度的产品</h3><p style="font-size:.72rem;color:#555;margin-top:4px">Design with soul.</p></div>
+<div class="visual"></div>
+</div>
+</div>
+</div>
+
+<!-- Layout 2: Sticky侧栏 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 02</span>
+<div class="demo-card__name">Sticky侧栏+内容滚动</div>
+<div class="demo-box">
+<div class="mini-sticky">
+<div class="side">01</div>
+<div class="content">
+<p><strong>品牌核心</strong></p>
+<p>温暖的配色、衬线标题体、有人情味的文案——这些元素共同构成了Cola的设计语言。每一个细节都在传递我们的态度。</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Layout 3: 三等分卡片 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 03</span>
+<div class="demo-card__name">三等分卡片网格</div>
+<div class="demo-box">
+<div class="mini-cards">
+<div class="card">温暖</div>
+<div class="card">灵魂</div>
+<div class="card">科技</div>
+</div>
+</div>
+</div>
+
+<!-- Layout 4: 纵向Step流程线 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 04</span>
+<div class="demo-card__name">纵向Step流程线</div>
+<div class="demo-box">
+<div class="mini-steps">
+<div class="mini-step"><strong>确认需求</strong> — 类型与受众</div>
+<div class="mini-step"><strong>读取规范</strong> — 品牌DNA</div>
+<div class="mini-step"><strong>选择布局</strong> — 组合搭配</div>
+</div>
+</div>
+</div>
+
+<!-- Layout 5: 中轴时间线 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 05</span>
+<div class="demo-card__name">中轴时间线交错</div>
+<div class="demo-box">
+<div class="mini-timeline">
+<div class="tl-item"><div class="tl-box">品牌创立<br><small>定义核心价值</small></div><div></div></div>
+<div class="tl-item reverse"><div></div><div class="tl-box">设计系统<br><small>建立规范</small></div></div>
+</div>
+</div>
+</div>
+
+<!-- Layout 6: 全宽深色面板 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 06</span>
+<div class="demo-card__name">全宽深色面板</div>
+<div class="demo-box" style="padding:0">
+<div class="mini-dark">"设计不是装饰，是表达。"</div>
+</div>
+</div>
+
+<!-- Layout 7: 横向Step连接线 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 07</span>
+<div class="demo-card__name">横向Step连接线</div>
+<div class="demo-box">
+<div class="mini-hsteps">
+<div><div class="dot">1</div><div class="step-label">规划</div></div>
+<div><div class="dot">2</div><div class="step-label">设计</div></div>
+<div><div class="dot">3</div><div class="step-label">交付</div></div>
+</div>
+</div>
+</div>
+
+<!-- Layout 8: Hero全屏居中 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 08</span>
+<div class="demo-card__name">Hero全屏居中型</div>
+<div class="demo-box">
+<div class="mini-centered"><div class="ccard">Cola Design<br><span style="font-size:.7rem;color:var(--orange)">品牌设计系统 v2</span></div></div>
+</div>
+</div>
+
+<!-- Layout 9: Hero单栏纵向 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 09</span>
+<div class="demo-card__name">Hero单栏纵向</div>
+<div class="demo-box">
+<div class="mini-vertical">
+<div class="avatar"></div>
+<h4>Cola</h4>
+<p style="font-size:.7rem;color:#555">有温度的AI伙伴</p>
+<div class="tags"><span class="tag">设计</span><span class="tag">品牌</span><span class="tag">系统</span></div>
+</div>
+</div>
+</div>
+
+<!-- Layout 10: 自适应卡片网格 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 10</span>
+<div class="demo-card__name">自适应卡片网格</div>
+<div class="demo-box">
+<div class="mini-autogrid">
+<div class="ag-card">React</div>
+<div class="ag-card">Vue</div>
+<div class="ag-card">Svelte</div>
+<div class="ag-card">Solid</div>
+<div class="ag-card">Astro</div>
+</div>
+</div>
+</div>
+
+<!-- Layout 11: 全宽品牌色面板 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 11</span>
+<div class="demo-card__name">全宽品牌色面板</div>
+<div class="demo-box" style="padding:0">
+<div class="mini-accent"><h4>加入我们</h4><p>一起创造有温度的产品</p></div>
+</div>
+</div>
+
+<!-- Layout 12: 横向滚动时间线 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 12</span>
+<div class="demo-card__name">横向滚动时间线</div>
+<div class="demo-box" style="padding:12px">
+<div class="mini-hscroll">
+<div class="hs-card"><div class="yr">2022</div>品牌创立</div>
+<div class="hs-card"><div class="yr">2023</div>设计系统</div>
+<div class="hs-card"><div class="yr">2024</div>组件库</div>
+<div class="hs-card"><div class="yr">2025</div>开放生态</div>
+</div>
+</div>
+</div>
+
+<!-- Layout 13: 分栏对称 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 13</span>
+<div class="demo-card__name">分栏对称 (Pain Point)</div>
+<div class="demo-box" style="padding:0">
+<div class="mini-split">
+<div class="left">痛点</div>
+<div class="right">• 缺乏规范<br>• 风格不统一<br>• 交付低效</div>
+</div>
+</div>
+</div>
+
+<!-- Layout 14: Tab切换 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 14</span>
+<div class="demo-card__name">Tab切换单栏</div>
+<div class="demo-box">
+<div class="mini-tabs" data-tabs="1">
+<div class="tab-bar">
+<button class="tab-btn active" data-target="t1a">概览</button>
+<button class="tab-btn" data-target="t1b">配色</button>
+<button class="tab-btn" data-target="t1c">字体</button>
+</div>
+<div class="tab-panel active" id="t1a">Cola设计系统包含品牌色、字体、布局模式三大核心模块。</div>
+<div class="tab-panel" id="t1b">主色橙 #F1752D，辅以深灰与暖白，比例 60:30:10。</div>
+<div class="tab-panel" id="t1c">标题用衬线体，正文用无衬线体，英文做装饰点缀。</div>
+</div>
+</div>
+</div>
+
+<!-- Layout 15: 无限画布 -->
+<div class="demo-card">
+<span class="demo-card__label">Layout 15</span>
+<div class="demo-card__name">无限画布</div>
+<div class="demo-box" style="padding:0">
+<div class="mini-canvas">
+<div class="node" style="top:12px;left:20px">想法A</div>
+<div class="node" style="top:40px;left:100px">想法B</div>
+<div class="node" style="top:18px;right:30px">想法C</div>
+</div>
+</div>
+</div>
+
+</div><!-- end layouts-grid -->
+</div>
 </section>
 
-<!-- CARDS -->
-<section class="pg-section" id="cards">
-  <div class="container">
-    <span class="pg-label">03 — Components · Cards</span>
-    <h2 class="pg-title">卡片组件</h2>
-    <p class="pg-desc">5种卡片变体，根据信息场景选用。</p>
-    <div class="cards-demo">
-      <div class="magazine-card">
-        <div class="card-title">杂志裁切风</div>
-        <div class="card-desc">适用于需要大气场的标题卡、功能展示、首屏核心卖点。</div>
-        <span class="card-aux">MAGAZINE CARD</span>
-      </div>
-      <div class="number-card">
-        <span class="card-number">02</span>
-        <div class="card-title">编号主导卡片</div>
-        <div class="card-desc">适用于步骤列表、问题清单、并列要点。大数字做装饰背景。</div>
-      </div>
-      <div class="tag-card">
-        <span class="card-pill">标签卡片</span>
-        <div class="card-title">带分类标签</div>
-        <div class="card-desc">适用于分类展示、功能矩阵、带标签的信息卡。</div>
-      </div>
-    </div>
-  </div>
+<!-- Section 4: Scenes -->
+<section id="scenes" style="background:#fff">
+<div class="container">
+<h2 class="section-title">4 Scenes</h2>
+<div class="scenes-grid">
+
+<!-- Scene 1: Tutorial -->
+<div class="demo-card">
+<span class="demo-card__label">Scene 01</span>
+<div class="demo-card__name">教程/介绍/科普</div>
+<div class="demo-box" style="padding:0">
+<div class="scene-tutorial">
+<div class="num">01</div>
+<h4>什么是设计系统</h4>
+<p>设计系统是一套统一的设计语言和组件库，确保产品在不同场景下保持一致的视觉体验。它包括颜色、字体、布局等基础元素。</p>
+</div>
+</div>
+</div>
+
+<!-- Scene 2: Landing -->
+<div class="demo-card">
+<span class="demo-card__label">Scene 02</span>
+<div class="demo-card__name">活动页/Landing</div>
+<div class="demo-box" style="padding:0">
+<div class="scene-landing">
+<h4>Cola Design Summit</h4>
+<p style="font-size:.75rem;opacity:.8">2025年度设计分享会</p>
+<span class="cta">立即报名 →</span>
+</div>
+</div>
+</div>
+
+<!-- Scene 3: App型 -->
+<div class="demo-card">
+<span class="demo-card__label">Scene 03</span>
+<div class="demo-card__name">App型/功能型</div>
+<div class="demo-box" style="padding:0">
+<div class="scene-app">
+<div class="app-header"><span class="active">首页</span><span>项目</span><span>设置</span></div>
+<div class="app-body">紧凑布局，Sticky导航栏，Tab切换视图。适合功能型产品界面。</div>
+</div>
+</div>
+</div>
+
+<!-- Scene 4: Cards -->
+<div class="demo-card">
+<span class="demo-card__label">Scene 04</span>
+<div class="demo-card__name">图文卡片/小红书</div>
+<div class="demo-box">
+<div class="scene-card-34">
+<h4>好的设计<br>是温暖的</h4>
+<p>Cola Design</p>
+</div>
+</div>
+</div>
+
+</div>
+</div>
 </section>
 
-<!-- LAYOUTS -->
-<section class="pg-section" id="layouts">
-  <div class="container">
-    <span class="pg-label">04 — Layouts</span>
-    <h2 class="pg-title">15种布局模式（精选展示）</h2>
-    <p class="pg-desc">每个section选不同布局，组合使用避免单调。</p>
+<!-- Section 5: Templates -->
+<section id="templates">
+<div class="container">
+<h2 class="section-title">7 Templates</h2>
+<div class="templates-grid">
 
-    <!-- Vertical Steps -->
-    <div class="layout-demo">
-      <div class="layout-demo-label">Layout #4 · 纵向Step流程线</div>
-      <div class="steps-demo">
-        <div class="step-demo-item"><span class="step-demo-num">1</span><h4>需求梳理</h4><p>把痛点列成清单就是你的需求文档</p></div>
-        <div class="step-demo-item"><span class="step-demo-num">2</span><h4>原型搭建</h4><p>一小时跑通核心流程</p></div>
-        <div class="step-demo-item"><span class="step-demo-num">3</span><h4>功能迭代</h4><p>每次只加一个功能，确认稳定再加下一个</p></div>
-      </div>
-    </div>
+<!-- Template 1: Tutorial -->
+<div class="demo-card">
+<span class="demo-card__label">Template 01</span>
+<div class="demo-card__name">template-tutorial</div>
+<div class="tpl-preview tpl-tutorial">
+<span class="tpl-label">tutorial</span>
+<div class="tpl-num">01</div>
+<h4>设计入门指南</h4>
+<p>从零开始搭建你的第一个设计系统，理解颜色、字体与布局的关系。</p>
+</div>
+</div>
 
-    <!-- Dark Panel -->
-    <div class="layout-demo" style="padding:0;overflow:hidden;border-radius:16px;">
-      <div class="layout-demo-label" style="padding:16px 32px 0;">Layout #6 · 全宽深色面板</div>
-      <div class="dark-panel">
-        <div class="quote">"做100分的产品，不如做80分的产品 + 100分的展示"</div>
-        <div class="quote-attr">— Cola Design Philosophy</div>
-      </div>
-    </div>
+<!-- Template 2: Landing -->
+<div class="demo-card">
+<span class="demo-card__label">Template 02</span>
+<div class="demo-card__name">template-landing</div>
+<div class="tpl-preview tpl-landing">
+<span class="tpl-label">landing</span>
+<div class="hero-bar"></div>
+<h4>产品发布会</h4>
+<span class="cta-btn">了解更多</span>
+</div>
+</div>
 
-    <!-- Horizontal Steps -->
-    <div class="layout-demo">
-      <div class="layout-demo-label">Layout #7 · 横向Step连接线</div>
-      <div class="h-steps">
-        <div class="h-step"><span class="h-step-dot">1</span><h4>做产品</h4><p>Vibe Coding</p></div>
-        <div class="h-step"><span class="h-step-dot">2</span><h4>包装故事</h4><p>Case Study</p></div>
-        <div class="h-step"><span class="h-step-dot">3</span><h4>部署上线</h4><p>GitHub Pages</p></div>
-        <div class="h-step"><span class="h-step-dot">4</span><h4>串联体验</h4><p>iframe嵌入</p></div>
-      </div>
-    </div>
-  </div>
+<!-- Template 3: App -->
+<div class="demo-card">
+<span class="demo-card__label">Template 03</span>
+<div class="demo-card__name">template-app</div>
+<div class="tpl-preview tpl-app">
+<span class="tpl-label">app</span>
+<div class="top-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+<div class="app-content">
+<p><strong>Dashboard</strong></p>
+<p style="margin-top:6px;color:#555">紧凑功能界面，Tab导航，侧栏菜单。</p>
+</div>
+</div>
+</div>
+
+<!-- Template 4: Cards -->
+<div class="demo-card">
+<span class="demo-card__label">Template 04</span>
+<div class="demo-card__name">template-cards</div>
+<div class="tpl-preview tpl-cards">
+<span class="tpl-label">cards 3:4</span>
+<div class="card-34"><h5>设计如诗</h5><p style="font-size:.65rem;color:#555;margin-top:4px">Cola</p></div>
+</div>
+</div>
+
+<!-- Template 5: Chat Mockup -->
+<div class="demo-card">
+<span class="demo-card__label">Template 05</span>
+<div class="demo-card__name">template-chat-mockup</div>
+<div class="tpl-preview tpl-chat">
+<span class="tpl-label">chat</span>
+<div class="bubble cola">你好呀，有什么我可以帮你的？</div>
+<div class="bubble user">帮我做个设计系统吧</div>
+<div class="bubble cola">没问题，我们开始～</div>
+</div>
+</div>
+
+<!-- Template 6: Founder Says -->
+<div class="demo-card">
+<span class="demo-card__label">Template 06</span>
+<div class="demo-card__name">template-founder-says</div>
+<div class="tpl-preview tpl-founder">
+<span class="tpl-label">founder</span>
+<div class="quote-mark">"</div>
+<p>好的产品应该像一个朋友，而不是一个工具。</p>
+<div class="sig">— Cola</div>
+</div>
+</div>
+
+<!-- Template 7: 心迹 -->
+<div class="demo-card">
+<span class="demo-card__label">Template 07</span>
+<div class="demo-card__name">template-xinji (心迹)</div>
+<div class="tpl-preview tpl-xinji">
+<span class="tpl-label">心迹</span>
+<div class="date">2025.06.09 · 周一</div>
+<h4>Today I learned...</h4>
+<p>设计不只是让东西好看。它是在帮用户减少思考、感到被理解。每一个间距、每一个配色选择，都在无声地说话。</p>
+</div>
+</div>
+
+</div>
+</div>
 </section>
 
-<!-- SCENES -->
-<section class="pg-section" id="scenes">
-  <div class="container">
-    <span class="pg-label">05 — Scenes</span>
-    <h2 class="pg-title">4种场景规范</h2>
-    <p class="pg-desc">不同类型的页面有不同的设计规范，选对场景再动手。</p>
-    <div class="scene-grid">
-      <div class="scene-card">
-        <h3>📖 教程 / 介绍 / 科普</h3>
-        <p>长内容分段展示，强调可读性和节奏感。暖色调为主。</p>
-        <div class="scene-file">scene-tutorial.md → template-tutorial.html</div>
-      </div>
-      <div class="scene-card">
-        <h3>🎉 活动页 / Landing</h3>
-        <p>分享会、发布会、活动报名。强CTA、视觉冲击力。</p>
-        <div class="scene-file">scene-landing.md → template-landing.html</div>
-      </div>
-      <div class="scene-card">
-        <h3>⚙️ App型 / 功能型</h3>
-        <p>看板、书架、Canvas等功能型应用。注重交互和信息密度。</p>
-        <div class="scene-file">scene-app.md → template-app.html</div>
-      </div>
-      <div class="scene-card">
-        <h3>🎴 图文卡片 / 小红书</h3>
-        <p>文章转卡片、社交媒体图文。竖版为主，适合截图分享。</p>
-        <div class="scene-file">scene-cards.md → template-cards.html</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TEMPLATES -->
-<section class="pg-section" id="templates">
-  <div class="container">
-    <span class="pg-label">06 — Templates</span>
-    <h2 class="pg-title">7个HTML模板</h2>
-    <p class="pg-desc">从模板开始改，不从零写。每个模板已内置品牌变量和基础结构。</p>
-    <div class="tpl-grid">
-      <div class="tpl-card"><span class="emoji">📖</span><h4>tutorial</h4><p>教程/介绍/科普页面</p></div>
-      <div class="tpl-card"><span class="emoji">🎉</span><h4>landing</h4><p>活动页/Landing</p></div>
-      <div class="tpl-card"><span class="emoji">⚙️</span><h4>app</h4><p>App型/功能型</p></div>
-      <div class="tpl-card"><span class="emoji">🎴</span><h4>cards</h4><p>图文卡片/小红书</p></div>
-      <div class="tpl-card"><span class="emoji">💬</span><h4>chat-mockup</h4><p>对话框模拟</p></div>
-      <div class="tpl-card"><span class="emoji">🗣️</span><h4>founder-says</h4><p>创始人语录</p></div>
-      <div class="tpl-card"><span class="emoji">✨</span><h4>xinji (心迹)</h4><p>日记/心迹展示</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- CHECKLIST -->
-<section class="pg-section" id="checklist">
-  <div class="container">
-    <span class="pg-label">07 — Quality Checklist</span>
-    <h2 class="pg-title">质检清单</h2>
-    <p class="pg-desc">做完必须跑checklist。P0全过才能交付。</p>
-    <div class="checklist-section">
-      <div class="check-group p0">
-        <h4>🔴 P0 — 必须全过</h4>
-        <ul>
-          <li>品牌三色正确使用</li>
-          <li>字体层次分明（衬线标题+无衬线正文）</li>
-          <li>没有默认浏览器样式</li>
-          <li>移动端可正常浏览</li>
-          <li>截图发出去不会被说"又是AI做的"</li>
-        </ul>
-      </div>
-      <div class="check-group p1">
-        <h4>🟠 P1 — 应该满足</h4>
-        <ul>
-          <li>每个section布局不同</li>
-          <li>有滚动动画/reveal效果</li>
-          <li>间距使用clamp()做流式</li>
-          <li>深色面板制造节奏对比</li>
-          <li>英文做装饰/标签使用</li>
-        </ul>
-      </div>
-      <div class="check-group p2">
-        <h4>🔵 P2 — 加分项</h4>
-        <ul>
-          <li>有手写字体点缀</li>
-          <li>径向渐变背景层次</li>
-          <li>微动画（hover/入场）</li>
-          <li>暗色模式支持</li>
-          <li>性能优化（图片懒加载等）</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer style="text-align:center;padding:40px 24px;font-size:0.8rem;color:var(--ink-faint);">
-  Cola Design System Playground · Skill路径: <code style="font-family:'Fira Code',monospace;background:var(--cream-dark);padding:2px 8px;border-radius:4px;">~/.cola/resources/skills/cola-design/</code>
+<!-- Footer -->
+<footer style="background:var(--dark);color:#e2e8f0;text-align:center;padding:40px 2rem">
+<p style="font-family:'Fraunces',serif;font-style:italic;font-size:1.2rem;color:var(--orange);margin-bottom:8px">Cola Design System</p>
+<p style="font-size:.78rem;opacity:.6">Playground v2 · All 15 layouts · 4 scenes · 7 templates</p>
 </footer>
 
+<script>
+// Tab switching
+document.querySelectorAll('.mini-tabs').forEach(container=>{
+  container.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const target=btn.dataset.target;
+      container.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      container.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+});
+
+// Nav active state
+const sections=document.querySelectorAll('section[id]');
+const navLinks=document.querySelectorAll('nav a');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      navLinks.forEach(l=>l.classList.remove('active'));
+      const active=document.querySelector(`nav a[href="#${entry.target.id}"]`);
+      if(active)active.classList.add('active');
+    }
+  });
+},{threshold:0.3});
+sections.forEach(s=>observer.observe(s));
+
+// Smooth scroll
+document.querySelectorAll('nav a').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const target=document.querySelector(a.getAttribute('href'));
+    if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+</script>
 </body>
 </html>
