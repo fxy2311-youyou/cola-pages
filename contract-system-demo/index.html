@@ -302,28 +302,12 @@ let products=DB.get('products');
 // ========== SEED DATA ==========
 if(!clients.length){
   clients=[
-{id:1,name:'杭州创新贸易有限公司',agent:'王经理',phone:'',address:'',bank_name:'',bank_account:'',products_note:'C001 清洗剂1号'},
-{id:2,name:'深圳前海新材料有限公司',agent:'李总',phone:'',address:'',bank_name:'',bank_account:'',products_note:'G002/Q001/Q002'},
-{id:3,name:'优供达',agent:'陈工',phone:'',address:'',bank_name:'',bank_account:'',products_note:'C001 清洗剂1号'},
-{id:4,name:'苏州正方机电有限公司',agent:'赵主管',phone:'',address:'',bank_name:'',bank_account:'',products_note:'T001 涂层材料1号'},
-{id:5,name:'广州南方化工有限公司',agent:'周经理',phone:'',address:'',bank_name:'',bank_account:'',products_note:'G002 工业胶水2号'},
-{id:6,name:'北京朝阳新材料有限公司',agent:'林经理',phone:'13912345678',address:'浦东新区科苑路100号',bank_name:'中国工商银行上海徐汇支行',bank_account:'62200000000098765432',products_note:'G001/Q001/Q002等'},
-{id:7,name:'武汉光谷实业有限公司',agent:'吴主管',phone:'',address:'',bank_name:'',bank_account:'',products_note:'G001/Q001/Q002等'},
-{id:8,name:'江苏恒源材料有限公司',agent:'孙经理',phone:'',address:'',bank_name:'',bank_account:'',products_note:'G001 工业胶水1号'},
-{id:9,name:'天津华远工贸有限公司',agent:'钱主管',phone:'',address:'',bank_name:'',bank_account:'',products_note:'C001 清洗剂1号'},
-{id:10,name:'成都西南科技有限公司',agent:'郑工',phone:'',address:'',bank_name:'',bank_account:'',products_note:'C001 清洗剂1号'}
-];
+{id:1,name:'示例客户公司',agent:'王经理',phone:'13800000001',address:'上海市浦东新区张江路100号',bank_name:'中国工商银行',bank_account:'6222000000001234567',products_note:'胶水1号'}];
   DB.set('clients',clients);
 }
 if(!products.length){
   products=[
-{id:1,product_id:'G001',desc:'工业胶水1号 250ml',sell_prices:'132, 133, 134',buy_prices:'120, 121, 122'},
-{id:2,product_id:'G002',desc:'工业胶水2号 20g',sell_prices:'135, 136',buy_prices:'123, 124'},
-{id:3,product_id:'Q001',desc:'精密器材1号 250ml',sell_prices:'137, 138',buy_prices:'125, 126'},
-{id:4,product_id:'Q002',desc:'精密器材2号 50ml',sell_prices:'139, 140',buy_prices:'127, 128'},
-{id:5,product_id:'C001',desc:'清洗剂1号 500ml',sell_prices:'141, 142, 143',buy_prices:'129, 130, 131'},
-{id:6,product_id:'T001',desc:'涂层材料1号 10kg',sell_prices:'144, 145',buy_prices:'132, 133'}
-];
+{id:1,product_id:'J001',desc:'胶水1号 250ml',sell_prices:'134, 135',buy_prices:'120, 121'}];
   DB.set('products',products);
 }
 
