@@ -753,53 +753,44 @@
   </section>
 
 
-  <!-- ====== SECTION 3 - Layout #4: 纵向Step流程线 ====== -->
+  <!-- ====== SECTION 3 - Layout #4: 开发流程 ====== -->
   <section class="section-steps">
     <div class="container">
       <div class="section-header reveal">
         <span class="section-num-deco" style="color:var(--orange);opacity:.3;font-family:'Fraunces',serif;font-style:italic;font-size:clamp(1.4rem,3vw,2rem);display:block;margin-bottom:.25rem;">03</span>
-        <h2 class="section-title" style="font-family:'Noto Serif SC',serif;font-weight:900;font-size:clamp(1.4rem,3vw,2.2rem);">怎么做到的</h2>
+        <h2 class="section-title" style="font-family:'Noto Serif SC',serif;font-weight:900;font-size:clamp(1.4rem,3vw,2.2rem);">开发流程</h2>
       </div>
       <div class="steps-container">
         <div class="step-item reveal reveal-d1">
           <span class="step-num">1</span>
           <div class="step-content">
-            <h3>把文件给AI</h3>
-            <p>把正在用的Word合同模板和Excel订单统计表直接发给AI,让它理解我的业务流程和数据结构。</p>
-            <span class="step-detail">↳ 给原始文件,别给截图!</span>
-            <div style="margin-top:16px;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);max-width:500px;">
-              <img src="chat-analyze.png" alt="AI分析合同结构" style="width:100%;display:block;">
-            </div>
+            <h3>需求梳理</h3>
+            <p>把现有的工作流程整理清楚：哪些环节耗时最多？哪些数据反复手动录入？哪些操作最容易出错？把这些痛点列成清单，就是你的需求文档。</p>
+            <span class="step-detail">↳ 我的清单：合同填写慢、算价容易错、订单汇总靠Excel手动拉</span>
           </div>
         </div>
         <div class="step-item reveal reveal-d2">
           <span class="step-num">2</span>
           <div class="step-content">
-            <h3>拿到第一版</h3>
-            <p>大概一个小时,第一版就跑通了。能选客户、填产品、自动算含税价、生成PDF。粗糙,但核心流程通了。</p>
-            <span class="step-detail">↳ 先有个能用的,比什么都重要</span>
+            <h3>原型搭建</h3>
+            <p>把原始文件（Word合同模板、Excel订单表）直接发给AI，用自然语言描述“我要什么”。AI生成第一版代码，一个小时内跑通核心流程。</p>
+            <span class="step-detail">↳ 给原始文件，不给截图——AI读文件比读图精准得多</span>
           </div>
         </div>
         <div class="step-item reveal reveal-d3">
           <span class="step-num">3</span>
           <div class="step-content">
-            <h3>小步迭代</h3>
-            <p>在实际使用中一条一条提需求--"利润要自动算"、"表头按截图改"、"加个管理模块"。打字、语音、截图,三种方式混着用。</p>
-            <span class="step-detail">↳ 截图 + 具体描述效率最高</span>
-            <div style="margin-top:16px;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);max-width:500px;">
-              <img src="chat-iterate.png" alt="迭代反馈对话" style="width:100%;display:block;">
-            </div>
+            <h3>功能迭代</h3>
+            <p>在实际使用中发现问题，逐条反馈给AI。每次只加一个功能，确认稳定了再加下一个。语音、打字、截图三种方式混着来。</p>
+            <span class="step-detail">↳ v1→v4 基础功能，v5→v8 体验优化，v9→v12 完整系统</span>
           </div>
         </div>
         <div class="step-item reveal reveal-d4">
           <span class="step-num">4</span>
           <div class="step-content">
-            <h3>推倒重来也不怕</h3>
-            <p>加到一定程度代码会臃肿,改一个地方另一个地方就坏。果断砍掉花哨功能、只保留核心,从头重写--反而更快更稳。</p>
-            <span class="step-detail">↳ 每一版都存个新文件,随时能退</span>
-            <div style="margin-top:16px;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);max-width:500px;">
-              <img src="chat-rebuild.png" alt="重建功能清单" style="width:100%;display:block;">
-            </div>
+            <h3>部署上线</h3>
+            <p>最终版部署到GitHub Pages，变成一个在线链接。任何人点开就能用，不需要安装任何东西。后续改了内容直接更新，链接不变。</p>
+            <span class="step-detail">↳ 免费、无需服务器、一分钟生效</span>
           </div>
         </div>
       </div>
