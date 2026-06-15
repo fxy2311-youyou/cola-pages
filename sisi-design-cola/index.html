@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sisi Design System — Cola Framework Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=Caveat:wght@400;700&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   CSS VARIABLES — Berry Garden Palette + Cola Typography
+   ═══════════════════════════════════════════════════════ */
+:root {
+  --berry: #8B4A8C;
+  --plum: #2D1A2E;
+  --blush: #FFFAFA;
+  --lavender: #C9A8D4;
+  --rose: #D4456A;
+  --sage: #7BA886;
+  --ink: #2D1A2E;
+  --ink-light: #4A4A5A;
+  --ink-faint: #888;
+  --cream: #FFFAFA;
+  --cream-dark: #faf6eb;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background: var(--blush);
+  color: var(--ink);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #C9A8D4;
+  color: #2D1A2E;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--blush); }
+::-webkit-scrollbar-thumb {
+  background: var(--lavender);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--berry); }
+
+/* ═══════════════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════════════ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 1rem 2rem;
+  background: rgba(255, 245, 245, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(139, 74, 140, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: box-shadow 0.3s ease;
+}
+nav.scrolled {
+  box-shadow: 0 2px 24px rgba(139, 74, 140, 0.08);
+}
+.nav-logo {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--berry);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+.nav-links {
+  display: flex;
+  gap: 1.8rem;
+  align-items: center;
+}
+.nav-links a {
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 0.9rem;
+  position: relative;
+  transition: color 0.2s;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0; right: 0;
+  height: 2px;
+  background: var(--berry);
+  transform: scaleX(0);
+  transition: transform 0.25s ease-out;
+}
+.nav-links a:hover { color: var(--berry); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+@media (max-width: 700px) {
+  .nav-links { gap: 1rem; }
+  .nav-links a { font-size: 0.9rem; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   LAYOUT UTILITIES
+   ═══════════════════════════════════════════════════════ */
+.container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 3rem);
+}
+section {
+  padding: clamp(80px, 12vh, 160px) 0;
+}
+.section-header {
+  margin-bottom: clamp(40px, 6vw, 80px);
+}
+.section-number {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  color: var(--berry);
+  opacity: 0.4;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+.section-title {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 900;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  color: var(--ink);
+  line-height: 1.3;
+}
+.section-subtitle {
+  font-size: 0.95rem;
+  color: var(--ink-light);
+  margin-top: 0.75rem;
+  max-width: 600px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   HERO
+   ═══════════════════════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 74, 140, 0.06) 0%, transparent 70%);
+  top: 10%; right: -10%;
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 69, 106, 0.04) 0%, transparent 70%);
+  bottom: 10%; left: -5%;
+  pointer-events: none;
+}
+.hero-label {
+  font-family: 'Fraunces', serif; font-style: italic;
+  font-size: 1.2rem;
+  color: var(--berry);
+  margin-bottom: 1rem;
+  display: block;
+}
+.hero h1 {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 900;
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  color: var(--ink);
+  line-height: 1.15;
+  margin-bottom: 1.5rem;
+}
+.hero h1 em {
+  font-style: italic;
+  font-family: 'Fraunces', serif;
+  color: var(--berry);
+}
+.hero-desc {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--ink-light);
+  max-width: 560px;
+  line-height: 1.8;
+}
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 2rem;
+}
+.hero-tag {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  background: rgba(139, 74, 140, 0.08);
+  color: var(--berry);
+  border: 1px solid rgba(139, 74, 140, 0.12);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION 1: BRAND COLORS
+   ═══════════════════════════════════════════════════════ */
+#colors { background: var(--blush); }
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+}
+.color-card {
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(139, 74, 140, 0.06);
+  transition: transform 0.3s ease;
+}
+.color-card:hover { transform: translateY(-4px); }
+.color-swatch {
+  height: 120px;
+  display: flex;
+  align-items: flex-end;
+  padding: 12px 16px;
+}
+.color-swatch span {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+.color-info {
+  padding: 14px 16px;
+}
+.color-name {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+.color-hex {
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  letter-spacing: 0.5px;
+}
+.color-usage {
+  font-size: 0.9rem;
+  color: var(--ink-faint);
+  margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION 2: TYPOGRAPHY
+   ═══════════════════════════════════════════════════════ */
+#typography { background: #fff; }
+
+.type-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 5vw, 72px);
+}
+.type-item {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 32px;
+  align-items: baseline;
+}
+.type-meta {
+  font-size: 0.9rem;
+  color: var(--ink-faint);
+}
+.type-meta .type-label {
+  font-family: 'Fraunces', serif; font-style: italic;
+  font-size: 1rem;
+  color: var(--berry);
+  display: block;
+  margin-bottom: 4px;
+}
+.type-meta .type-spec {
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.type-sample-hero {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 900;
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  line-height: 1.15;
+  color: var(--ink);
+}
+.type-sample-section {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 900;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  line-height: 1.3;
+  color: var(--ink);
+}
+.type-sample-fraunces {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  color: var(--berry);
+  line-height: 1.3;
+}
+.type-sample-caveat {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  color: var(--ink);
+  line-height: 1.4;
+}
+.type-sample-body {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 1rem;
+  color: var(--ink-light);
+  line-height: 1.8;
+  max-width: 540px;
+}
+
+@media (max-width: 700px) {
+  .type-item {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION 3: COMPONENTS
+   ═══════════════════════════════════════════════════════ */
+#components { background: var(--blush); }
+
+.comp-group {
+  margin-bottom: clamp(48px, 6vw, 80px);
+}
+.comp-group-title {
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--berry);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed rgba(139, 74, 140, 0.2);
+}
+
+/* Buttons */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: var(--berry);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(139, 74, 140, 0.3);
+}
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--berry);
+  border: 2px solid var(--berry);
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-secondary:hover {
+  background: var(--berry);
+  color: #fff;
+}
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: rgba(139, 74, 140, 0.06);
+  color: var(--berry);
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-ghost:hover { background: rgba(139, 74, 140, 0.12); }
+.btn-rose {
+  display: inline-flex;
+  padding: 12px 28px;
+  background: var(--rose);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-rose:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(212, 69, 106, 0.3);
+}
+
+/* Cards */
+.cards-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+.demo-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: clamp(24px, 3vw, 36px);
+  box-shadow: 0 4px 20px rgba(139, 74, 140, 0.05);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+.demo-card:hover { transform: translateY(-4px); }
+.demo-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--berry), var(--rose));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.demo-card:hover::before { opacity: 1; }
+.demo-card h4 {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+.demo-card p {
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  line-height: 1.7;
+}
+.demo-card .card-pill {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+  background: rgba(139, 74, 140, 0.08);
+  color: var(--berry);
+}
+
+/* Quote Block */
+.demo-quote {
+  position: relative;
+  padding: 32px 32px 32px 56px;
+  background: #fff;
+  border-radius: 16px;
+  border-left: 6px solid var(--berry);
+  box-shadow: 0 2px 12px rgba(139, 74, 140, 0.04);
+}
+.demo-quote::before {
+  content: '\201C';
+  position: absolute;
+  top: 12px; left: 18px;
+  font-family: 'Fraunces', serif;
+  font-size: 3.5rem;
+  line-height: 1;
+  color: var(--berry);
+  opacity: 0.4;
+}
+.demo-quote p {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: var(--ink);
+  font-weight: 700;
+}
+.demo-quote .quote-source {
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 400;
+}
+
+/* Tags */
+.tags-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 1rem;
+}
+.tag-berry {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  background: rgba(139, 74, 140, 0.1);
+  color: var(--berry);
+}
+.tag-rose {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  background: rgba(212, 69, 106, 0.1);
+  color: var(--rose);
+}
+.tag-sage {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  background: rgba(123, 168, 134, 0.12);
+  color: var(--sage);
+}
+.tag-lavender {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  background: rgba(201, 168, 212, 0.2);
+  color: #6b3f7a;
+}
+
+/* Progress Bar */
+.progress-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 500px;
+}
+.progress-item label {
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  margin-bottom: 6px;
+  display: block;
+}
+.progress-track {
+  height: 8px;
+  background: rgba(139, 74, 140, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.progress-fill--berry { background: var(--berry); }
+.progress-fill--rose { background: var(--rose); }
+.progress-fill--sage { background: var(--sage); }
+
+/* List */
+.styled-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.styled-list li {
+  padding: 12px 16px 12px 40px;
+  background: #fff;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  position: relative;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  color: var(--ink-light);
+  line-height: 1.6;
+}
+.styled-list li::before {
+  content: '◆';
+  position: absolute;
+  left: 16px;
+  top: 13px;
+  font-size: 0.55rem;
+  color: var(--berry);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION 4: LAYOUTS
+   ═══════════════════════════════════════════════════════ */
+#layouts { background: #fff; }
+
+.layout-demos {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(48px, 6vw, 80px);
+}
+.layout-demo {
+  background: var(--blush);
+  border-radius: 20px;
+  padding: clamp(24px, 3vw, 40px);
+  position: relative;
+}
+.layout-demo-label {
+  font-family: 'Fraunces', serif; font-style: italic;
+  font-size: 1rem;
+  color: var(--berry);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+/* Layout A: Two-column asymmetric */
+.layout-a {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 32px;
+  align-items: center;
+}
+.layout-a .la-text h3 {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 900;
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+}
+.layout-a .la-text p {
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  line-height: 1.8;
+}
+.layout-a .la-visual {
+  background: linear-gradient(135deg, rgba(139,74,140,0.08), rgba(201,168,212,0.15));
+  border-radius: 16px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 2rem;
+  color: var(--berry);
+  opacity: 0.6;
+}
+
+/* Layout B: Three columns */
+.layout-b {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.layout-b .lb-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px 20px;
+  text-align: center;
+}
+.layout-b .lb-card .lb-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+.layout-b .lb-card h4 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.layout-b .lb-card p {
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  line-height: 1.6;
+}
+
+/* Layout C: Sticky sidebar */
+.layout-c {
+  display: grid;
+  grid-template-columns: 0.3fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+.layout-c .lc-sidebar {
+  position: sticky;
+  top: 100px;
+}
+.layout-c .lc-sidebar h3 {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 1.3rem;
+  color: var(--berry);
+  margin-bottom: 8px;
+}
+.layout-c .lc-sidebar p {
+  font-size: 0.9rem;
+  color: var(--ink-faint);
+}
+.layout-c .lc-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.layout-c .lc-block {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  .layout-a { grid-template-columns: 1fr; }
+  .layout-b { grid-template-columns: 1fr; }
+  .layout-c { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION 5: SCENARIOS
+   ═══════════════════════════════════════════════════════ */
+#scenarios { background: var(--blush); }
+
+.scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+  gap: clamp(24px, 3vw, 40px);
+}
+@media (max-width: 900px) {
+  .scenario-grid { grid-template-columns: 1fr; }
+}
+
+.scenario-card {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(139, 74, 140, 0.05);
+}
+.scenario-header {
+  background: var(--plum);
+  padding: 24px 28px;
+  color: #fff;
+}
+.scenario-header h4 {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+}
+.scenario-header p {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+.scenario-body {
+  padding: 28px;
+}
+
+/* Scenario A: Personal Branding */
+.sc-brand-hero {
+  text-align: center;
+  padding: 20px;
+  background: var(--blush);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.sc-brand-hero .sc-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--berry), var(--rose));
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: 'Fraunces', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+}
+.sc-brand-hero h5 {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 900;
+  font-size: 1rem;
+}
+.sc-brand-hero p {
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  margin-top: 4px;
+}
+.sc-brand-tags {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.sc-brand-tags span {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  background: rgba(139, 74, 140, 0.08);
+  color: var(--berry);
+}
+
+/* Scenario B: Tutorial / Article */
+.sc-tutorial {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sc-tutorial .sc-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.sc-tutorial .sc-step-num {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--berry);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.sc-tutorial .sc-step-text h5 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.sc-tutorial .sc-step-text p {
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION 6: COMPARISON
+   ═══════════════════════════════════════════════════════ */
+#comparison {
+  background: #fff;
+}
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 3vw, 48px);
+}
+@media (max-width: 900px) {
+  .compare-grid { grid-template-columns: 1fr; }
+}
+
+.compare-panel {
+  border-radius: 20px;
+  padding: clamp(28px, 3vw, 40px);
+  position: relative;
+}
+.compare-panel--pixel {
+  background: var(--cream-dark);
+  border: 2px dashed rgba(139, 74, 140, 0.2);
+}
+.compare-panel--cola {
+  background: var(--blush);
+  border: 2px solid rgba(139, 74, 140, 0.15);
+}
+.compare-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.compare-panel--pixel .compare-badge {
+  background: rgba(45, 26, 46, 0.08);
+  color: var(--plum);
+}
+.compare-panel--cola .compare-badge {
+  background: rgba(139, 74, 140, 0.1);
+  color: var(--berry);
+}
+.compare-panel h4 {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+}
+.compare-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.compare-list li {
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.7;
+}
+.compare-list li::before {
+  content: '•';
+  position: absolute;
+  left: 4px;
+  color: var(--berry);
+  font-weight: 700;
+}
+.compare-note {
+  margin-top: 24px;
+  padding: 16px 20px;
+  background: rgba(139, 74, 140, 0.04);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════ */
+footer {
+  padding: 48px 0;
+  text-align: center;
+  background: var(--plum);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+}
+footer .footer-brand {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--lavender);
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SCROLL REVEAL
+   ═══════════════════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.2s; }
+.reveal-d3 { transition-delay: 0.3s; }
+.reveal-d4 { transition-delay: 0.4s; }
+.reveal-d5 { transition-delay: 0.5s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════ NAVIGATION ═══════════════════════════════════ -->
+<nav>
+  <span class="nav-logo">Sisi Design · Cola</span>
+  <div class="nav-links">
+    <a href="#colors">色彩</a>
+    <a href="#typography">字体</a>
+    <a href="#components">组件</a>
+    <a href="#layouts">布局</a>
+    <a href="#scenarios">场景</a>
+    <a href="#comparison">对比</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════ HERO ═══════════════════════════════════ -->
+<section class="hero">
+  <span class="hero-label reveal">Berry Garden × Cola Framework</span>
+  <h1 class="reveal reveal-d1">莓果花园<br><em>Design System</em></h1>
+  <p class="hero-desc reveal reveal-d2">温暖、有灵魂、有人情味——基于 Cola 框架的编辑杂志风设计系统。科技产品也能有温度，像一个并肩的伙伴。</p>
+  <div class="hero-tags reveal reveal-d3">
+    <span class="hero-tag">编辑杂志风</span>
+    <span class="hero-tag">Cola 框架</span>
+    <span class="hero-tag">莓果色系</span>
+    <span class="hero-tag">有机曲线</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 1. COLORS ═══════════════════════════════════ -->
+<section id="colors">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">01</span>
+      <h2 class="section-title">品牌色彩</h2>
+      <p class="section-subtitle">六色色盘，莓果花园调性。三色为骨，扩展色添细节。</p>
+    </div>
+    <div class="color-grid">
+      <div class="color-card reveal reveal-d1">
+        <div class="color-swatch" style="background:#8B4A8C;"><span style="color:rgba(255,255,255,0.8)">Primary</span></div>
+        <div class="color-info">
+          <div class="color-name">莓果紫</div>
+          <div class="color-hex">#8B4A8C</div>
+          <div class="color-usage">主色调 · CTA · 标题重点</div>
+        </div>
+      </div>
+      <div class="color-card reveal reveal-d2">
+        <div class="color-swatch" style="background:#2D1A2E;"><span style="color:rgba(255,255,255,0.7)">Text / Dark</span></div>
+        <div class="color-info">
+          <div class="color-name">深梅色</div>
+          <div class="color-hex">#2D1A2E</div>
+          <div class="color-usage">正文 · 深色面板 · 沉稳对比</div>
+        </div>
+      </div>
+      <div class="color-card reveal reveal-d3">
+        <div class="color-swatch" style="background:#FFFAFA; border-bottom: 1px solid rgba(139,74,140,0.08);"><span style="color:var(--ink-light)">Background</span></div>
+        <div class="color-info">
+          <div class="color-name">淡粉底</div>
+          <div class="color-hex">#FFFAFA</div>
+          <div class="color-usage">背景底色 · 留白区域</div>
+        </div>
+      </div>
+      <div class="color-card reveal reveal-d1">
+        <div class="color-swatch" style="background:#C9A8D4;"><span style="color:rgba(255,255,255,0.85)">Accent</span></div>
+        <div class="color-info">
+          <div class="color-name">薰衣草紫</div>
+          <div class="color-hex">#C9A8D4</div>
+          <div class="color-usage">浅背景 · Hover · 文本高亮</div>
+        </div>
+      </div>
+      <div class="color-card reveal reveal-d2">
+        <div class="color-swatch" style="background:#D4456A;"><span style="color:rgba(255,255,255,0.85)">Warm</span></div>
+        <div class="color-info">
+          <div class="color-name">玫瑰红</div>
+          <div class="color-hex">#D4456A</div>
+          <div class="color-usage">深色强调 · Badge · 高亮块</div>
+        </div>
+      </div>
+      <div class="color-card reveal reveal-d3">
+        <div class="color-swatch" style="background:#7BA886;"><span style="color:rgba(255,255,255,0.85)">Nature</span></div>
+        <div class="color-info">
+          <div class="color-name">鼠尾草绿</div>
+          <div class="color-hex">#7BA886</div>
+          <div class="color-usage">辅助装饰 · 次要标签</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 2. TYPOGRAPHY ═══════════════════════════════════ -->
+<section id="typography">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">02</span>
+      <h2 class="section-title">字体层级</h2>
+      <p class="section-subtitle">标题用衬线，正文用无衬线；中英混搭产生节奏感，字号对比要极端。</p>
+    </div>
+    <div class="type-showcase">
+      <div class="type-item reveal">
+        <div class="type-meta">
+          <span class="type-label">Hero 大标题</span>
+          <span class="type-spec">Noto Serif SC 900<br>clamp(2.8rem, 7vw, 5.5rem)</span>
+        </div>
+        <div class="type-sample-hero">莓果花园</div>
+      </div>
+      <div class="type-item reveal reveal-d1">
+        <div class="type-meta">
+          <span class="type-label">Section 标题</span>
+          <span class="type-spec">Noto Serif SC 900<br>clamp(1.6rem, 4vw, 2.6rem)</span>
+        </div>
+        <div class="type-sample-section">温暖有灵魂的设计系统</div>
+      </div>
+      <div class="type-item reveal reveal-d2">
+        <div class="type-meta">
+          <span class="type-label">English Display</span>
+          <span class="type-spec">Fraunces italic<br>装饰性英文标题</span>
+        </div>
+        <div class="type-sample-fraunces">Berry Garden Edition</div>
+      </div>
+      <div class="type-item reveal reveal-d3">
+        <div class="type-meta">
+          <span class="type-label">Handwriting</span>
+          <span class="type-spec">Caveat 700<br>标注 · 注释 · 轻松场景</span>
+        </div>
+        <div class="type-sample-caveat">A warm companion, not a cold tool ✦</div>
+      </div>
+      <div class="type-item reveal reveal-d4">
+        <div class="type-meta">
+          <span class="type-label">正文</span>
+          <span class="type-spec">Noto Sans SC 400<br>16px · 行高 1.7</span>
+        </div>
+        <div class="type-sample-body">设计出来的东西应该让人觉得温暖、有灵魂。像一个朋友在跟你说话，而不是冰冷的工具输出。科技产品也能有人情味。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 3. COMPONENTS ═══════════════════════════════════ -->
+<section id="components">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">03</span>
+      <h2 class="section-title">组件</h2>
+      <p class="section-subtitle">编辑杂志风格，有机曲线圆角，莓果紫为高亮色。</p>
+    </div>
+
+    <!-- Buttons -->
+    <div class="comp-group reveal">
+      <div class="comp-group-title">Buttons</div>
+      <div class="btn-row">
+        <button class="btn-primary">主要行动 →</button>
+        <button class="btn-secondary">次要按钮</button>
+        <button class="btn-ghost">幽灵按钮</button>
+        <button class="btn-rose">玫瑰红 CTA</button>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="comp-group reveal">
+      <div class="comp-group-title">Cards</div>
+      <div class="cards-row">
+        <div class="demo-card">
+          <span class="card-pill">设计系统</span>
+          <h4>杂志裁切风卡片</h4>
+          <p>大气场的标题卡，适合功能展示和核心卖点。Hover 时顶部渐变条出现。</p>
+        </div>
+        <div class="demo-card">
+          <span class="card-pill">组件</span>
+          <h4>标签卡片</h4>
+          <p>带分类标签的信息卡，用于功能矩阵和分类展示。圆角柔和，留白充分。</p>
+        </div>
+        <div class="demo-card">
+          <span class="card-pill">布局</span>
+          <h4>侧边 Icon 卡片</h4>
+          <p>带图标的功能说明卡，适合能力展示和工具介绍。水平排列更高效。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quote -->
+    <div class="comp-group reveal">
+      <div class="comp-group-title">Quote Block</div>
+      <div class="demo-quote">
+        <p>好的设计不需要解释，它让人觉得「就该是这样」。</p>
+        <div class="quote-source">— 设计哲学</div>
+      </div>
+    </div>
+
+    <!-- Tags -->
+    <div class="comp-group reveal">
+      <div class="comp-group-title">Tags & Pills</div>
+      <div class="tags-demo">
+        <span class="tag-berry">莓果紫标签</span>
+        <span class="tag-rose">玫瑰红标签</span>
+        <span class="tag-sage">鼠尾草绿</span>
+        <span class="tag-lavender">薰衣草紫</span>
+        <span class="tag-berry">Cola 框架</span>
+        <span class="tag-rose">编辑风</span>
+        <span class="tag-sage">有温度</span>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="comp-group reveal">
+      <div class="comp-group-title">Progress Bars</div>
+      <div class="progress-group">
+        <div class="progress-item">
+          <label>设计系统完成度</label>
+          <div class="progress-track">
+            <div class="progress-fill progress-fill--berry" style="width:85%"></div>
+          </div>
+        </div>
+        <div class="progress-item">
+          <label>组件覆盖率</label>
+          <div class="progress-track">
+            <div class="progress-fill progress-fill--rose" style="width:72%"></div>
+          </div>
+        </div>
+        <div class="progress-item">
+          <label>场景适配</label>
+          <div class="progress-track">
+            <div class="progress-fill progress-fill--sage" style="width:60%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- List -->
+    <div class="comp-group reveal">
+      <div class="comp-group-title">Styled List</div>
+      <ul class="styled-list" style="max-width:500px;">
+        <li>温暖 — 有人情味，不是冰冷的工具感</li>
+        <li>有灵魂 — 背后有思考、有态度</li>
+        <li>科技但不冷 — 技术产品也能有温度</li>
+        <li>像一个伙伴 — 不是服务商，是并肩的人</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 4. LAYOUTS ═══════════════════════════════════ -->
+<section id="layouts">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">04</span>
+      <h2 class="section-title">布局示例</h2>
+      <p class="section-subtitle">每个 Section 布局必须不同——避免单调重复，组合产生节奏。</p>
+    </div>
+    <div class="layout-demos">
+      <!-- Layout A -->
+      <div class="layout-demo reveal">
+        <span class="layout-demo-label">Layout A — 双栏不对称</span>
+        <div class="layout-a">
+          <div class="la-text">
+            <h3>文字主导，右侧留白</h3>
+            <p>不对称比例产生张力。左侧承载核心信息，右侧用视觉元素呼吸。适合首屏、产品介绍、概念阐述。</p>
+          </div>
+          <div class="la-visual">✦</div>
+        </div>
+      </div>
+
+      <!-- Layout B -->
+      <div class="layout-demo reveal">
+        <span class="layout-demo-label">Layout B — 三等分卡片</span>
+        <div class="layout-b">
+          <div class="lb-card">
+            <div class="lb-icon">🎨</div>
+            <h4>品牌色彩</h4>
+            <p>莓果紫为核心，六色体系协调</p>
+          </div>
+          <div class="lb-card">
+            <div class="lb-icon">✍️</div>
+            <h4>字体混搭</h4>
+            <p>衬线做标题，无衬线做正文</p>
+          </div>
+          <div class="lb-card">
+            <div class="lb-icon">🧩</div>
+            <h4>组件系统</h4>
+            <p>20+ 组件，编辑杂志风格</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layout C -->
+      <div class="layout-demo reveal">
+        <span class="layout-demo-label">Layout C — Sticky 侧栏 + 滚动内容</span>
+        <div class="layout-c">
+          <div class="lc-sidebar">
+            <h3>Side Note</h3>
+            <p>侧栏固定，内容区域可自由滚动。适合深度教程和长内容。</p>
+          </div>
+          <div class="lc-content">
+            <div class="lc-block">第一段内容：设计系统的核心在于一致性与灵活性的平衡。</div>
+            <div class="lc-block">第二段内容：莓果花园调性——温暖但不甜腻，有品质但不高冷。</div>
+            <div class="lc-block">第三段内容：每个组件都为真实场景服务，不做无用的装饰。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 5. SCENARIOS ═══════════════════════════════════ -->
+<section id="scenarios">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">05</span>
+      <h2 class="section-title">场景示例</h2>
+      <p class="section-subtitle">两种真实使用场景的迷你 Demo——个人品牌页和教程步骤页。</p>
+    </div>
+    <div class="scenario-grid">
+      <!-- Scenario A: Personal Branding -->
+      <div class="scenario-card reveal">
+        <div class="scenario-header">
+          <h4>Personal Branding</h4>
+          <p>个人品牌首页 · Landing</p>
+        </div>
+        <div class="scenario-body">
+          <div class="sc-brand-hero">
+            <div class="sc-avatar">S</div>
+            <h5>Hi, I'm Sisi</h5>
+            <p>设计系统 · 产品思维 · 分享会</p>
+            <div class="sc-brand-tags">
+              <span>Design Systems</span>
+              <span>Cola Framework</span>
+              <span>Berry Garden</span>
+            </div>
+          </div>
+          <div class="demo-quote" style="border-radius:12px; padding:20px 20px 20px 44px; margin-top:16px;">
+            <p style="font-size:0.9rem;">做有温度的技术产品。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenario B: Tutorial -->
+      <div class="scenario-card reveal reveal-d1">
+        <div class="scenario-header">
+          <h4>Tutorial Steps</h4>
+          <p>教程型 · 步骤引导</p>
+        </div>
+        <div class="scenario-body">
+          <div class="sc-tutorial">
+            <div class="sc-step">
+              <span class="sc-step-num">1</span>
+              <div class="sc-step-text">
+                <h5>读规范</h5>
+                <p>从 brand-dna.md 确认品牌底层约束</p>
+              </div>
+            </div>
+            <div class="sc-step">
+              <span class="sc-step-num">2</span>
+              <div class="sc-step-text">
+                <h5>选模板</h5>
+                <p>根据场景从 assets/ 选择对应模板起步</p>
+              </div>
+            </div>
+            <div class="sc-step">
+              <span class="sc-step-num">3</span>
+              <div class="sc-step-text">
+                <h5>填组件</h5>
+                <p>从 components.md 选取组件填入布局</p>
+              </div>
+            </div>
+            <div class="sc-step">
+              <span class="sc-step-num">4</span>
+              <div class="sc-step-text">
+                <h5>跑检查</h5>
+                <p>对照 checklist.md 确保 P0 全过再交付</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 6. COMPARISON ═══════════════════════════════════ -->
+<section id="comparison">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">06</span>
+      <h2 class="section-title">气质对比</h2>
+      <p class="section-subtitle">同一个品牌，两种设计语言——像素版 vs Cola 框架版的差异所在。</p>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-panel compare-panel--pixel reveal">
+        <span class="compare-badge">sisi-design 像素版</span>
+        <h4>像素 RPG 菜单风</h4>
+        <ul class="compare-list">
+          <li>像素边框、box-shadow 偏移</li>
+          <li>等宽像素字体为主体</li>
+          <li>8-bit 游戏感 UI 元素</li>
+          <li>棱角分明的方块布局</li>
+          <li>复古像素装饰</li>
+          <li>适合：极客向、游戏向、个性展示</li>
+        </ul>
+      </div>
+      <div class="compare-panel compare-panel--cola reveal reveal-d1">
+        <span class="compare-badge">sisi-design-cola 框架版</span>
+        <h4>编辑杂志风</h4>
+        <ul class="compare-list">
+          <li>圆角、有机曲线、柔和阴影</li>
+          <li>衬线 + 无衬线混搭节奏</li>
+          <li>编辑排版感、杂志 Editorial 感</li>
+          <li>充分留白、呼吸感</li>
+          <li>Fraunces 装饰字体 + Caveat 手写</li>
+          <li>适合：专业分享、品牌展示、教程</li>
+        </ul>
+      </div>
+    </div>
+    <div class="compare-note reveal">
+      两个版本共享莓果花园色系（#8B4A8C · #2D1A2E · #FFFAFA），核心差异在于「形状语言」和「排版气质」。Cola 框架版更适合正式分享和专业展示，像素版更适合个性表达和趣味场景。选择取决于受众和使用场景。
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ FOOTER ═══════════════════════════════════ -->
+<footer>
+  <span class="footer-brand">Sisi Design System</span>
+  <p>Cola Framework Edition · Berry Garden Palette · 2024</p>
+</footer>
+
+<!-- ═══════════════════════════════════ SCRIPTS ═══════════════════════════════════ -->
+<script>
+// Scroll Reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Nav scroll shadow
+const nav = document.querySelector('nav');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 40) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+}, { passive: true });
+
+// Smooth scroll for nav links
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>

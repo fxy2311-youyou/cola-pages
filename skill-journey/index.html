@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sisi-design skill 诞生记</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #8B4A8C;
+  --secondary: #D4456A;
+  --accent1: #7BA886;
+  --accent2: #C9A8D4;
+  --dark: #2D1A2E;
+  --bg: #FFF5F5;
+  --bg-alt: #FFF0F5;
+  --bg-card: #FFFAF8;
+  --text: #2D1A2E;
+  --text-light: #5A3A5C;
+  --text-faint: #8A7A8C;
+
+  --font-pixel: 'Silkscreen', cursive;
+  --font-heading-en: 'Space Mono', monospace;
+  --font-heading-cn: 'LXGW WenKai', cursive;
+  --font-body: 'Noto Sans SC', sans-serif;
+  --font-data: 'Space Mono', monospace;
+}
+::selection { background: var(--accent2); color: var(--dark); }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent2); border: 2px solid var(--bg); }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+body {
+  font-family: var(--font-body);
+  font-weight: 300;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.8;
+  font-size: 17px;
+}
+.container { max-width: 1000px; margin: 0 auto; padding: 0 32px; }
+
+/* 像素边框 */
+.pixel-frame {
+  border: 4px solid var(--dark);
+  box-shadow: 6px 6px 0 0 var(--primary);
+  background: #fff;
+}
+.pixel-frame-green {
+  border: 4px solid var(--dark);
+  box-shadow: 6px 6px 0 0 var(--accent1);
+  background: #fff;
+}
+.pixel-frame-red {
+  border: 4px solid var(--dark);
+  box-shadow: 6px 6px 0 0 var(--secondary);
+  background: #fff;
+}
+
+/* 标签 - 提大 */
+.pixel-tag {
+  font-family: var(--font-pixel);
+  font-size: 0.95rem;
+  color: var(--accent1);
+  letter-spacing: 2px;
+}
+.en-title {
+  font-family: var(--font-heading-en);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--dark);
+}
+.cn-title {
+  font-family: var(--font-heading-cn);
+  color: var(--dark);
+}
+.data-num {
+  font-family: var(--font-data);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* Hero - 更撑开 */
+.hero {
+  min-height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 32px;
+  text-align: center;
+}
+.hero-box {
+  border: 4px solid var(--dark);
+  box-shadow: 10px 10px 0 0 var(--dark);
+  padding: clamp(56px, 8vw, 100px) clamp(40px, 6vw, 80px);
+  background: var(--bg);
+  max-width: 760px;
+  width: 100%;
+}
+.hero-date {
+  font-family: var(--font-data);
+  font-size: 0.9rem;
+  letter-spacing: -0.02em;
+  color: var(--text-faint);
+  margin-bottom: 16px;
+}
+
+/* Section - 大间距 */
+section { padding: clamp(100px, 14vh, 180px) 0; }
+.section-header { margin-bottom: 48px; }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 40px; margin-top: 32px; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent2);
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 48px;
+}
+.timeline-item:last-child { margin-bottom: 0; }
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -35px;
+  top: 10px;
+  width: 14px;
+  height: 14px;
+  background: var(--secondary);
+  border: 3px solid var(--dark);
+}
+.timeline-item.green::before { background: var(--accent1); }
+
+/* Compare */
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 32px;
+}
+@media (max-width: 700px) { .compare-grid { grid-template-columns: 1fr; } }
+
+.color-swatch-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.swatch {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--dark);
+}
+
+/* 滚动动画 */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* Stats */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+}
+@media (max-width: 600px) { .stats-row { grid-template-columns: 1fr; } }
+.stat-box {
+  border: 3px solid var(--dark);
+  box-shadow: 4px 4px 0 0 var(--accent1);
+  padding: 28px 20px;
+  text-align: center;
+  background: #fff;
+}
+
+/* Font showcase */
+.font-layer {
+  padding: 28px 32px;
+  border-bottom: 2px solid var(--bg-alt);
+}
+.font-layer:last-child { border-bottom: none; }
+.font-meta {
+  font-size: 0.95rem;
+  color: var(--text-faint);
+  margin-top: 6px;
+}
+
+/* 引用 */
+.pixel-quote {
+  border: 4px solid var(--dark);
+  box-shadow: 6px 6px 0 0 var(--accent2);
+  padding: 36px 32px 36px 48px;
+  background: var(--bg-alt);
+  position: relative;
+  margin: 32px 0;
+}
+.pixel-quote::before {
+  content: '"';
+  font-family: var(--font-heading-cn);
+  font-size: 4rem;
+  color: var(--accent2);
+  position: absolute;
+  top: 0px;
+  left: 16px;
+  line-height: 1;
+}
+
+/* 像素按钮 */
+.pixel-btn {
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  padding: 12px 24px;
+  border: 3px solid var(--dark);
+  box-shadow: 4px 4px 0 0 var(--dark);
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+  text-decoration: none;
+  display: inline-block;
+}
+.pixel-btn:hover { transform: translate(1px, 1px); box-shadow: 3px 3px 0 0 var(--dark); }
+.pixel-btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 0 var(--dark); }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero" style="padding:clamp(80px,12vh,140px) 0;">
+  <div class="hero-box">
+    <div class="pixel-tag">✦ DESIGN JOURNEY ✦</div>
+    <div class="hero-date">2026.06.09 - 2026.06.10</div>
+    <h1 class="cn-title" style="font-size:clamp(2.4rem, 6vw, 3.8rem); margin:20px 0;">一个个人设计系统的诞生</h1>
+    <p style="font-size:1.05rem; color:var(--text-light); max-width:520px; margin:0 auto 32px; line-height:1.9;">从"我想把cola-design变成自己的"到完整的5层字体+6色品牌体系--两天的迭代过程记录。</p>
+    <div class="pixel-btn">↓ SCROLL TO BEGIN</div>
+  </div>
+</section>
+
+<!-- Section 1: 起因 -->
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="pixel-tag">✦ CHAPTER 01 ✦</div>
+      <h2 class="cn-title" style="font-size:clamp(1.8rem, 4vw, 2.6rem); margin-top:8px;">💡 起因：想要属于自己的东西</h2>
+    </div>
+
+    <div class="pixel-quote reveal">
+      <p style="font-size:1.1rem; line-height:1.9;">"这些cola品牌的内容，就不要放在我的风格skill里了，<span style="background:var(--accent2);padding:2px 6px;">我需要我自己的东西</span>。"</p>
+    </div>
+
+    <p class="reveal" style="margin-top:28px; font-size:1.05rem; line-height:1.9;">cola-design是Cola产品的官方设计系统--橙色主调、Fraunces衬线字体、温暖科技风。但做个人品牌页面时,总觉得"<span style="background:var(--accent2);padding:2px 6px;">"这不是我"</span>"。一个下午的对话后,决定从零开始做一个完全属于自己的设计系统。 🌱</p>
+  </div>
+</section>
+
+<!-- Section 2: 风格探索 -->
+<section style="background:var(--bg-alt);">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="pixel-tag">✦ CHAPTER 02 ✦</div>
+      <h2 class="cn-title" style="font-size:clamp(1.8rem, 4vw, 2.6rem); margin-top:8px;">🎮 风格探索：三个像素方向</h2>
+    </div>
+
+    <p class="reveal" style="margin-bottom:32px; font-size:1.05rem;">先做了三个完全不同的像素风demo,各自代表一种气质:</p>
+
+    <div class="compare-grid reveal">
+      <div class="pixel-frame" style="padding:32px;">
+        <div class="pixel-tag" style="color:var(--secondary);">✦ DEMO A ✦</div>
+        <div class="cn-title" style="font-size:1.4rem; margin:10px 0;">复古游戏机</div>
+        <p style="font-size:0.95rem; color:var(--text-light);">Game Boy绿 + 深绿 + 亮黄 + 暗紫</p>
+        <div class="color-swatch-row">
+          <div class="swatch" style="background:#9bbc0f;"></div>
+          <div class="swatch" style="background:#0f380f;"></div>
+          <div class="swatch" style="background:#ffd700;"></div>
+          <div class="swatch" style="background:#2D1A2E;"></div>
+        </div>
+      </div>
+      <div class="pixel-frame" style="padding:32px;">
+        <div class="pixel-tag" style="color:var(--secondary);">✦ DEMO B ✦</div>
+        <div class="cn-title" style="font-size:1.4rem; margin:10px 0;">赛博朋克</div>
+        <p style="font-size:0.95rem; color:var(--text-light);">黑底 + 霓虹粉蓝 + 白,极简现代</p>
+        <div class="color-swatch-row">
+          <div class="swatch" style="background:#0a0a0a;"></div>
+          <div class="swatch" style="background:#ff6b9d;"></div>
+          <div class="swatch" style="background:#00d4ff;"></div>
+          <div class="swatch" style="background:#ffffff;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pixel-frame-red reveal" style="padding:36px; margin-top:28px;">
+      <div class="pixel-tag" style="color:var(--secondary);">✦ DEMO C - 最终选择 ✦</div>
+      <div class="cn-title" style="font-size:1.5rem; margin:10px 0;">温暖像素手账风</div>
+      <p style="font-size:1rem; color:var(--text-light); margin-bottom:16px;">奶油底 + 马卡龙色系,RPG菜单卡片 → 再进一步演变为<span style="background:var(--accent2);padding:2px 6px;">"莓果花园"</span> 🍓</p>
+      <div class="color-swatch-row">
+        <div class="swatch" style="background:#8B4A8C;"></div>
+        <div class="swatch" style="background:#D4456A;"></div>
+        <div class="swatch" style="background:#7BA886;"></div>
+        <div class="swatch" style="background:#C9A8D4;"></div>
+        <div class="swatch" style="background:#2D1A2E;"></div>
+        <div class="swatch" style="background:#FFF5F5;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: 配色变奏 -->
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="pixel-tag">✦ CHAPTER 03 ✦</div>
+      <h2 class="cn-title" style="font-size:clamp(1.8rem, 4vw, 2.6rem); margin-top:8px;">🎨 配色变奏：从“太normal”到莓果花园</h2>
+    </div>
+
+    <p class="reveal" style="margin-bottom:32px; font-size:1.05rem;">选了Demo C后觉得颜色"太normal",又做了三个变奏方向:</p>
+
+    <div class="timeline reveal">
+      <div class="timeline-item">
+        <div class="en-title" style="font-size:1.1rem; margin-bottom:4px;">C-1 Caramel</div>
+        <div class="cn-title" style="font-size:1.2rem;">焦糖奶茶</div>
+        <p style="font-size:0.95rem; color:var(--text-light); margin-top:6px;">暖棕 + 焦糖橙,秋天咖啡馆的温暖</p>
+      </div>
+      <div class="timeline-item">
+        <div class="en-title" style="font-size:1.1rem; margin-bottom:4px;">C-2 Night Sky</div>
+        <div class="cn-title" style="font-size:1.2rem;">薄荷夜空</div>
+        <p style="font-size:0.95rem; color:var(--text-light); margin-top:6px;">深蓝紫底 + 薄荷绿 + 星光黄,暗色RPG</p>
+      </div>
+      <div class="timeline-item green">
+        <div class="en-title" style="font-size:1.1rem; margin-bottom:4px;">C-3 Berry Garden ✓</div>
+        <div class="cn-title" style="font-size:1.2rem;">莓果花园</div>
+        <p style="font-size:0.95rem; color:var(--text-light); margin-top:6px;">浅粉底 + 浆果紫 + 玫瑰红 + 鼠尾草绿 — <span style="background:var(--accent2);padding:2px 6px;">最终选定</span> 🍇</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 4: Skill搭建 -->
+<section style="background:var(--bg-alt);">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="pixel-tag">✦ CHAPTER 04 ✦</div>
+      <h2 class="cn-title" style="font-size:clamp(1.8rem, 4vw, 2.6rem); margin-top:8px;">📦 搭建：17个文件的完整Skill</h2>
+    </div>
+
+    <p class="reveal" style="margin-bottom:32px; font-size:1.05rem;">参考cola-design的7步工作流框架,替换所有视觉内容,生成完整的个人设计系统:</p>
+
+    <div class="stats-row reveal">
+      <div class="stat-box">
+        <div class="data-num" style="font-size:2.6rem; color:var(--primary);">17</div>
+        <div style="font-size:0.95rem; color:var(--text-light); margin-top:8px;">文件</div>
+      </div>
+      <div class="stat-box">
+        <div class="data-num" style="font-size:2.6rem; color:var(--secondary);">176KB</div>
+        <div style="font-size:0.95rem; color:var(--text-light); margin-top:8px;">总大小</div>
+      </div>
+      <div class="stat-box">
+        <div class="data-num" style="font-size:2.6rem; color:var(--accent1);">4</div>
+        <div style="font-size:0.95rem; color:var(--text-light); margin-top:8px;">场景类型</div>
+      </div>
+    </div>
+
+    <div class="pixel-frame reveal" style="padding:36px; margin-top:40px;">
+      <div class="cn-title" style="font-size:1.3rem; margin-bottom:16px;">文件结构</div>
+      <div class="data-num" style="font-size:0.9rem; line-height:2.2; color:var(--text);">
+        sisi-design/<br>
+        ├── SKILL.md<br>
+        ├── brand-dna.md<br>
+        ├── README.md<br>
+        ├── references/<br>
+        │   ├── layouts.md (12种布局)<br>
+        │   ├── components.md (15+组件)<br>
+        │   ├── checklist.md<br>
+        │   ├── scene-tutorial.md<br>
+        │   ├── scene-landing.md<br>
+        │   ├── scene-app.md<br>
+        │   └── scene-cards.md<br>
+        ├── assets/ (4个HTML模板)<br>
+        └── templates/ (3个特殊模板)
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 5: 字体迭代 -->
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="pixel-tag">✦ CHAPTER 05 ✦</div>
+      <h2 class="cn-title" style="font-size:clamp(1.8rem, 4vw, 2.6rem); margin-top:8px;">🔤 字体迭代：最痛的调整</h2>
+    </div>
+
+    <p class="reveal" style="margin-bottom:32px; font-size:1.05rem;">最初用Silkscreen做所有标题--像素感很强但中文完全看不清。经历了5轮迭代才找到平衡点:</p>
+
+    <div class="timeline reveal">
+      <div class="timeline-item">
+        <div class="pixel-tag" style="color:var(--secondary);">V1 · 问题</div>
+        <div class="cn-title" style="font-size:1.2rem; margin:6px 0;">Silkscreen全站</div>
+        <p style="font-size:0.95rem; color:var(--text-light);">中文标题像素化后糊成一团,完全无法阅读 😵</p>
+      </div>
+      <div class="timeline-item">
+        <div class="pixel-tag" style="color:var(--secondary);">V2 · 尝试</div>
+        <div class="cn-title" style="font-size:1.2rem; margin:6px 0;">Space Mono 700 + Noto Sans SC 700</div>
+        <p style="font-size:0.95rem; color:var(--text-light);">清晰了,但太厚重,放一起头重脚轻</p>
+      </div>
+      <div class="timeline-item">
+        <div class="pixel-tag" style="color:var(--secondary);">V3 · 选字</div>
+        <div class="cn-title" style="font-size:1.2rem; margin:6px 0;">5种中文复古字体对比</div>
+        <p style="font-size:0.95rem; color:var(--text-light);">快乐体 / 黄油体 / 小薇体 / 毛笔体 / 落霞文楷 → 选了落霞文楷</p>
+      </div>
+      <div class="timeline-item">
+        <div class="pixel-tag" style="color:var(--secondary);">V4 · 平衡</div>
+        <div class="cn-title" style="font-size:1.2rem; margin:6px 0;">英文字体太粗,配不上文楷的轻盈</div>
+        <p style="font-size:0.95rem; color:var(--text-light);">对比了 Outfit / DM Sans / Figtree / Space Mono 400</p>
+      </div>
+      <div class="timeline-item green">
+        <div class="pixel-tag" style="color:var(--accent1);">V5 · 定稿 ✓</div>
+        <div class="cn-title" style="font-size:1.2rem; margin:6px 0;">Space Mono 400 + 字间距收紧</div>
+        <p style="font-size:0.95rem; color:var(--text-light);">字重降下来,letter-spacing: -0.03em,<span style="background:var(--accent2);padding:2px 6px;">终于和谐了</span> ✨</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 6: 最终方案 -->
+<section style="background:var(--bg-alt);">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="pixel-tag">✦ CHAPTER 06 ✦</div>
+      <h2 class="cn-title" style="font-size:clamp(1.8rem, 4vw, 2.6rem); margin-top:8px;">✨ 最终：5层字体系统</h2>
+    </div>
+
+    <div class="pixel-frame reveal" style="padding:0; overflow:hidden;">
+      <div class="font-layer">
+        <div class="pixel-tag" style="margin-bottom:8px;">LAYER 1 · PIXEL TAG</div>
+        <div style="font-family:var(--font-pixel); font-size:1rem; letter-spacing:2px; color:var(--accent1);">✦ SECTION 01 ✦ · ♥ BERRY GARDEN ♥</div>
+        <div class="font-meta">Silkscreen 400 · 只做英文装饰标签</div>
+      </div>
+      <div class="font-layer">
+        <div class="pixel-tag" style="margin-bottom:8px;">LAYER 2 · EN HEADING</div>
+        <div class="en-title" style="font-size:1.8rem;">Pixel Berry Garden</div>
+        <div class="font-meta">Space Mono 400 · letter-spacing: -0.03em</div>
+      </div>
+      <div class="font-layer">
+        <div class="pixel-tag" style="margin-bottom:8px;">LAYER 3 · CN HEADING</div>
+        <div class="cn-title" style="font-size:1.8rem;">莓果花园设计系统</div>
+        <div class="font-meta">LXGW WenKai(落霞文楷)· 温暖手写楷体</div>
+      </div>
+      <div class="font-layer">
+        <div class="pixel-tag" style="margin-bottom:8px;">LAYER 4 · BODY</div>
+        <div style="font-family:var(--font-body); font-weight:300; font-size:17px; line-height:1.8;">正文用最清晰的无衬线字体,让内容自在呼吸。</div>
+        <div class="font-meta">Noto Sans SC 300 · 17px · 最大可读性</div>
+      </div>
+      <div class="font-layer">
+        <div class="pixel-tag" style="margin-bottom:8px;">LAYER 5 · DATA</div>
+        <div class="data-num" style="font-size:1.6rem; color:var(--primary);">29.2% · 3.26x · 56%</div>
+        <div class="font-meta">Space Mono 400 · letter-spacing: -0.02em</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 7: 沉淀 -->
+<section>
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="pixel-tag">✦ CHAPTER 07 ✦</div>
+      <h2 class="cn-title" style="font-size:clamp(1.8rem, 4vw, 2.6rem); margin-top:8px;">📝 沉淀：参考了什么，学到了什么</h2>
+    </div>
+
+    <div class="compare-grid reveal">
+      <div class="pixel-frame" style="padding:32px;">
+        <div class="cn-title" style="font-size:1.3rem; margin-bottom:12px;">从 cola-design 拿的</div>
+        <ul style="font-size:1rem; line-height:2.2; padding-left:20px; color:var(--text-light);">
+          <li>7步工作流框架</li>
+          <li>文件目录结构</li>
+          <li>"从模板开始改"原则</li>
+          <li>"禁止HTML默认样式"规则</li>
+          <li>P0/P1/P2质检分级</li>
+        </ul>
+      </div>
+      <div class="pixel-frame-green" style="padding:32px;">
+        <div class="cn-title" style="font-size:1.3rem; margin-bottom:12px;">从归藏 frontend-design 学的</div>
+        <ul style="font-size:1rem; line-height:2.2; padding-left:20px; color:var(--text-light);">
+          <li>字体不要用烂大街的</li>
+          <li>配色要有方法论</li>
+          <li>动效需要系统规范</li>
+          <li>间距要有节奏感</li>
+          <li>"AI Slop Test"反面清单</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pixel-quote reveal" style="margin-top:40px;">
+      <p style="font-size:1.1rem; line-height:1.9;">品牌系统的骨架可以借鉴,但皮肤必须完全是自己的。字体是最难的部分--它决定了一个页面"像谁"。 🌿</p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<section style="background:var(--dark); padding:100px 32px; text-align:center;">
+  <div class="pixel-tag" style="color:var(--accent2); font-size:1rem;">♥ SISI DESIGN SKILL ♥</div>
+  <div class="cn-title" style="font-size:clamp(1.8rem, 4vw, 2.8rem); color:var(--bg); margin:16px 0;">从想法到系统，两天完成。 🍒</div>
+  <p style="font-size:1.05rem; color:var(--accent2); margin-bottom:32px;">17 files · 176KB · 6 colors · 5 font layers · 12 layouts · 15+ components</p>
+  <div class="data-num" style="font-size:0.9rem; color:var(--text-faint);">2026.06.09 - 2026.06.10</div>
+</section>
+
+<script>
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 100);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+reveals.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

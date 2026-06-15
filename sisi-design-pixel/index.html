@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sisi Design System — Playground v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet">
+<style>
+/* ========== CSS VARIABLES ========== */
+:root {
+  --primary: #8B4A8C;
+  --secondary: #D4456A;
+  --accent1: #7BA886;
+  --accent2: #C9A8D4;
+  --dark: #2D1A2E;
+  --bg: #FFF5F5;
+  --bg-alt: #FFF0F5;
+  --bg-card: #FFFAF8;
+  --text: #2D1A2E;
+  --text-light: #5A3A5C;
+  --text-faint: #8A7A8C;
+  --pixel-border: 4px;
+  --font-pixel: 'Silkscreen', cursive;
+  --font-heading-en: 'Space Mono', monospace;
+  --font-heading-cn: 'LXGW WenKai', cursive;
+  --font-body: 'Noto Sans SC', sans-serif;
+  --font-data: 'Space Mono', monospace;
+}
+
+/* ========== RESET ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ========== SELECTION ========== */
+::selection { background: #C9A8D4; color: #2D1A2E; }
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar { width: 12px; }
+::-webkit-scrollbar-track { background: #FFF0F5; }
+::-webkit-scrollbar-thumb { background: #8B4A8C; border: 2px solid #FFF0F5; }
+::-webkit-scrollbar-thumb:hover { background: #D4456A; }
+
+/* ========== STICKY NAV ========== */
+.pixel-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 10px 24px;
+  background: var(--bg);
+  border-bottom: 4px solid var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pixel-nav-brand {
+  font-family: var(--font-pixel);
+  font-size: 0.85rem;
+  color: var(--primary);
+  letter-spacing: 1px;
+}
+.pixel-nav-links {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+.pixel-nav-link {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  padding: 5px 10px;
+  text-decoration: none;
+  color: var(--text-light);
+  border: 2px solid transparent;
+  transition: all 0.1s;
+}
+.pixel-nav-link:hover {
+  border-color: var(--accent2);
+  color: var(--primary);
+}
+.pixel-nav-link.active {
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  background: rgba(139, 74, 140, 0.06);
+  box-shadow: 2px 2px 0 0 var(--primary);
+}
+
+/* ========== GENERAL SECTION ========== */
+.section {
+  padding: clamp(60px, 10vh, 140px) clamp(16px, 4vw, 48px);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.section-label {
+  font-family: var(--font-pixel);
+  font-size: 0.65rem;
+  color: var(--accent1);
+  letter-spacing: 2px;
+  display: block;
+  margin-bottom: 12px;
+}
+.section-title-cn {
+  font-family: var(--font-heading-cn);
+  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+  color: var(--dark);
+  margin-bottom: 8px;
+}
+.section-title-en {
+  font-family: var(--font-heading-en);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+  color: var(--dark);
+  margin-bottom: 8px;
+}
+.section-desc {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: clamp(32px, 5vw, 56px);
+  max-width: 600px;
+}
+
+/* ========== HERO ========== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(100px, 15vh, 200px) 2rem 4rem;
+  background: var(--bg);
+  text-align: center;
+}
+.hero-frame {
+  position: relative;
+  border: 4px solid var(--dark);
+  box-shadow: 8px 8px 0 0 var(--primary);
+  padding: clamp(3rem, 6vw, 5rem);
+  max-width: 900px;
+  background: var(--bg-card);
+}
+.pixel-corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 4px solid var(--secondary);
+}
+.pixel-corner.tl { top: -6px; left: -6px; border-right: none; border-bottom: none; }
+.pixel-corner.tr { top: -6px; right: -6px; border-left: none; border-bottom: none; }
+.pixel-corner.bl { bottom: -6px; left: -6px; border-right: none; border-top: none; }
+.pixel-corner.br { bottom: -6px; right: -6px; border-left: none; border-top: none; }
+.hero-label {
+  font-family: var(--font-pixel);
+  font-size: 0.65rem;
+  color: var(--accent1);
+  letter-spacing: 2px;
+  display: block;
+  margin-bottom: 1.5rem;
+}
+.hero-title {
+  font-family: var(--font-heading-cn);
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  color: var(--dark);
+  margin-bottom: 0.8rem;
+  line-height: 1.2;
+}
+.hero-subtitle {
+  font-family: var(--font-heading-en);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  color: var(--text-light);
+  margin-bottom: 2rem;
+}
+.hero-desc {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 1rem;
+  color: var(--text-light);
+  margin-bottom: 2.5rem;
+  line-height: 1.8;
+}
+
+/* ========== PIXEL BUTTON ========== */
+.pixel-btn {
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  padding: 12px 24px;
+  border: 3px solid var(--dark);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.1s, box-shadow 0.1s;
+  text-decoration: none;
+  display: inline-block;
+  background: none;
+}
+.pixel-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: none !important;
+}
+.pixel-btn.primary { background: var(--primary); color: #fff; box-shadow: 4px 4px 0 0 var(--dark); }
+.pixel-btn.primary:hover { background: #6B3A6C; }
+.pixel-btn.secondary { background: var(--secondary); color: #fff; box-shadow: 4px 4px 0 0 var(--dark); }
+.pixel-btn.secondary:hover { background: #B8354F; }
+.pixel-btn.ghost { background: transparent; color: var(--primary); box-shadow: 3px 3px 0 0 var(--primary); }
+.pixel-btn.ghost:hover { background: var(--bg-alt); }
+.pixel-btn.ghost-light { background: transparent; color: #fff; border-color: #fff; box-shadow: 3px 3px 0 0 rgba(255,255,255,0.3); }
+
+/* ========== PIXEL TAG ========== */
+.pixel-tag {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  padding: 3px 8px;
+  border: 2px solid;
+  display: inline-block;
+  letter-spacing: 0.5px;
+}
+.pixel-tag.purple { border-color: var(--primary); color: var(--primary); background: rgba(139,74,140,0.08); }
+.pixel-tag.green { border-color: var(--accent1); color: var(--accent1); background: rgba(123,168,134,0.08); }
+.pixel-tag.rose { border-color: var(--secondary); color: var(--secondary); background: rgba(212,69,106,0.08); }
+
+/* ========== COLOR SECTION ========== */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+.color-swatch {
+  border: 3px solid var(--dark);
+  box-shadow: 4px 4px 0 0 var(--dark);
+  overflow: hidden;
+}
+.color-swatch-block {
+  height: 80px;
+  border-bottom: 3px solid var(--dark);
+}
+.color-swatch-info {
+  padding: 10px 12px;
+  background: var(--bg-card);
+}
+.color-swatch-name {
+  font-family: var(--font-heading-cn);
+  font-size: 0.9rem;
+  color: var(--dark);
+  display: block;
+  margin-bottom: 4px;
+}
+.color-swatch-hex {
+  font-family: var(--font-data);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  font-size: 0.72rem;
+  color: var(--text-faint);
+}
+.color-swatch-use {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 0.7rem;
+  color: var(--text-light);
+  display: block;
+  margin-top: 4px;
+}
+
+/* ========== TYPOGRAPHY SECTION ========== */
+.type-layer {
+  border: 3px solid var(--dark);
+  box-shadow: 4px 4px 0 0 var(--accent2);
+  padding: clamp(20px, 3vw, 32px);
+  margin-bottom: 20px;
+  background: var(--bg-card);
+}
+.type-layer:nth-child(2) { box-shadow: 4px 4px 0 0 var(--primary); }
+.type-layer:nth-child(3) { box-shadow: 4px 4px 0 0 var(--secondary); }
+.type-layer:nth-child(4) { box-shadow: 4px 4px 0 0 var(--accent1); }
+.type-layer:nth-child(5) { box-shadow: 4px 4px 0 0 var(--accent2); }
+.type-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.type-sample-pixel { font-family: var(--font-pixel); font-size: 0.65rem; color: var(--accent1); letter-spacing: 2px; }
+.type-sample-en { font-family: var(--font-heading-en); font-weight: 400; letter-spacing: -0.03em; font-size: clamp(1.4rem, 3vw, 2rem); color: var(--dark); }
+.type-sample-cn { font-family: var(--font-heading-cn); font-size: clamp(1.4rem, 3vw, 2rem); color: var(--dark); }
+.type-sample-body { font-family: var(--font-body); font-weight: 300; font-size: 1rem; color: var(--text); line-height: 1.8; }
+.type-sample-data { font-family: var(--font-data); font-weight: 400; letter-spacing: -0.02em; font-size: clamp(2rem, 4vw, 3rem); color: var(--primary); }
+
+/* ========== PIXEL ART SECTION ========== */
+.pixel-art-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
+}
+.pixel-art-item {
+  border: 3px solid var(--dark);
+  box-shadow: 4px 4px 0 0 var(--primary);
+  padding: 32px 24px;
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.pixel-art-label {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  letter-spacing: 1px;
+}
+.pixel-berry {
+  width: 8px; height: 8px; background: transparent;
+  box-shadow:
+    8px 0 0 #D4456A, 16px 0 0 #D4456A,
+    0 8px 0 #D4456A, 8px 8px 0 #8B4A8C, 16px 8px 0 #D4456A, 24px 8px 0 #D4456A,
+    0 16px 0 #D4456A, 8px 16px 0 #D4456A, 16px 16px 0 #8B4A8C, 24px 16px 0 #D4456A,
+    8px 24px 0 #D4456A, 16px 24px 0 #D4456A,
+    8px -8px 0 #7BA886, 16px -8px 0 #7BA886, 16px -16px 0 #5A8A66;
+}
+.pixel-flower {
+  width: 8px; height: 8px; background: transparent;
+  box-shadow:
+    8px 0 0 #C9A8D4, 0 8px 0 #C9A8D4, 16px 8px 0 #C9A8D4, 8px 16px 0 #C9A8D4, 8px 8px 0 #D4456A;
+}
+.pixel-vine {
+  width: 8px; height: 8px; background: transparent;
+  box-shadow:
+    0 0 0 #7BA886, 8px 0 0 #7BA886, 16px 0 0 #7BA886,
+    24px -8px 0 #7BA886, 32px -8px 0 #7BA886,
+    40px 0 0 #7BA886, 48px 0 0 #7BA886, 56px 0 0 #7BA886,
+    24px -16px 0 #5A8A66, 56px 8px 0 #5A8A66;
+}
+.pixel-heart {
+  width: 4px; height: 4px; background: var(--secondary);
+  box-shadow:
+    4px 0 0 var(--secondary), 8px 0 0 var(--secondary),
+    12px 0 0 var(--secondary), 16px 0 0 var(--secondary),
+    20px 0 0 var(--secondary),
+    0 4px 0 var(--secondary), 4px 4px 0 var(--secondary),
+    8px 4px 0 var(--secondary), 12px 4px 0 var(--secondary),
+    16px 4px 0 var(--secondary), 20px 4px 0 var(--secondary),
+    24px 4px 0 var(--secondary),
+    4px 8px 0 var(--secondary), 8px 8px 0 var(--secondary),
+    12px 8px 0 var(--secondary), 16px 8px 0 var(--secondary),
+    20px 8px 0 var(--secondary),
+    8px 12px 0 var(--secondary), 12px 12px 0 var(--secondary),
+    16px 12px 0 var(--secondary),
+    12px 16px 0 var(--secondary);
+}
+.pixel-star {
+  width: 4px; height: 4px; background: transparent;
+  box-shadow:
+    8px 0 0 var(--primary),
+    0 8px 0 var(--primary), 4px 8px 0 var(--primary),
+    8px 8px 0 var(--primary), 12px 8px 0 var(--primary),
+    16px 8px 0 var(--primary),
+    8px 4px 0 var(--primary),
+    4px 12px 0 var(--primary), 12px 12px 0 var(--primary),
+    8px 16px 0 var(--primary);
+}
+.pixel-frame-demo {
+  border: 4px solid var(--dark);
+  box-shadow: 4px 4px 0 0 var(--dark), -2px -2px 0 0 var(--primary), inset 2px 2px 0 0 rgba(255,255,255,0.3);
+  padding: 20px;
+  background: var(--bg);
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  text-align: center;
+}
+
+/* ========== LAYOUTS SECTION ========== */
+.layouts-showcase {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+.layout-mini {
+  border: 3px solid var(--dark);
+  box-shadow: 4px 4px 0 0 var(--accent2);
+  overflow: hidden;
+  background: var(--bg-card);
+}
+.layout-mini:nth-child(2n) { box-shadow: 4px 4px 0 0 var(--secondary); }
+.layout-mini:nth-child(3n) { box-shadow: 4px 4px 0 0 var(--accent1); }
+.layout-mini-header {
+  padding: 10px 16px;
+  border-bottom: 2px solid var(--dark);
+  background: var(--bg-alt);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.layout-mini-title {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  color: var(--dark);
+}
+.layout-mini-num {
+  font-family: var(--font-data);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  font-size: 0.65rem;
+  color: var(--text-faint);
+}
+.layout-mini-body {
+  padding: 16px;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mini-placeholder {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+}
+.mini-block {
+  background: var(--bg-alt);
+  border: 2px solid var(--accent2);
+  min-height: 60px;
+  flex: 1;
+}
+.mini-block.narrow { flex: 0.4; }
+.mini-block.tall { min-height: 90px; }
+.mini-block-center {
+  width: 70%;
+  min-height: 70px;
+  background: var(--bg-alt);
+  border: 2px solid var(--primary);
+  margin: 0 auto;
+}
+.mini-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.mini-tl-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.mini-tl-dot {
+  width: 10px; height: 10px;
+  border: 2px solid var(--primary);
+  background: var(--secondary);
+  flex-shrink: 0;
+}
+.mini-tl-line {
+  height: 8px;
+  flex: 1;
+  background: var(--bg-alt);
+  border: 1px solid var(--accent2);
+}
+.mini-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  width: 100%;
+}
+.mini-grid-item {
+  height: 40px;
+  background: var(--bg-alt);
+  border: 2px solid var(--accent2);
+}
+.mini-tabs {
+  width: 100%;
+}
+.mini-tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--dark);
+}
+.mini-tab {
+  flex: 1;
+  height: 20px;
+  background: var(--bg-alt);
+  border: 1px solid var(--dark);
+  border-bottom: none;
+}
+.mini-tab.active { background: var(--bg-card); }
+.mini-tab-content {
+  height: 50px;
+  background: var(--bg-card);
+  border: 1px solid var(--dark);
+  border-top: none;
+}
+.mini-scroll-row {
+  display: flex;
+  gap: 6px;
+  overflow: hidden;
+  width: 100%;
+}
+.mini-scroll-card {
+  flex: 0 0 60px;
+  height: 70px;
+  background: var(--bg-alt);
+  border: 2px solid var(--accent2);
+}
+.mini-stats-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+}
+.mini-stat-box {
+  width: 50px; height: 50px;
+  border: 2px solid var(--dark);
+  background: var(--bg-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-data);
+  font-size: 0.6rem;
+  color: var(--primary);
+}
+.mini-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  width: 100%;
+  border: 2px solid var(--dark);
+}
+.mini-compare-side {
+  height: 60px;
+  background: var(--bg-alt);
+}
+.mini-compare-side:first-child {
+  border-right: 2px solid var(--dark);
+  background: #FFF0F5;
+}
+.mini-steps-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  justify-content: center;
+}
+.mini-step-box {
+  width: 30px; height: 30px;
+  border: 2px solid var(--dark);
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-pixel);
+  font-size: 0.5rem;
+  color: var(--primary);
+}
+.mini-step-arrow {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  color: var(--secondary);
+}
+.mini-sticky {
+  display: grid;
+  grid-template-columns: 0.3fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+.mini-sticky-side {
+  background: var(--bg-alt);
+  border: 2px solid var(--primary);
+  min-height: 80px;
+}
+.mini-sticky-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mini-sticky-block {
+  height: 24px;
+  background: var(--bg-alt);
+  border: 1px solid var(--accent2);
+}
+.mini-dialog {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  align-items: flex-start;
+}
+.mini-portrait {
+  width: 30px; height: 30px;
+  border: 2px solid var(--dark);
+  background: var(--accent2);
+  flex-shrink: 0;
+}
+.mini-bubble {
+  flex: 1;
+  height: 50px;
+  border: 2px solid var(--dark);
+  background: var(--bg-card);
+}
+.mini-fullwidth {
+  width: 100%;
+  height: 70px;
+  background: var(--primary);
+  border: 2px solid var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mini-fullwidth-text {
+  font-family: var(--font-pixel);
+  font-size: 0.5rem;
+  color: #fff;
+}
+
+/* ========== COMPONENTS SECTION ========== */
+.components-grid {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(32px, 5vw, 56px);
+}
+.component-group {
+  border: 3px solid var(--dark);
+  box-shadow: 5px 5px 0 0 var(--primary);
+  overflow: hidden;
+  background: var(--bg-card);
+}
+.component-group:nth-child(2n) { box-shadow: 5px 5px 0 0 var(--secondary); }
+.component-group:nth-child(3n) { box-shadow: 5px 5px 0 0 var(--accent1); }
+.component-group-header {
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--dark);
+  background: var(--bg-alt);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.component-group-title {
+  font-family: var(--font-heading-cn);
+  font-size: 1.1rem;
+  color: var(--dark);
+}
+.component-group-body {
+  padding: clamp(20px, 3vw, 36px);
+}
+
+/* RPG Card */
+.rpg-card {
+  border: 4px solid var(--dark);
+  box-shadow: 6px 6px 0 0 var(--primary);
+  background: var(--bg-card);
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.rpg-card:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 0 var(--primary); }
+.rpg-card-header {
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--dark);
+  background: var(--bg-alt);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.rpg-card-title { font-family: var(--font-pixel); font-size: 0.75rem; color: var(--dark); }
+.rpg-card-badge { font-family: var(--font-pixel); font-size: 0.55rem; padding: 2px 8px; border: 2px solid var(--secondary); color: var(--secondary); }
+.rpg-card-body { padding: 20px; }
+.rpg-card-body p { font-family: var(--font-body); font-weight: 300; font-size: 0.88rem; line-height: 1.7; color: var(--text); }
+
+/* RPG Quote */
+.rpg-quote { display: flex; gap: 16px; align-items: flex-start; }
+.rpg-quote-portrait {
+  flex: 0 0 48px; height: 48px;
+  border: 3px solid var(--dark); box-shadow: 2px 2px 0 0 var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; background: var(--bg-alt);
+}
+.rpg-quote-box {
+  flex: 1; border: 3px solid var(--dark);
+  box-shadow: 4px 4px 0 0 var(--accent2);
+  padding: 16px 20px; background: var(--bg-card); position: relative;
+}
+.rpg-quote-box::before {
+  content: ''; position: absolute; left: -10px; top: 14px;
+  width: 0; height: 0;
+  border-top: 6px solid transparent; border-bottom: 6px solid transparent;
+  border-right: 8px solid var(--dark);
+}
+.rpg-quote-text { font-family: var(--font-body); font-weight: 300; font-size: 0.9rem; line-height: 1.8; color: var(--text); }
+.rpg-quote-source { display: block; margin-top: 10px; font-family: var(--font-pixel); font-size: 0.6rem; color: var(--text-faint); }
+
+/* Progress */
+.pixel-progress-group { margin-bottom: 16px; }
+.pixel-progress-label {
+  display: flex; justify-content: space-between; margin-bottom: 6px;
+  font-family: var(--font-pixel); font-size: 0.65rem; color: var(--text-light);
+}
+.pixel-progress-bar { height: 18px; border: 3px solid var(--dark); background: var(--bg-alt); overflow: hidden; }
+.pixel-progress-fill {
+  height: 100%;
+  background: repeating-linear-gradient(90deg, var(--primary) 0px, var(--primary) 12px, var(--bg-alt) 12px, var(--bg-alt) 14px);
+  transition: width 0.5s steps(10);
+}
+.pixel-progress-fill.rose { background: repeating-linear-gradient(90deg, var(--secondary) 0px, var(--secondary) 12px, var(--bg-alt) 12px, var(--bg-alt) 14px); }
+.pixel-progress-fill.green { background: repeating-linear-gradient(90deg, var(--accent1) 0px, var(--accent1) 12px, var(--bg-alt) 12px, var(--bg-alt) 14px); }
+
+/* Stat */
+.pixel-stat { text-align: center; padding: 24px 28px; border: 3px solid var(--dark); box-shadow: 4px 4px 0 0 var(--primary); background: var(--bg-card); }
+.pixel-stat-num { font-family: var(--font-data); font-weight: 400; letter-spacing: -0.02em; font-size: clamp(2rem, 4vw, 3rem); color: var(--primary); display: block; line-height: 1; margin-bottom: 6px; }
+.pixel-stat-label { font-family: var(--font-pixel); font-size: 0.6rem; color: var(--text-faint); letter-spacing: 1px; }
+
+/* Timeline */
+.pixel-tl-item { position: relative; padding-left: 44px; margin-bottom: 28px; }
+.pixel-tl-dot { position: absolute; left: 0; top: 4px; width: 18px; height: 18px; border: 3px solid var(--primary); background: var(--secondary); box-shadow: 2px 2px 0 0 var(--dark); }
+.pixel-tl-date { font-family: var(--font-pixel); font-size: 0.6rem; color: var(--accent1); display: block; margin-bottom: 3px; }
+.pixel-tl-content h4 { font-family: var(--font-heading-cn); font-size: 1rem; color: var(--dark); margin-bottom: 4px; }
+.pixel-tl-content p { font-family: var(--font-body); font-weight: 300; font-size: 0.82rem; color: var(--text-light); line-height: 1.6; }
+
+/* Table */
+.pixel-table-wrapper { border: 4px solid var(--dark); box-shadow: 5px 5px 0 0 var(--accent2); overflow: hidden; }
+.pixel-table { width: 100%; border-collapse: collapse; font-family: var(--font-body); font-weight: 300; font-size: 0.85rem; }
+.pixel-table thead tr { background: var(--primary); color: #fff; }
+.pixel-table th { font-family: var(--font-pixel); font-size: 0.65rem; padding: 10px 14px; text-align: left; border-right: 2px solid rgba(255,255,255,0.2); letter-spacing: 0.5px; }
+.pixel-table th:last-child { border-right: none; }
+.pixel-table td { padding: 10px 14px; border-bottom: 2px solid var(--bg-alt); color: var(--text); }
+.pixel-table tbody tr:nth-child(even) { background: var(--bg-alt); }
+.pixel-table tbody tr:hover { background: rgba(139,74,140,0.06); }
+
+/* List */
+.pixel-list { list-style: none; padding: 0; margin: 0; }
+.pixel-list li {
+  font-family: var(--font-body); font-weight: 300; font-size: 0.88rem;
+  color: var(--text); line-height: 1.7; padding: 7px 0 7px 28px;
+  position: relative; border-bottom: 1px dashed rgba(139,74,140,0.15);
+}
+.pixel-list li:last-child { border-bottom: none; }
+.pixel-list.hearts li::before {
+  content: ''; position: absolute; left: 0; top: 11px;
+  width: 4px; height: 4px; background: var(--secondary);
+  box-shadow: 4px 0 0 var(--secondary), 0 4px 0 var(--secondary),
+    4px 4px 0 var(--secondary), 8px 4px 0 var(--secondary),
+    2px 8px 0 var(--secondary), 6px 8px 0 var(--secondary),
+    4px 12px 0 var(--secondary);
+}
+.pixel-list.stars li::before {
+  content: ''; position: absolute; left: 2px; top: 12px;
+  width: 4px; height: 4px; background: var(--primary);
+  box-shadow: 4px 0 0 var(--primary), -4px 0 0 var(--primary),
+    0 4px 0 var(--primary), 0 -4px 0 var(--primary);
+}
+
+/* Alert */
+.pixel-alert { display: flex; gap: 14px; align-items: flex-start; border: 3px solid var(--dark); padding: 14px 18px; background: var(--bg-card); }
+.pixel-alert-icon {
+  flex: 0 0 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-pixel); font-size: 0.85rem; font-weight: 700; border: 3px solid;
+}
+.pixel-alert.warning { box-shadow: 4px 4px 0 0 var(--secondary); }
+.pixel-alert.warning .pixel-alert-icon { border-color: var(--secondary); color: var(--secondary); background: rgba(212,69,106,0.1); }
+.pixel-alert.info { box-shadow: 4px 4px 0 0 var(--accent1); }
+.pixel-alert.info .pixel-alert-icon { border-color: var(--accent1); color: var(--accent1); background: rgba(123,168,134,0.1); }
+.pixel-alert-content strong { font-family: var(--font-pixel); font-size: 0.7rem; display: block; margin-bottom: 3px; color: var(--dark); }
+.pixel-alert-content p { font-family: var(--font-body); font-weight: 300; font-size: 0.82rem; color: var(--text-light); line-height: 1.6; margin: 0; }
+
+/* Accordion */
+.pixel-accordion { border: 3px solid var(--dark); margin-bottom: 8px; background: var(--bg-card); }
+.pixel-accordion[open] { box-shadow: 4px 4px 0 0 var(--accent2); }
+.pixel-accordion-header {
+  font-family: var(--font-pixel); font-size: 0.75rem; padding: 12px 16px;
+  cursor: pointer; color: var(--dark); display: flex; align-items: center;
+  gap: 10px; list-style: none; border-bottom: 2px solid transparent;
+}
+.pixel-accordion-header::-webkit-details-marker { display: none; }
+.pixel-accordion[open] .pixel-accordion-header { border-bottom-color: var(--dark); color: var(--primary); }
+.pixel-accordion-icon { font-size: 0.55rem; transition: transform 0.15s; }
+.pixel-accordion[open] .pixel-accordion-icon { transform: rotate(90deg); }
+.pixel-accordion-body { padding: 14px 16px; }
+.pixel-accordion-body p { font-family: var(--font-body); font-weight: 300; font-size: 0.85rem; line-height: 1.7; color: var(--text-light); margin: 0; }
+
+/* Nav Demo */
+.nav-demo {
+  border: 3px solid var(--dark); box-shadow: 4px 4px 0 0 var(--accent1);
+  padding: 12px 20px; background: var(--bg-card);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-demo-brand { font-family: var(--font-pixel); font-size: 0.8rem; color: var(--primary); }
+.nav-demo-links { display: flex; gap: 4px; }
+.nav-demo-link {
+  font-family: var(--font-pixel); font-size: 0.6rem;
+  padding: 4px 10px; border: 2px solid transparent; color: var(--text-light);
+}
+.nav-demo-link.active { border-color: var(--primary); color: var(--primary); box-shadow: 2px 2px 0 0 var(--primary); }
+
+/* Tooltip */
+.pixel-tooltip-wrapper { position: relative; display: inline-block; }
+.pixel-tooltip {
+  position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%);
+  border: 3px solid var(--dark); box-shadow: 3px 3px 0 0 var(--accent2);
+  padding: 8px 12px; background: var(--bg-card); white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity 0.15s;
+}
+.pixel-tooltip::after {
+  content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid var(--dark);
+}
+.pixel-tooltip p { font-family: var(--font-body); font-weight: 300; font-size: 0.75rem; color: var(--text); margin: 0; }
+.pixel-tooltip-wrapper:hover .pixel-tooltip { opacity: 1; pointer-events: auto; }
+.pixel-tooltip-trigger { font-family: var(--font-pixel); font-size: 0.7rem; color: var(--primary); border-bottom: 2px dashed var(--primary); cursor: help; }
+
+/* Pullquote */
+.pixel-pullquote {
+  border: 4px solid var(--dark); box-shadow: 6px 6px 0 0 var(--secondary);
+  padding: clamp(24px, 3vw, 40px); text-align: center; background: var(--bg-alt); position: relative;
+}
+.pullquote-deco { font-family: var(--font-pixel); font-size: 2.5rem; color: var(--accent2); display: block; margin-bottom: 10px; line-height: 1; }
+.pixel-pullquote p { font-family: var(--font-heading-cn); font-size: clamp(1rem, 2vw, 1.3rem); line-height: 1.8; color: var(--dark); }
+.pullquote-source { display: block; margin-top: 12px; font-family: var(--font-pixel); font-size: 0.6rem; color: var(--text-faint); }
+
+/* ========== SCENES SECTION ========== */
+.scenes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+.scene-card {
+  border: 4px solid var(--dark);
+  box-shadow: 6px 6px 0 0 var(--primary);
+  overflow: hidden;
+  background: var(--bg-card);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.scene-card:nth-child(2) { box-shadow: 6px 6px 0 0 var(--secondary); }
+.scene-card:nth-child(3) { box-shadow: 6px 6px 0 0 var(--accent1); }
+.scene-card:nth-child(4) { box-shadow: 6px 6px 0 0 var(--accent2); }
+.scene-card:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 0 var(--primary); }
+.scene-card-preview {
+  height: 140px;
+  border-bottom: 3px solid var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.scene-card-info { padding: 16px 20px; }
+.scene-card-title { font-family: var(--font-heading-cn); font-size: 1.1rem; color: var(--dark); margin-bottom: 6px; }
+.scene-card-desc { font-family: var(--font-body); font-weight: 300; font-size: 0.8rem; color: var(--text-light); line-height: 1.6; }
+
+/* Scene preview mini layouts */
+.scene-mini-tutorial {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; gap: 6px; padding: 8px;
+  background: var(--bg);
+}
+.scene-mini-tutorial .smt-header { height: 20px; background: var(--primary); opacity: 0.3; }
+.scene-mini-tutorial .smt-steps { display: flex; gap: 4px; flex: 1; }
+.scene-mini-tutorial .smt-step { flex: 1; background: var(--accent2); opacity: 0.4; border: 1px solid var(--primary); }
+
+.scene-mini-landing {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; background: var(--bg);
+}
+.scene-mini-landing .sml-hero { width: 60%; height: 30px; border: 2px solid var(--primary); background: var(--bg-alt); }
+.scene-mini-landing .sml-cta { width: 40px; height: 16px; background: var(--primary); }
+
+.scene-mini-app {
+  width: 100%; height: 100%;
+  display: grid; grid-template-columns: 0.25fr 1fr; gap: 4px; padding: 6px;
+  background: var(--dark);
+}
+.scene-mini-app .sma-sidebar { background: rgba(139,74,140,0.3); }
+.scene-mini-app .sma-main { background: rgba(255,245,245,0.1); display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; }
+.scene-mini-app .sma-card { background: rgba(255,245,245,0.15); border: 1px solid rgba(201,168,212,0.3); }
+
+.scene-mini-cards {
+  width: 100%; height: 100%;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 8px;
+  background: var(--bg);
+}
+.scene-mini-cards .smc-card { border: 2px solid var(--dark); background: var(--bg-card); }
+
+/* ========== TEMPLATES SECTION ========== */
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+.template-card {
+  border: 3px solid var(--dark);
+  box-shadow: 4px 4px 0 0 var(--accent2);
+  padding: 20px;
+  background: var(--bg-card);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.template-card:nth-child(2n) { box-shadow: 4px 4px 0 0 var(--secondary); }
+.template-card:nth-child(3n) { box-shadow: 4px 4px 0 0 var(--primary); }
+.template-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 0 var(--accent1); }
+.template-icon { font-size: 1.5rem; margin-bottom: 10px; display: block; }
+.template-name { font-family: var(--font-heading-cn); font-size: 1rem; color: var(--dark); margin-bottom: 6px; }
+.template-file { font-family: var(--font-data); font-weight: 400; letter-spacing: -0.02em; font-size: 0.65rem; color: var(--text-faint); margin-bottom: 8px; display: block; }
+.template-desc { font-family: var(--font-body); font-weight: 300; font-size: 0.78rem; color: var(--text-light); line-height: 1.6; }
+
+/* ========== CHECKLIST SECTION ========== */
+.checklist-group {
+  border: 3px solid var(--dark);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.checklist-group.p0 { box-shadow: 5px 5px 0 0 var(--secondary); }
+.checklist-group.p1 { box-shadow: 5px 5px 0 0 var(--primary); }
+.checklist-group.p2 { box-shadow: 5px 5px 0 0 var(--accent1); }
+.checklist-group-header {
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--dark);
+  display: flex; align-items: center; gap: 10px;
+}
+.checklist-group.p0 .checklist-group-header { background: rgba(212,69,106,0.1); }
+.checklist-group.p1 .checklist-group-header { background: rgba(139,74,140,0.08); }
+.checklist-group.p2 .checklist-group-header { background: rgba(123,168,134,0.08); }
+.checklist-priority {
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border: 2px solid;
+}
+.checklist-group.p0 .checklist-priority { border-color: var(--secondary); color: var(--secondary); }
+.checklist-group.p1 .checklist-priority { border-color: var(--primary); color: var(--primary); }
+.checklist-group.p2 .checklist-priority { border-color: var(--accent1); color: var(--accent1); }
+.checklist-group-label {
+  font-family: var(--font-heading-cn);
+  font-size: 1rem;
+  color: var(--dark);
+}
+.checklist-items { padding: 16px 20px; background: var(--bg-card); }
+.checklist-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(139,74,140,0.12);
+  font-family: var(--font-body); font-weight: 300; font-size: 0.82rem;
+  color: var(--text-light); line-height: 1.6;
+}
+.checklist-item:last-child { border-bottom: none; }
+.checklist-box {
+  flex: 0 0 16px; height: 16px;
+  border: 2px solid var(--dark);
+  margin-top: 2px;
+}
+
+/* ========== PIXEL DIVIDERS ========== */
+.pixel-divider { display: flex; align-items: center; justify-content: center; padding: 32px 0; position: relative; }
+.pixel-divider::before, .pixel-divider::after {
+  content: ''; flex: 1; height: 4px;
+  background: repeating-linear-gradient(to right, var(--accent2) 0px, var(--accent2) 6px, transparent 6px, transparent 12px);
+}
+.pixel-divider::before { margin-right: 24px; }
+.pixel-divider::after { margin-left: 24px; }
+
+/* ========== SCROLL REVEAL ========== */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.2s; }
+.reveal-d3 { transition-delay: 0.3s; }
+.reveal-d4 { transition-delay: 0.4s; }
+.reveal-d5 { transition-delay: 0.5s; }
+.reveal-d6 { transition-delay: 0.6s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ========== FOOTER ========== */
+.pixel-footer { padding: 40px 2rem; text-align: center; }
+.pixel-footer-divider {
+  width: 100%; height: 4px;
+  background: repeating-linear-gradient(to right, var(--primary) 0px, var(--primary) 8px, transparent 8px, transparent 16px);
+  margin-bottom: 32px;
+}
+.pixel-footer-brand { font-family: var(--font-pixel); font-size: 0.85rem; color: var(--primary); display: block; margin-bottom: 8px; }
+.pixel-footer-text { font-family: var(--font-body); font-weight: 300; font-size: 0.78rem; color: var(--text-faint); }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+  .pixel-nav-links { gap: 1px; }
+  .pixel-nav-link { padding: 4px 6px; font-size: 0.55rem; }
+  .layouts-showcase { grid-template-columns: 1fr; }
+  .scenes-grid { grid-template-columns: 1fr; }
+  .color-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}
+@media (max-width: 600px) {
+  .pixel-nav { flex-direction: column; gap: 8px; padding: 8px 16px; }
+  .pixel-nav-links { justify-content: center; }
+  .hero { padding-top: 140px; }
+  .hero-frame { padding: 2rem 1.5rem; }
+  .layouts-showcase { grid-template-columns: 1fr; }
+  .templates-grid { grid-template-columns: 1fr; }
+  .rpg-quote { flex-direction: column; }
+  .rpg-quote-box::before { display: none; }
+  .pixel-art-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}
+
+/* ========== UTILITY ========== */
+.flex-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.mt-sm { margin-top: 16px; }
+.mt-md { margin-top: 24px; }
+.mb-sm { margin-bottom: 16px; }
+.mb-md { margin-bottom: 24px; }
+.gap-sm { gap: 8px; }
+.w-full { width: 100%; }
+
+/* Stats row in components */
+.stats-demo-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.stats-demo-row .pixel-stat { flex: 1; min-width: 120px; }
+</style>
+</head>
+<body>
+
+<!-- ===== STICKY NAV ===== -->
+<nav class="pixel-nav">
+  <span class="pixel-nav-brand">✦ SISI DESIGN ✦</span>
+  <div class="pixel-nav-links">
+    <a href="#colors" class="pixel-nav-link">Colors</a>
+    <a href="#typography" class="pixel-nav-link">Type</a>
+    <a href="#pixel-art" class="pixel-nav-link">Pixels</a>
+    <a href="#layouts" class="pixel-nav-link">Layouts</a>
+    <a href="#components" class="pixel-nav-link">Components</a>
+    <a href="#scenes" class="pixel-nav-link">Scenes</a>
+    <a href="#templates" class="pixel-nav-link">Templates</a>
+    <a href="#checklist" class="pixel-nav-link">Checklist</a>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="hero-frame reveal">
+    <span class="pixel-corner tl"></span>
+    <span class="pixel-corner tr"></span>
+    <span class="pixel-corner bl"></span>
+    <span class="pixel-corner br"></span>
+    <span class="hero-label">✦ DESIGN SYSTEM PLAYGROUND ✦</span>
+    <h1 class="hero-title">莓果花园像素设计系统</h1>
+    <p class="hero-subtitle">Sisi Pixel Design System — v2</p>
+    <p class="hero-desc">像素温暖 · RPG菜单框 · 莓果花园气质<br>完整的品牌色、字体、装饰、布局、组件展示</p>
+    <a href="#colors" class="pixel-btn primary">开始探索 ↓</a>
+  </div>
+</section>
+
+<!-- ===== 1. COLORS ===== -->
+<section class="section" id="colors">
+  <div class="reveal">
+    <span class="section-label">✦ SECTION 01 ✦</span>
+    <h2 class="section-title-cn">品牌色</h2>
+    <p class="section-desc">6主色 + 6扩展色。莓果紫40% · 玫瑰红25% · 绿/薰衣草20% · 深梅色15%</p>
+  </div>
+
+  <h3 class="section-title-cn reveal mb-md" style="font-size:1.1rem;">六色主调</h3>
+  <div class="color-grid reveal reveal-d1">
+    <div class="color-swatch">
+      <div class="color-swatch-block" style="background:#8B4A8C"></div>
+      <div class="color-swatch-info">
+        <span class="color-swatch-name">莓果紫</span>
+        <span class="color-swatch-hex">#8B4A8C</span>
+        <span class="color-swatch-use">Primary · CTA · 标题</span>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-swatch-block" style="background:#D4456A"></div>
+      <div class="color-swatch-info">
+        <span class="color-swatch-name">玫瑰红</span>
+        <span class="color-swatch-hex">#D4456A</span>
+        <span class="color-swatch-use">Secondary · Hover · 高亮</span>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-swatch-block" style="background:#7BA886"></div>
+      <div class="color-swatch-info">
+        <span class="color-swatch-name">鼠尾草绿</span>
+        <span class="color-swatch-hex">#7BA886</span>
+        <span class="color-swatch-use">Accent 1 · 标签 · 成功</span>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-swatch-block" style="background:#C9A8D4"></div>
+      <div class="color-swatch-info">
+        <span class="color-swatch-name">薰衣草紫</span>
+        <span class="color-swatch-hex">#C9A8D4</span>
+        <span class="color-swatch-use">Accent 2 · 浅装饰 · 柔和</span>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-swatch-block" style="background:#2D1A2E"></div>
+      <div class="color-swatch-info">
+        <span class="color-swatch-name">深梅色</span>
+        <span class="color-swatch-hex">#2D1A2E</span>
+        <span class="color-swatch-use">Text · Dark · 正文</span>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-swatch-block" style="background:#FFF5F5"></div>
+      <div class="color-swatch-info">
+        <span class="color-swatch-name">淡粉底</span>
+        <span class="color-swatch-hex">#FFF5F5</span>
+        <span class="color-swatch-use">Background · 页面主背景</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pixel-divider reveal"><div class="pixel-flower"></div></div>
+
+  <h3 class="section-title-cn reveal mb-md" style="font-size:1.1rem;">扩展色</h3>
+  <div class="color-grid reveal reveal-d2">
+    <div class="color-swatch">
+      <div class="color-swatch-block" style="background:#FFF0F5"></div>
+      <div class="color-swatch-info">
+        <span class="color-swatch-name">浅粉底变体</span>
+        <span class="color-swatch-hex">#FFF0F5</span>
+        <span class="color-swatch-use">交替section背景</span>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-swatch-block" style="background:#F5E6F7"></div>
+      <div class="color-swatch-info">
+        <span class="color-swatch-name">极浅紫</span>
+        <span class="color-swatch-hex">#F5E6F7</span>
+        <span class="color-swatch-use">卡片背景 · hover</span>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-swatch-block" style="background:#6B3A6C"></div>
+      <div class="color-swatch-info">
+        <span class="color-swatch-name">莓果暗紫</span>
+        <span class="color-swatch-hex">#6B3A6C</span>
+        <span class="color-swatch-use">深色按钮 · 深色强调</span>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-swatch-block" style="background:#F7B2C4"></div>
+      <div class="color-swatch-info">
+        <span class="color-swatch-name">玫瑰浅粉</span>
+        <span class="color-swatch-hex">#F7B2C4</span>
+        <span class="color-swatch-use">装饰元素 · 进度条空轨</span>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-swatch-block" style="background:#5A8A66"></div>
+      <div class="color-swatch-info">
+        <span class="color-swatch-name">森林深绿</span>
+        <span class="color-swatch-hex">#5A8A66</span>
+        <span class="color-swatch-use">深绿装饰 · hover</span>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-swatch-block" style="background:#FFFAF8"></div>
+      <div class="color-swatch-info">
+        <span class="color-swatch-name">奶油白</span>
+        <span class="color-swatch-hex">#FFFAF8</span>
+        <span class="color-swatch-use">卡片内背景 · 更白区域</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 2. TYPOGRAPHY ===== -->
+<section class="section" id="typography" style="background: var(--bg-alt); max-width: none; padding-left: 0; padding-right: 0;">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 48px);">
+    <div class="reveal">
+      <span class="section-label">✦ SECTION 02 ✦</span>
+      <h2 class="section-title-cn">字体系统</h2>
+      <p class="section-desc">5层字体各司其职，绝不混用。像素标签、英文标题、中文标题、正文、数据各有归属。</p>
+    </div>
+
+    <div class="type-layer reveal reveal-d1">
+      <div class="type-meta">
+        <span class="pixel-tag purple">LAYER 1</span>
+        <span class="pixel-tag green">SILKSCREEN 400</span>
+        <span style="font-family:var(--font-body);font-weight:300;font-size:0.75rem;color:var(--text-faint)">0.6–0.7rem · 像素小标签</span>
+      </div>
+      <p class="type-sample-pixel">✦ SECTION 01 ✦ · HERO · STATS · NEW · STEP 01</p>
+      <p style="font-family:var(--font-body);font-weight:300;font-size:0.78rem;color:var(--text-light);margin-top:8px;">用途：装饰性小标签，绝不做中文标题</p>
+    </div>
+
+    <div class="type-layer reveal reveal-d2">
+      <div class="type-meta">
+        <span class="pixel-tag purple">LAYER 2</span>
+        <span class="pixel-tag green">SPACE MONO 400</span>
+        <span style="font-family:var(--font-body);font-weight:300;font-size:0.75rem;color:var(--text-faint)">letter-spacing: -0.03em · 英文标题</span>
+      </div>
+      <p class="type-sample-en">Pixel Berry Garden Design System</p>
+      <p style="font-family:var(--font-body);font-weight:300;font-size:0.78rem;color:var(--text-light);margin-top:8px;">用途：英文标题、英文hero文字。等宽复古感，只用400字重</p>
+    </div>
+
+    <div class="type-layer reveal reveal-d3">
+      <div class="type-meta">
+        <span class="pixel-tag purple">LAYER 3</span>
+        <span class="pixel-tag green">LXGW WENKAI</span>
+        <span style="font-family:var(--font-body);font-weight:300;font-size:0.75rem;color:var(--text-faint)">落霞文楷 · 中文标题</span>
+      </div>
+      <p class="type-sample-cn">莓果花园像素设计系统</p>
+      <p style="font-family:var(--font-body);font-weight:300;font-size:0.78rem;color:var(--text-light);margin-top:8px;">用途：中文hero标题、section标题、卡片标题。温暖手写楷体，绝不做正文</p>
+    </div>
+
+    <div class="type-layer reveal reveal-d4">
+      <div class="type-meta">
+        <span class="pixel-tag purple">LAYER 4</span>
+        <span class="pixel-tag green">NOTO SANS SC 300</span>
+        <span style="font-family:var(--font-body);font-weight:300;font-size:0.75rem;color:var(--text-faint)">正文 · 16px · 最大可读性</span>
+      </div>
+      <p class="type-sample-body">这是正文字体展示。所有正文内容使用 Noto Sans SC weight 300，轻量无衬线，提供最大可读性。行高1.7-1.8，字色使用深梅色 #2D1A2E，辅助文字用 #5A3A5C。</p>
+    </div>
+
+    <div class="type-layer reveal reveal-d5">
+      <div class="type-meta">
+        <span class="pixel-tag purple">LAYER 5</span>
+        <span class="pixel-tag green">SPACE MONO 400</span>
+        <span style="font-family:var(--font-body);font-weight:300;font-size:0.75rem;color:var(--text-faint)">letter-spacing: -0.02em · 数字/数据</span>
+      </div>
+      <p class="type-sample-data">42 · 8,192 · 99.7% · 2024.06</p>
+      <p style="font-family:var(--font-body);font-weight:300;font-size:0.78rem;color:var(--text-light);margin-top:8px;">用途：统计数字、数据展示、代码片段。等宽对齐</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 3. PIXEL ART ===== -->
+<section class="section" id="pixel-art">
+  <div class="reveal">
+    <span class="section-label">✦ SECTION 03 ✦</span>
+    <h2 class="section-title-cn">像素装饰</h2>
+    <p class="section-desc">CSS box-shadow技法实现的像素艺术装饰：莓果、花朵、藤蔓、爱心、星星，以及RPG边框和像素按钮。</p>
+  </div>
+
+  <div class="pixel-art-grid">
+    <div class="pixel-art-item reveal reveal-d1">
+      <div class="pixel-berry" style="transform: scale(1.5);"></div>
+      <span class="pixel-art-label">PIXEL BERRY</span>
+    </div>
+    <div class="pixel-art-item reveal reveal-d2">
+      <div class="pixel-flower" style="transform: scale(2);"></div>
+      <span class="pixel-art-label">PIXEL FLOWER</span>
+    </div>
+    <div class="pixel-art-item reveal reveal-d3">
+      <div class="pixel-vine" style="transform: scale(1.3);"></div>
+      <span class="pixel-art-label">PIXEL VINE</span>
+    </div>
+    <div class="pixel-art-item reveal reveal-d4">
+      <div class="pixel-heart" style="transform: scale(1.8);"></div>
+      <span class="pixel-art-label">PIXEL HEART</span>
+    </div>
+    <div class="pixel-art-item reveal reveal-d5">
+      <div class="pixel-star" style="transform: scale(2);"></div>
+      <span class="pixel-art-label">PIXEL STAR</span>
+    </div>
+  </div>
+
+  <div class="pixel-divider reveal"><div class="pixel-berry"></div></div>
+
+  <h3 class="section-title-cn reveal mb-md" style="font-size:1.1rem;">RPG边框 Demo</h3>
+  <div class="reveal reveal-d1">
+    <div class="pixel-frame-demo">
+      RPG菜单框 — border: 4px solid + box-shadow偏移 + inset高光<br>
+      <span style="font-family:var(--font-pixel);font-size:0.6rem;color:var(--accent1);">NO BORDER-RADIUS!</span>
+    </div>
+  </div>
+
+  <div class="mt-md reveal reveal-d2">
+    <h3 class="section-title-cn mb-sm" style="font-size:1.1rem;">像素按钮</h3>
+    <div class="flex-row">
+      <button class="pixel-btn primary">Primary</button>
+      <button class="pixel-btn secondary">Secondary</button>
+      <button class="pixel-btn ghost">Ghost</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 4. LAYOUTS ===== -->
+<section class="section" id="layouts" style="background: var(--bg-alt); max-width: none; padding-left: 0; padding-right: 0;">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 48px);">
+    <div class="reveal">
+      <span class="section-label">✦ SECTION 04 ✦</span>
+      <h2 class="section-title-cn">布局模式库</h2>
+      <p class="section-desc">12种像素/RPG风格布局模式，每个section选不同布局，组合使用。</p>
+    </div>
+
+    <div class="layouts-showcase">
+      <!-- Layout 1 -->
+      <div class="layout-mini reveal reveal-d1">
+        <div class="layout-mini-header">
+          <span class="layout-mini-title">HERO PIXEL BANNER</span>
+          <span class="layout-mini-num">01</span>
+        </div>
+        <div class="layout-mini-body">
+          <div class="mini-block-center"></div>
+        </div>
+      </div>
+      <!-- Layout 2 -->
+      <div class="layout-mini reveal reveal-d2">
+        <div class="layout-mini-header">
+          <span class="layout-mini-title">SPLIT + DIVIDER</span>
+          <span class="layout-mini-num">02</span>
+        </div>
+        <div class="layout-mini-body">
+          <div class="mini-placeholder">
+            <div class="mini-block"></div>
+            <div style="width:3px;background:repeating-linear-gradient(to bottom,var(--primary) 0px,var(--primary) 4px,transparent 4px,transparent 8px)"></div>
+            <div class="mini-block"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Layout 3 -->
+      <div class="layout-mini reveal reveal-d3">
+        <div class="layout-mini-header">
+          <span class="layout-mini-title">RPG DIALOG</span>
+          <span class="layout-mini-num">03</span>
+        </div>
+        <div class="layout-mini-body">
+          <div class="mini-dialog">
+            <div class="mini-portrait"></div>
+            <div class="mini-bubble"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Layout 4 -->
+      <div class="layout-mini reveal reveal-d4">
+        <div class="layout-mini-header">
+          <span class="layout-mini-title">CARD GRID</span>
+          <span class="layout-mini-num">04</span>
+        </div>
+        <div class="layout-mini-body">
+          <div class="mini-grid">
+            <div class="mini-grid-item"></div>
+            <div class="mini-grid-item"></div>
+            <div class="mini-grid-item"></div>
+            <div class="mini-grid-item"></div>
+            <div class="mini-grid-item"></div>
+            <div class="mini-grid-item"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Layout 5 -->
+      <div class="layout-mini reveal reveal-d1">
+        <div class="layout-mini-header">
+          <span class="layout-mini-title">TIMELINE</span>
+          <span class="layout-mini-num">05</span>
+        </div>
+        <div class="layout-mini-body">
+          <div class="mini-timeline">
+            <div class="mini-tl-item"><div class="mini-tl-dot"></div><div class="mini-tl-line"></div></div>
+            <div class="mini-tl-item"><div class="mini-tl-dot"></div><div class="mini-tl-line"></div></div>
+            <div class="mini-tl-item"><div class="mini-tl-dot"></div><div class="mini-tl-line"></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Layout 6 -->
+      <div class="layout-mini reveal reveal-d2">
+        <div class="layout-mini-header">
+          <span class="layout-mini-title">FULL COLOR PANEL</span>
+          <span class="layout-mini-num">06</span>
+        </div>
+        <div class="layout-mini-body">
+          <div class="mini-fullwidth">
+            <span class="mini-fullwidth-text">CTA SECTION</span>
+          </div>
+        </div>
+      </div>
+      <!-- Layout 7 -->
+      <div class="layout-mini reveal reveal-d3">
+        <div class="layout-mini-header">
+          <span class="layout-mini-title">STEP ARROWS</span>
+          <span class="layout-mini-num">07</span>
+        </div>
+        <div class="layout-mini-body">
+          <div class="mini-steps-row">
+            <div class="mini-step-box">1</div>
+            <span class="mini-step-arrow">→</span>
+            <div class="mini-step-box">2</div>
+            <span class="mini-step-arrow">→</span>
+            <div class="mini-step-box">3</div>
+          </div>
+        </div>
+      </div>
+      <!-- Layout 8 -->
+      <div class="layout-mini reveal reveal-d4">
+        <div class="layout-mini-header">
+          <span class="layout-mini-title">COMPARE</span>
+          <span class="layout-mini-num">08</span>
+        </div>
+        <div class="layout-mini-body">
+          <div class="mini-compare">
+            <div class="mini-compare-side"></div>
+            <div class="mini-compare-side"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Layout 9 -->
+      <div class="layout-mini reveal reveal-d1">
+        <div class="layout-mini-header">
+          <span class="layout-mini-title">TAB MENU</span>
+          <span class="layout-mini-num">09</span>
+        </div>
+        <div class="layout-mini-body">
+          <div class="mini-tabs">
+            <div class="mini-tab-bar">
+              <div class="mini-tab active"></div>
+              <div class="mini-tab"></div>
+              <div class="mini-tab"></div>
+            </div>
+            <div class="mini-tab-content"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Layout 10 -->
+      <div class="layout-mini reveal reveal-d2">
+        <div class="layout-mini-header">
+          <span class="layout-mini-title">HORIZONTAL SCROLL</span>
+          <span class="layout-mini-num">10</span>
+        </div>
+        <div class="layout-mini-body">
+          <div class="mini-scroll-row">
+            <div class="mini-scroll-card"></div>
+            <div class="mini-scroll-card"></div>
+            <div class="mini-scroll-card"></div>
+            <div class="mini-scroll-card"></div>
+            <div class="mini-scroll-card"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Layout 11 -->
+      <div class="layout-mini reveal reveal-d3">
+        <div class="layout-mini-header">
+          <span class="layout-mini-title">STICKY SIDEBAR</span>
+          <span class="layout-mini-num">11</span>
+        </div>
+        <div class="layout-mini-body">
+          <div class="mini-sticky">
+            <div class="mini-sticky-side"></div>
+            <div class="mini-sticky-content">
+              <div class="mini-sticky-block"></div>
+              <div class="mini-sticky-block"></div>
+              <div class="mini-sticky-block"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Layout 12 -->
+      <div class="layout-mini reveal reveal-d4">
+        <div class="layout-mini-header">
+          <span class="layout-mini-title">STATS PANEL</span>
+          <span class="layout-mini-num">12</span>
+        </div>
+        <div class="layout-mini-body">
+          <div class="mini-stats-row">
+            <div class="mini-stat-box">42</div>
+            <div class="mini-stat-box">8K</div>
+            <div class="mini-stat-box">99</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 5. COMPONENTS ===== -->
+<section class="section" id="components">
+  <div class="reveal">
+    <span class="section-label">✦ SECTION 05 ✦</span>
+    <h2 class="section-title-cn">组件库</h2>
+    <p class="section-desc">15+个像素/RPG风格可复用组件，直接复制使用。所有组件像素边框，禁止圆角。</p>
+  </div>
+
+  <div class="components-grid">
+
+    <!-- RPG Card -->
+    <div class="component-group reveal">
+      <div class="component-group-header">
+        <span class="component-group-title">RPG框架卡片</span>
+        <span class="pixel-tag purple">01</span>
+      </div>
+      <div class="component-group-body">
+        <div class="rpg-card" style="max-width:400px;">
+          <div class="rpg-card-header">
+            <span class="rpg-card-title">QUEST CARD</span>
+            <span class="rpg-card-badge">NEW</span>
+          </div>
+          <div class="rpg-card-body">
+            <p>核心卡片组件，所有面板/卡片的基础。hover时往左上偏移，阴影加大，模拟"抬起"像素效果。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="component-group reveal reveal-d1">
+      <div class="component-group-header">
+        <span class="component-group-title">像素按钮</span>
+        <span class="pixel-tag purple">02</span>
+      </div>
+      <div class="component-group-body">
+        <div class="flex-row">
+          <button class="pixel-btn primary">Primary 按钮</button>
+          <button class="pixel-btn secondary">Secondary 按钮</button>
+          <button class="pixel-btn ghost">Ghost 按钮</button>
+        </div>
+        <p style="font-family:var(--font-body);font-weight:300;font-size:0.78rem;color:var(--text-faint);margin-top:12px;">点击有按下效果：box-shadow归零 + translate位移</p>
+      </div>
+    </div>
+
+    <!-- Tags -->
+    <div class="component-group reveal reveal-d2">
+      <div class="component-group-header">
+        <span class="component-group-title">像素标签/徽章</span>
+        <span class="pixel-tag purple">03</span>
+      </div>
+      <div class="component-group-body">
+        <div class="flex-row">
+          <span class="pixel-tag purple">PURPLE TAG</span>
+          <span class="pixel-tag green">SUCCESS</span>
+          <span class="pixel-tag rose">IMPORTANT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quote -->
+    <div class="component-group reveal reveal-d3">
+      <div class="component-group-header">
+        <span class="component-group-title">RPG对话引用块</span>
+        <span class="pixel-tag purple">04</span>
+      </div>
+      <div class="component-group-body">
+        <div class="rpg-quote">
+          <div class="rpg-quote-portrait">🌸</div>
+          <div class="rpg-quote-box">
+            <p class="rpg-quote-text">像素风格不意味着低龄，保持成熟品味。温暖但有态度，可爱但不做作。</p>
+            <span class="rpg-quote-source">— Sisi Design DNA</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="component-group reveal reveal-d4">
+      <div class="component-group-header">
+        <span class="component-group-title">像素进度条</span>
+        <span class="pixel-tag purple">05</span>
+      </div>
+      <div class="component-group-body">
+        <div class="pixel-progress-group">
+          <div class="pixel-progress-label"><span>Design System</span><span>90%</span></div>
+          <div class="pixel-progress-bar"><div class="pixel-progress-fill" style="width:90%"></div></div>
+        </div>
+        <div class="pixel-progress-group">
+          <div class="pixel-progress-label"><span>Pixel Art</span><span>75%</span></div>
+          <div class="pixel-progress-bar"><div class="pixel-progress-fill rose" style="width:75%"></div></div>
+        </div>
+        <div class="pixel-progress-group">
+          <div class="pixel-progress-label"><span>Components</span><span>60%</span></div>
+          <div class="pixel-progress-bar"><div class="pixel-progress-fill green" style="width:60%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="component-group reveal">
+      <div class="component-group-header">
+        <span class="component-group-title">数据统计卡</span>
+        <span class="pixel-tag purple">06</span>
+      </div>
+      <div class="component-group-body">
+        <div class="stats-demo-row">
+          <div class="pixel-stat">
+            <span class="pixel-stat-num">42</span>
+            <span class="pixel-stat-label">PROJECTS</span>
+          </div>
+          <div class="pixel-stat" style="box-shadow:4px 4px 0 0 var(--secondary)">
+            <span class="pixel-stat-num">8K+</span>
+            <span class="pixel-stat-label">FOLLOWERS</span>
+          </div>
+          <div class="pixel-stat" style="box-shadow:4px 4px 0 0 var(--accent1)">
+            <span class="pixel-stat-num">99%</span>
+            <span class="pixel-stat-label">QUALITY</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="component-group reveal reveal-d1">
+      <div class="component-group-header">
+        <span class="component-group-title">时间线条目</span>
+        <span class="pixel-tag purple">07</span>
+      </div>
+      <div class="component-group-body">
+        <div class="pixel-tl-item">
+          <div class="pixel-tl-dot"></div>
+          <div class="pixel-tl-content">
+            <span class="pixel-tl-date">2024.06</span>
+            <h4>设计系统启动</h4>
+            <p>确定莓果花园主题和像素风格方向</p>
+          </div>
+        </div>
+        <div class="pixel-tl-item">
+          <div class="pixel-tl-dot"></div>
+          <div class="pixel-tl-content">
+            <span class="pixel-tl-date">2024.08</span>
+            <h4>组件库完成</h4>
+            <p>15+个可复用组件开发完毕，覆盖所有常用场景</p>
+          </div>
+        </div>
+        <div class="pixel-tl-item">
+          <div class="pixel-tl-dot"></div>
+          <div class="pixel-tl-content">
+            <span class="pixel-tl-date">2024.10</span>
+            <h4>字体系统升级</h4>
+            <p>引入5层字体策略，落霞文楷做中文标题</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="component-group reveal reveal-d2">
+      <div class="component-group-header">
+        <span class="component-group-title">像素表格</span>
+        <span class="pixel-tag purple">08</span>
+      </div>
+      <div class="component-group-body">
+        <div class="pixel-table-wrapper">
+          <table class="pixel-table">
+            <thead><tr><th>LAYER</th><th>FONT</th><th>USAGE</th><th>SIZE</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Silkscreen</td><td>像素标签</td><td>0.6-0.7rem</td></tr>
+              <tr><td>2</td><td>Space Mono</td><td>英文标题</td><td>clamp()</td></tr>
+              <tr><td>3</td><td>LXGW WenKai</td><td>中文标题</td><td>clamp()</td></tr>
+              <tr><td>4</td><td>Noto Sans SC</td><td>正文</td><td>16px</td></tr>
+              <tr><td>5</td><td>Space Mono</td><td>数字/数据</td><td>variable</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lists -->
+    <div class="component-group reveal reveal-d3">
+      <div class="component-group-header">
+        <span class="component-group-title">像素列表</span>
+        <span class="pixel-tag purple">09</span>
+      </div>
+      <div class="component-group-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+          <div>
+            <p style="font-family:var(--font-pixel);font-size:0.6rem;color:var(--text-faint);margin-bottom:8px;">HEARTS LIST</p>
+            <ul class="pixel-list hearts">
+              <li>像素心子弹点列表</li>
+              <li>温暖的莓果色系装饰</li>
+              <li>告别默认无样式列表</li>
+            </ul>
+          </div>
+          <div>
+            <p style="font-family:var(--font-pixel);font-size:0.6rem;color:var(--text-faint);margin-bottom:8px;">STARS LIST</p>
+            <ul class="pixel-list stars">
+              <li>像素星子弹点列表</li>
+              <li>主色调像素十字星</li>
+              <li>适合功能/特性列举</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="component-group reveal reveal-d4">
+      <div class="component-group-header">
+        <span class="component-group-title">警告/提示框</span>
+        <span class="pixel-tag purple">10</span>
+      </div>
+      <div class="component-group-body">
+        <div class="pixel-alert warning mb-sm">
+          <span class="pixel-alert-icon">!</span>
+          <div class="pixel-alert-content">
+            <strong>WARNING</strong>
+            <p>绝不使用border-radius超过2px的圆角，所有边框保持像素方正感。</p>
+          </div>
+        </div>
+        <div class="pixel-alert info">
+          <span class="pixel-alert-icon">i</span>
+          <div class="pixel-alert-content">
+            <strong>INFO</strong>
+            <p>所有组件从components.md选用，禁止浏览器默认渲染。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="component-group reveal">
+      <div class="component-group-header">
+        <span class="component-group-title">像素导航栏</span>
+        <span class="pixel-tag purple">11</span>
+      </div>
+      <div class="component-group-body">
+        <div class="nav-demo">
+          <span class="nav-demo-brand">✦ SISI</span>
+          <div class="nav-demo-links">
+            <span class="nav-demo-link active">Home</span>
+            <span class="nav-demo-link">About</span>
+            <span class="nav-demo-link">Work</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tooltip -->
+    <div class="component-group reveal reveal-d1">
+      <div class="component-group-header">
+        <span class="component-group-title">像素Tooltip</span>
+        <span class="pixel-tag purple">14</span>
+      </div>
+      <div class="component-group-body" style="padding-top:50px;">
+        <div class="pixel-tooltip-wrapper">
+          <span class="pixel-tooltip-trigger">hover me !</span>
+          <div class="pixel-tooltip">
+            <p>像素风 tooltip 提示信息</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accordion -->
+    <div class="component-group reveal reveal-d2">
+      <div class="component-group-header">
+        <span class="component-group-title">折叠面板</span>
+        <span class="pixel-tag purple">15</span>
+      </div>
+      <div class="component-group-body">
+        <details class="pixel-accordion" open>
+          <summary class="pixel-accordion-header">
+            <span class="pixel-accordion-icon">▶</span>
+            设计系统是什么？
+          </summary>
+          <div class="pixel-accordion-body">
+            <p>一套完整的视觉语言和组件规范，确保品牌在所有触点保持一致的像素温暖气质。</p>
+          </div>
+        </details>
+        <details class="pixel-accordion">
+          <summary class="pixel-accordion-header">
+            <span class="pixel-accordion-icon">▶</span>
+            为什么选择像素风？
+          </summary>
+          <div class="pixel-accordion-body">
+            <p>像素风有复古游戏的仪式感和手账的精心布置感，温暖而不冷硬，个性而不幼稚。</p>
+          </div>
+        </details>
+        <details class="pixel-accordion">
+          <summary class="pixel-accordion-header">
+            <span class="pixel-accordion-icon">▶</span>
+            可以用在哪些场景？
+          </summary>
+          <div class="pixel-accordion-body">
+            <p>教程页、Landing Page、App工具型页面、图文卡片——四种场景各有对应的设计指南。</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Pullquote -->
+    <div class="component-group reveal reveal-d3">
+      <div class="component-group-header">
+        <span class="component-group-title">Pull Quote 大字引用</span>
+        <span class="pixel-tag purple">17</span>
+      </div>
+      <div class="component-group-body">
+        <div class="pixel-pullquote">
+          <span class="pullquote-deco">❝</span>
+          <p>像素温暖，RPG菜单框，莓果花园的气质</p>
+          <span class="pullquote-source">— Brand DNA</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dividers -->
+    <div class="component-group reveal reveal-d4">
+      <div class="component-group-header">
+        <span class="component-group-title">Section分隔线</span>
+        <span class="pixel-tag purple">13</span>
+      </div>
+      <div class="component-group-body">
+        <p style="font-family:var(--font-pixel);font-size:0.6rem;color:var(--text-faint);margin-bottom:8px;">BERRY DIVIDER</p>
+        <div class="pixel-divider"><div class="pixel-berry"></div></div>
+        <p style="font-family:var(--font-pixel);font-size:0.6rem;color:var(--text-faint);margin-bottom:8px;margin-top:16px;">FLOWER DIVIDER</p>
+        <div class="pixel-divider"><div class="pixel-flower"></div></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="component-group reveal">
+      <div class="component-group-header">
+        <span class="component-group-title">像素Footer</span>
+        <span class="pixel-tag purple">12</span>
+      </div>
+      <div class="component-group-body">
+        <div style="padding:20px;background:var(--bg);border:2px solid var(--accent2);">
+          <div style="width:100%;height:4px;background:repeating-linear-gradient(to right,var(--primary) 0px,var(--primary) 8px,transparent 8px,transparent 16px);margin-bottom:16px;"></div>
+          <div style="text-align:center;">
+            <span style="font-family:var(--font-pixel);font-size:0.8rem;color:var(--primary);display:block;margin-bottom:6px;">✦ SISI ✦</span>
+            <span style="font-family:var(--font-body);font-weight:300;font-size:0.75rem;color:var(--text-faint);">Made with pixels & berries</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 6. SCENES ===== -->
+<section class="section" id="scenes" style="background: var(--bg-alt); max-width: none; padding-left: 0; padding-right: 0;">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 48px);">
+    <div class="reveal">
+      <span class="section-label">✦ SECTION 06 ✦</span>
+      <h2 class="section-title-cn">场景类型</h2>
+      <p class="section-desc">4种场景各有对应的设计指南和模板。根据内容类型选择合适的场景。</p>
+    </div>
+
+    <div class="scenes-grid">
+      <!-- Tutorial -->
+      <div class="scene-card reveal reveal-d1">
+        <div class="scene-card-preview" style="background: var(--bg);">
+          <div class="scene-mini-tutorial">
+            <div class="smt-header"></div>
+            <div class="smt-steps">
+              <div class="smt-step"></div>
+              <div class="smt-step"></div>
+              <div class="smt-step"></div>
+            </div>
+          </div>
+        </div>
+        <div class="scene-card-info">
+          <h3 class="scene-card-title">教程型 / 介绍型</h3>
+          <p class="scene-card-desc">步骤引导、知识科普、技术教程。时间线+步骤箭头布局为主，渐进式展开内容。</p>
+          <div class="flex-row mt-sm">
+            <span class="pixel-tag green">TUTORIAL</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Landing -->
+      <div class="scene-card reveal reveal-d2">
+        <div class="scene-card-preview" style="background: var(--bg);">
+          <div class="scene-mini-landing">
+            <div class="sml-hero"></div>
+            <div class="sml-cta"></div>
+          </div>
+        </div>
+        <div class="scene-card-info">
+          <h3 class="scene-card-title">分享会 / Landing</h3>
+          <p class="scene-card-desc">活动页、产品介绍、个人品牌首页。大字Hero+全宽色彩面板，强调节奏和CTA。</p>
+          <div class="flex-row mt-sm">
+            <span class="pixel-tag rose">LANDING</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- App -->
+      <div class="scene-card reveal reveal-d3">
+        <div class="scene-card-preview" style="background: var(--dark);">
+          <div class="scene-mini-app">
+            <div class="sma-sidebar"></div>
+            <div class="sma-main">
+              <div class="sma-card"></div>
+              <div class="sma-card"></div>
+              <div class="sma-card"></div>
+              <div class="sma-card"></div>
+            </div>
+          </div>
+        </div>
+        <div class="scene-card-info">
+          <h3 class="scene-card-title">App型 / 功能型</h3>
+          <p class="scene-card-desc">看板、工具页、数据面板。深色底+卡片网格，侧栏导航，功能密度高。</p>
+          <div class="flex-row mt-sm">
+            <span class="pixel-tag purple">APP</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cards -->
+      <div class="scene-card reveal reveal-d4">
+        <div class="scene-card-preview" style="background: var(--bg);">
+          <div class="scene-mini-cards">
+            <div class="smc-card"></div>
+            <div class="smc-card"></div>
+            <div class="smc-card"></div>
+            <div class="smc-card"></div>
+          </div>
+        </div>
+        <div class="scene-card-info">
+          <h3 class="scene-card-title">图文卡片</h3>
+          <p class="scene-card-desc">小红书图文、文章转卡片、社交分享。单页独立设计，每页排版手法不同。</p>
+          <div class="flex-row mt-sm">
+            <span class="pixel-tag green">CARDS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 7. TEMPLATES ===== -->
+<section class="section" id="templates">
+  <div class="reveal">
+    <span class="section-label">✦ SECTION 07 ✦</span>
+    <h2 class="section-title-cn">模板预览</h2>
+    <p class="section-desc">7个预置模板，从模板开始改，不从零写。每个模板内置品牌变量和像素风基础结构。</p>
+  </div>
+
+  <div class="templates-grid">
+    <div class="template-card reveal reveal-d1">
+      <span class="template-icon">📖</span>
+      <h4 class="template-name">教程模板</h4>
+      <span class="template-file">template-tutorial.html</span>
+      <p class="template-desc">步骤引导、知识科普页面。时间线布局+分步箭头。</p>
+    </div>
+    <div class="template-card reveal reveal-d2">
+      <span class="template-icon">🚀</span>
+      <h4 class="template-name">Landing模板</h4>
+      <span class="template-file">template-landing.html</span>
+      <p class="template-desc">分享会、活动页、产品介绍。Hero+CTA+全宽面板。</p>
+    </div>
+    <div class="template-card reveal reveal-d3">
+      <span class="template-icon">⚙️</span>
+      <h4 class="template-name">App模板</h4>
+      <span class="template-file">template-app.html</span>
+      <p class="template-desc">工具型页面、看板、数据面板。侧栏+卡片网格。</p>
+    </div>
+    <div class="template-card reveal reveal-d4">
+      <span class="template-icon">🃏</span>
+      <h4 class="template-name">图文卡片模板</h4>
+      <span class="template-file">template-cards.html</span>
+      <p class="template-desc">小红书图文、文章转卡片。每页独立排版。</p>
+    </div>
+    <div class="template-card reveal reveal-d5">
+      <span class="template-icon">💬</span>
+      <h4 class="template-name">聊天气泡Mockup</h4>
+      <span class="template-file">template-chat-mockup.html</span>
+      <p class="template-desc">对话界面模拟、聊天记录展示。像素气泡风格。</p>
+    </div>
+    <div class="template-card reveal reveal-d6">
+      <span class="template-icon">💡</span>
+      <h4 class="template-name">创始人语录</h4>
+      <span class="template-file">template-founder-says.html</span>
+      <p class="template-desc">金句页、语录集。大字引用+像素装饰。</p>
+    </div>
+    <div class="template-card reveal reveal-d1">
+      <span class="template-icon">📓</span>
+      <h4 class="template-name">心记/日记</h4>
+      <span class="template-file">template-xinji.html</span>
+      <p class="template-desc">日记、反思、随笔页面。手账感像素布局。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 8. CHECKLIST ===== -->
+<section class="section" id="checklist" style="background: var(--bg-alt); max-width: none; padding-left: 0; padding-right: 0;">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 48px);">
+    <div class="reveal">
+      <span class="section-label">✦ SECTION 08 ✦</span>
+      <h2 class="section-title-cn">质检清单</h2>
+      <p class="section-desc">做完设计后逐条对照。P0必须全过，否则打回修改。P1应过，P2加分。</p>
+    </div>
+
+    <!-- P0 -->
+    <div class="checklist-group p0 reveal reveal-d1">
+      <div class="checklist-group-header">
+        <span class="checklist-priority">P0</span>
+        <span class="checklist-group-label">必须全过</span>
+      </div>
+      <div class="checklist-items">
+        <div class="checklist-item"><div class="checklist-box"></div>品牌六色使用正确（莓果紫为主色，玫瑰红次强调，绿/薰衣草点缀）</div>
+        <div class="checklist-item"><div class="checklist-box"></div>没有使用禁忌清单里的任何元素（冷蓝/glassmorphism/圆角>4px/neon/bounce）</div>
+        <div class="checklist-item"><div class="checklist-box"></div>背景使用暖粉底（#FFF5F5 或 #FFF0F5），非纯黑纯白</div>
+        <div class="checklist-item"><div class="checklist-box"></div>字体正确加载（5层字体各司其职）</div>
+        <div class="checklist-item"><div class="checklist-box"></div>像素边框一致（box-shadow偏移 + 实线border，无圆角混用）</div>
+        <div class="checklist-item"><div class="checklist-box"></div>有响应式（至少900px断点，移动端不破版）</div>
+        <div class="checklist-item"><div class="checklist-box"></div>截图发社交媒体不会被说"又是AI做的通用模板"</div>
+        <div class="checklist-item"><div class="checklist-box"></div>每个section布局形式不同（从layouts.md选取不同模式）</div>
+        <div class="checklist-item"><div class="checklist-box"></div>clamp()做fluid sizing（标题/间距都用clamp）</div>
+        <div class="checklist-item"><div class="checklist-box"></div>没有使用任何HTML默认样式（所有组件从components.md选用）</div>
+      </div>
+    </div>
+
+    <!-- P1 -->
+    <div class="checklist-group p1 reveal reveal-d2">
+      <div class="checklist-group-header">
+        <span class="checklist-priority">P1</span>
+        <span class="checklist-group-label">应过</span>
+      </div>
+      <div class="checklist-items">
+        <div class="checklist-item"><div class="checklist-box"></div>至少一个section有视觉惊喜（全宽色彩面板/RPG对话框/像素装饰突破）</div>
+        <div class="checklist-item"><div class="checklist-box"></div>字号对比足够极端（大>2.4rem，小<0.75rem）</div>
+        <div class="checklist-item"><div class="checklist-box"></div>有Scroll Reveal动效 + stagger延迟</div>
+        <div class="checklist-item"><div class="checklist-box"></div>使用了像素装饰（莓果/花朵/藤蔓分隔线）</div>
+        <div class="checklist-item"><div class="checklist-box"></div>按钮有像素按下效果（box-shadow归零 + translate位移）</div>
+        <div class="checklist-item"><div class="checklist-box"></div>::selection用薰衣草紫高亮</div>
+        <div class="checklist-item"><div class="checklist-box"></div>至少3种不同颜色的box-shadow出现</div>
+        <div class="checklist-item"><div class="checklist-box"></div>布局模式至少用了3种不同的</div>
+      </div>
+    </div>
+
+    <!-- P2 -->
+    <div class="checklist-group p2 reveal reveal-d3">
+      <div class="checklist-group-header">
+        <span class="checklist-priority">P2</span>
+        <span class="checklist-group-label">加分</span>
+      </div>
+      <div class="checklist-items">
+        <div class="checklist-item"><div class="checklist-box"></div>hover时卡片"浮起"效果（translate + shadow增大）</div>
+        <div class="checklist-item"><div class="checklist-box"></div>自定义像素风滚动条</div>
+        <div class="checklist-item"><div class="checklist-box"></div>像素角落装饰（pixel-corner）在重要面板出现</div>
+        <div class="checklist-item"><div class="checklist-box"></div>像素进度条或数据可视化元素</div>
+        <div class="checklist-item"><div class="checklist-box"></div>RPG对话框用于引用/语录场景</div>
+        <div class="checklist-item"><div class="checklist-box"></div>像素art装饰（berry/flower/vine）在section间使用</div>
+        <div class="checklist-item"><div class="checklist-box"></div>prefers-reduced-motion尊重</div>
+        <div class="checklist-item"><div class="checklist-box"></div>Tab/手风琴组件增加交互性</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="pixel-footer">
+  <div class="pixel-footer-divider"></div>
+  <span class="pixel-footer-brand">✦ SISI DESIGN SYSTEM ✦</span>
+  <span class="pixel-footer-text">像素温暖 · RPG菜单框 · 莓果花园气质 — Playground v2</span>
+</footer>
+
+<!-- ===== JS: SCROLL REVEAL ===== -->
+<script>
+(function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+})();
+
+// Nav active state on scroll
+(function() {
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.pixel-nav-link');
+  
+  function updateNav() {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop - 100;
+      if (window.pageYOffset >= sectionTop) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  }
+  
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+})();
+</script>
+</body>
+</html>
