@@ -6,569 +6,494 @@
   <title>拿AI当理财教练</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Caveat:wght@400;700&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
+    /* === CSS变量 === */
     :root {
-      --green: #45A020;
-      --yellow: #FFD000;
-      --magenta: #E5007E;
-      --bg: #F8FFF5;
-      --bg-alt: #E8F5E0;
-      --ink: #2A2A2A;
-      --ink-light: #5A5A5A;
-      --ink-faint: #8A8A8A;
+      --orange: #F1752D;
+      --orange-deep: #D45A1A;
+      --orange-light: #FFE0CC;
+      --dark: #1A1A2E;
+      --warm-white: #FFF8F0;
+      --cream: #FFF8F0;
+      --cream-dark: #faf6eb;
+      --ink: #1A1A2E;
+      --ink-light: #4A4A5A;
+      --ink-faint: #8A8A9A;
+      --dark-panel: #1A1A2E;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html { scroll-behavior: smooth; }
-
     body {
       font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
       font-size: 16px;
-      line-height: 1.8;
+      line-height: 1.7;
       color: var(--ink);
-      background: var(--bg);
+      background: var(--cream);
     }
 
     ::selection {
-      background: var(--yellow);
+      background: var(--orange-light);
       color: var(--ink);
-    }
-
-    a {
-      color: var(--green);
-      text-decoration: none;
-      transition: all .2s;
-    }
-    a:hover {
-      color: var(--magenta);
-      text-decoration: underline;
-      text-decoration-color: var(--magenta);
-      text-underline-offset: 3px;
     }
 
     .container {
-      max-width: 1100px;
+      max-width: 1300px;
       margin: 0 auto;
-      padding: 0 clamp(1.5rem, 4vw, 3rem);
+      padding: 0 2rem;
     }
 
-    /* ========== HERO ========== */
+    img { max-width: 100%; height: auto; display: block; }
+
+    /* === HERO 全屏居中 === */
     .hero {
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: clamp(4rem, 10vh, 8rem) 2rem;
+      padding: 60px 24px;
+      text-align: center;
       position: relative;
       overflow: hidden;
     }
-
     .hero::before {
       content: '';
       position: absolute;
-      top: -20%;
-      right: -10%;
-      width: 500px;
-      height: 500px;
+      width: 600px;
+      height: 600px;
       border-radius: 50%;
-      background: var(--yellow);
-      opacity: 0.08;
+      background: radial-gradient(circle, rgba(241,117,45,0.08) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       pointer-events: none;
     }
-
-    .hero::after {
-      content: '';
-      position: absolute;
-      bottom: -15%;
-      left: -8%;
-      width: 400px;
-      height: 400px;
-      border-radius: 50%;
-      background: var(--green);
-      opacity: 0.06;
-      pointer-events: none;
-    }
-
-    .hero-inner {
-      text-align: center;
-      max-width: 800px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-label {
-      font-family: 'Fraunces', serif;
-      font-style: italic;
-      font-size: 0.85rem;
-      color: var(--green);
-      letter-spacing: 0.05em;
+    .hero .label-caps {
+      font-family: 'Fira Code', 'Caveat', cursive;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+      color: var(--orange);
       margin-bottom: 1.5rem;
-      display: block;
+      position: relative;
     }
-
     .hero h1 {
       font-family: 'Noto Serif SC', serif;
       font-weight: 900;
-      font-size: clamp(2rem, 5.5vw, 3.6rem);
-      line-height: 1.3;
-      color: var(--ink);
+      font-size: clamp(2rem, 5.5vw, 3.8rem);
+      line-height: 1.25;
       margin-bottom: 1.5rem;
+      max-width: 800px;
+      position: relative;
     }
-
-    .hero h1 em {
-      font-style: normal;
-      color: var(--green);
-    }
-
-    .hero-subtitle {
-      font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    .hero p {
+      font-size: 1.1rem;
       color: var(--ink-light);
+      max-width: 500px;
+      position: relative;
+    }
+    .hero .hero-tags {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
+      gap: 12px;
+      margin-top: 2rem;
       flex-wrap: wrap;
+      justify-content: center;
+    }
+    .hero .hero-tags span {
+      background: var(--orange-light);
+      color: var(--orange-deep);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 20px;
     }
 
-    .hero-subtitle .dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--yellow);
-      display: inline-block;
-    }
-
-    /* ========== SECTIONS ========== */
-    .section {
-      padding: clamp(80px, 12vh, 140px) 0;
-    }
+    /* === Section通用 === */
+    .section { padding: clamp(80px, 12vh, 160px) 0; }
+    .section--alt { background: var(--cream-dark); }
 
     .section-header {
-      margin-bottom: clamp(32px, 5vw, 56px);
+      margin-bottom: clamp(40px, 6vw, 80px);
     }
-
-    .section-num {
+    .section-number {
       font-family: 'Fraunces', serif;
       font-style: italic;
-      font-size: clamp(3rem, 7vw, 5.5rem);
-      font-weight: 900;
-      color: var(--green);
-      opacity: 0.12;
-      line-height: 0.85;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      color: var(--orange);
+      opacity: 0.3;
       display: block;
-      margin-bottom: -0.3em;
+      margin-bottom: 0.25rem;
     }
-
     .section-title {
       font-family: 'Noto Serif SC', serif;
       font-weight: 900;
-      font-size: clamp(1.5rem, 3.5vw, 2.2rem);
-      color: var(--ink);
-      position: relative;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
     }
 
-    /* ========== SECTION 1: 记账习惯 (Sticky Side + Content) ========== */
-    .s1-layout {
+    /* === Section 1: Sticky侧栏 + 内容滚动 === */
+    .layout-sticky {
       display: grid;
       grid-template-columns: 0.35fr 1fr;
-      gap: clamp(40px, 6vw, 80px);
+      gap: clamp(40px, 6vw, 100px);
       align-items: start;
     }
-
-    .s1-sticky {
+    .sticky-side {
       position: sticky;
-      top: 100px;
+      top: 80px;
     }
-
-    .s1-content {
+    .sticky-side .big-deco {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: clamp(4rem, 10vw, 7rem);
+      font-weight: 900;
+      color: var(--orange);
+      opacity: 0.1;
+      line-height: 0.85;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    .content-scroll {
       display: flex;
       flex-direction: column;
-      gap: clamp(24px, 3vw, 40px);
+      gap: clamp(24px, 3vw, 36px);
     }
-
-    .s1-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-    }
-
-    .s1-icon {
-      width: 44px;
-      height: 44px;
+    .content-scroll .item {
+      padding: 24px 28px;
+      background: #fff;
       border-radius: 12px;
-      background: var(--bg-alt);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      flex-shrink: 0;
-    }
-
-    .s1-text {
-      font-size: 1rem;
-      color: var(--ink);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      font-size: 0.95rem;
       line-height: 1.8;
-    }
-
-    .s1-text strong {
-      color: var(--green);
-      font-weight: 700;
-    }
-
-    .quote-highlight {
-      margin-top: clamp(24px, 4vw, 48px);
-      padding: 28px 32px;
-      background: var(--yellow);
-      border-radius: 14px;
+      color: var(--ink-light);
       position: relative;
+      padding-left: 44px;
+    }
+    .content-scroll .item::before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 30px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--orange);
     }
 
+    /* Pull Quote金句 */
+    .quote-highlight {
+      padding: 32px 36px;
+      background: var(--cream);
+      border-radius: 16px;
+      border: 2px solid var(--orange);
+      position: relative;
+      margin-top: 12px;
+    }
     .quote-highlight::before {
       content: '"';
       font-family: 'Fraunces', serif;
       font-size: 4rem;
-      color: var(--ink);
-      opacity: 0.15;
+      color: var(--orange);
       position: absolute;
-      top: 0px;
-      left: 16px;
+      top: -8px; left: 16px;
+      opacity: 0.5;
       line-height: 1;
     }
-
     .quote-highlight p {
       font-family: 'Noto Serif SC', serif;
-      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-size: clamp(1rem, 2vw, 1.25rem);
       font-weight: 700;
-      color: var(--ink);
-      line-height: 1.7;
+      line-height: 1.8;
     }
 
-    /* ========== SECTION 2: 焦虑来了 (Split) ========== */
-    .s2-split {
+    /* === Section 2: 分栏对称 === */
+    .split-section {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0;
-      border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+      min-height: 60vh;
     }
-
-    .s2-left {
-      background: var(--ink);
-      color: #f0f0f0;
-      padding: clamp(40px, 5vw, 64px);
+    .split-left {
       display: flex;
       flex-direction: column;
       justify-content: center;
+      padding: clamp(40px, 6vw, 80px);
+      background: var(--dark-panel);
+      color: #e2e8f0;
     }
-
-    .s2-left h2 {
-      font-family: 'Noto Serif SC', serif;
-      font-weight: 900;
-      font-size: clamp(1.6rem, 3vw, 2.4rem);
-      margin-bottom: 1rem;
-      line-height: 1.3;
-    }
-
-    .s2-left h2 em {
-      font-style: normal;
-      color: var(--yellow);
-    }
-
-    .s2-left .s2-desc {
-      font-size: 0.95rem;
-      color: rgba(255,255,255,0.7);
-      line-height: 1.9;
-    }
-
-    .s2-right {
-      background: #fff;
-      padding: clamp(40px, 5vw, 64px);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 20px;
-    }
-
-    .s2-pain {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .s2-pain::before {
-      content: '×';
-      font-weight: 900;
-      color: var(--magenta);
-      font-size: 1.1rem;
-      flex-shrink: 0;
-      line-height: 1.8;
-    }
-
-    .s2-pain p {
-      font-size: 0.95rem;
-      color: var(--ink-light);
-      line-height: 1.8;
-    }
-
-    /* ========== CHAT BUBBLES ========== */
-    .chat-area {
-      background: #f2f7f0;
-      border-radius: 20px;
-      padding: clamp(24px, 3vw, 40px);
-      margin-top: clamp(24px, 3vw, 40px);
-      border: 1px solid rgba(69, 160, 32, 0.1);
-    }
-
-    .chat-container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .chat-msg {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .chat-msg.user {
-      align-items: flex-end;
-    }
-
-    .chat-msg.ai {
-      align-items: flex-start;
-    }
-
-    .chat-label {
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--ink-faint);
-      padding: 0 8px;
-    }
-
-    .chat-bubble {
-      padding: 14px 20px;
-      border-radius: 14px;
-      max-width: 88%;
-      font-size: 0.92rem;
-      line-height: 1.7;
-    }
-
-    .chat-msg.user .chat-bubble {
-      background: var(--green);
-      color: #fff;
-      border-bottom-right-radius: 4px;
-    }
-
-    .chat-msg.ai .chat-bubble {
-      background: var(--yellow);
-      color: var(--ink);
-      border-bottom-left-radius: 4px;
-    }
-
-    /* ========== SECTION 3: AI三件事 (Steps) ========== */
-    .s3-steps {
-      display: flex;
-      flex-direction: column;
-      gap: clamp(48px, 6vw, 80px);
-    }
-
-    .s3-step {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: clamp(24px, 3vw, 40px);
-      align-items: start;
-    }
-
-    .s3-step-num {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: var(--green);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Fraunces', serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .s3-step:nth-child(2) .s3-step-num {
-      background: var(--yellow);
-      color: var(--ink);
-    }
-
-    .s3-step:nth-child(3) .s3-step-num {
-      background: var(--magenta);
-      color: #fff;
-    }
-
-    .s3-step-body h3 {
-      font-family: 'Noto Serif SC', serif;
-      font-weight: 700;
-      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-      margin-bottom: 16px;
-      color: var(--ink);
-    }
-
-    /* ========== SECTION 4: 回到本质 (Full-width accent) ========== */
-    .s4-panel {
-      background: var(--green);
-      color: #fff;
-      border-radius: 24px;
-      padding: clamp(48px, 7vw, 80px) clamp(32px, 5vw, 64px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .s4-panel::after {
-      content: '?';
-      font-family: 'Fraunces', serif;
-      font-size: clamp(12rem, 25vw, 20rem);
-      font-weight: 900;
-      position: absolute;
-      right: -2%;
-      bottom: -15%;
-      opacity: 0.08;
-      line-height: 1;
-      pointer-events: none;
-    }
-
-    .s4-intro {
-      font-size: clamp(1rem, 2vw, 1.2rem);
-      opacity: 0.9;
-      margin-bottom: clamp(32px, 5vw, 56px);
-      max-width: 600px;
-      line-height: 1.9;
-    }
-
-    .s4-questions {
+    .split-left .section-number { color: var(--orange); opacity: 0.5; }
+    .split-left .section-title { color: #fff; margin-bottom: 1.5rem; }
+    .split-left .pain-list {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: clamp(20px, 3vw, 32px);
-      margin-bottom: clamp(40px, 6vw, 64px);
-    }
-
-    .s4-questions li {
-      font-family: 'Noto Serif SC', serif;
-      font-weight: 900;
-      font-size: clamp(1.3rem, 3vw, 2rem);
-      line-height: 1.4;
-      display: flex;
       gap: 16px;
-      align-items: baseline;
     }
-
-    .s4-questions .q-num {
-      font-family: 'Fraunces', serif;
-      font-size: clamp(2rem, 4vw, 3rem);
-      opacity: 0.3;
-      font-weight: 900;
-      flex-shrink: 0;
+    .split-left .pain-list li {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.75);
+      padding-left: 24px;
+      position: relative;
+      line-height: 1.7;
     }
-
-    .s4-chat-area {
-      background: rgba(255,255,255,0.12);
-      border-radius: 16px;
-      padding: clamp(20px, 3vw, 32px);
-      max-width: 600px;
+    .split-left .pain-list li::before {
+      content: '×';
+      position: absolute;
+      left: 0;
+      color: var(--orange);
+      font-weight: 700;
     }
-
-    .s4-chat-area .chat-msg.ai .chat-bubble {
-      background: var(--yellow);
-      color: var(--ink);
-    }
-
-    .s4-chat-area .chat-label {
-      color: rgba(255,255,255,0.6);
-    }
-
-    /* ========== SECTION 5: 做成Skill (CTA) ========== */
-    .s5-layout {
-      text-align: center;
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
-    .s5-layout .section-header {
-      margin-bottom: clamp(24px, 4vw, 40px);
-    }
-
-    .s5-points {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      text-align: left;
-      margin-bottom: clamp(40px, 6vw, 56px);
-    }
-
-    .s5-point {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      padding: 16px 20px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-    }
-
-    .s5-point-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: var(--bg-alt);
+    .split-right {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
-      flex-shrink: 0;
+      padding: clamp(40px, 6vw, 80px);
+      background: var(--cream-dark);
     }
 
-    .s5-point p {
-      font-size: 0.95rem;
-      color: var(--ink);
+    /* === 对话气泡组 === */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 560px;
+      width: 100%;
+    }
+    .chat-bubble {
+      padding: 16px 22px;
+      border-radius: 20px;
+      max-width: 88%;
+      font-size: 0.9rem;
       line-height: 1.7;
     }
+    .chat-bubble.user {
+      background: var(--warm-white);
+      color: var(--ink);
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .chat-bubble.ai {
+      background: var(--orange);
+      color: #fff;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .chat-bubble .avatar-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      opacity: 0.7;
+      margin-bottom: 4px;
+      display: block;
+    }
 
-    .s5-cta {
-      display: inline-flex;
+    /* === Section 3: 纵向Step流程线 === */
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(48px, 6vw, 72px);
+      padding-left: 70px;
+      position: relative;
+    }
+    .steps-container::before {
+      content: '';
+      position: absolute;
+      left: 26px;
+      top: 50px; bottom: 50px;
+      width: 2px;
+      border-left: 2px dashed var(--orange-light);
+    }
+    .step-item {
+      position: relative;
+    }
+    .step-num {
+      position: absolute;
+      left: -70px;
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: var(--orange);
+      color: #fff;
+      display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 16px 40px;
-      background: var(--green);
-      color: #fff;
-      border-radius: 12px;
-      text-decoration: none;
+      justify-content: center;
+      font-family: 'Fraunces', serif;
       font-weight: 700;
-      font-size: 1rem;
-      transition: transform .2s, box-shadow .2s;
+      font-size: 1.2rem;
+    }
+    .step-item h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .step-item .step-screenshot {
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      margin: 1rem 0;
+      max-width: 600px;
+      width: 100%;
+    }
+    .step-screenshots-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 1rem 0;
+      max-width: 700px;
+    }
+    .step-screenshots-row .step-screenshot {
+      max-width: 100%;
+      margin: 0;
+    }
+    @media (max-width: 600px) {
+      .step-screenshots-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    .step-item .chat-container {
+      margin-top: 1rem;
     }
 
-    .s5-cta:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(69, 160, 32, 0.3);
-      color: #fff;
-      text-decoration: none;
+    /* === Section 4: 全宽深色面板 === */
+    .dark-section {
+      background: var(--dark-panel);
+      color: #e2e8f0;
+      padding: clamp(80px, 12vh, 160px) 0;
+      position: relative;
+      overflow: hidden;
     }
-
-    /* ========== FOOTER ========== */
-    .footer {
-      padding: 40px 0;
+    .dark-section::before {
+      content: 'essence';
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: clamp(6rem, 18vw, 14rem);
+      font-weight: 900;
+      color: rgba(241,117,45,0.04);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .dark-section .container {
+      position: relative;
+      z-index: 1;
+    }
+    .dark-section .core-questions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
       text-align: center;
+    }
+    .dark-section .core-questions h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 1rem;
+    }
+    .dark-section .question-list {
+      display: flex;
+      gap: clamp(20px, 3vw, 48px);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .dark-section .question-item {
+      background: rgba(241,117,45,0.1);
+      border: 1px solid rgba(241,117,45,0.25);
+      border-radius: 16px;
+      padding: 24px 32px;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--orange-light);
+      text-align: center;
+      min-width: 200px;
+    }
+    .dark-section .dark-chat {
+      margin-top: 3rem;
+      display: flex;
+      justify-content: center;
+    }
+    .dark-section .chat-bubble.ai {
+      background: var(--orange);
+      max-width: 600px;
+    }
+
+    /* === Section 5: CTA / 收尾 === */
+    .section-final {
+      padding: clamp(80px, 12vh, 160px) 0;
+      position: relative;
+    }
+    .final-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(40px, 6vw, 80px);
+      align-items: center;
+    }
+    .final-text h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      margin-bottom: 1.5rem;
+    }
+    .final-text .final-points {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 2rem;
+    }
+    .final-text .final-points li {
+      font-size: 0.95rem;
+      color: var(--ink-light);
+      padding-left: 20px;
+      position: relative;
+      line-height: 1.7;
+    }
+    .final-text .final-points li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--orange);
+      font-weight: 700;
+    }
+    .final-text .encouragement {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--orange-deep);
+      padding: 16px 24px;
+      background: var(--orange-light);
+      border-radius: 12px;
+      display: inline-block;
+    }
+    .final-visual {
+      position: relative;
+    }
+    .final-visual img {
+      border-radius: 16px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.12);
+    }
+
+    /* === Footer === */
+    .footer {
+      text-align: center;
+      padding: 3rem 2rem;
       font-size: 0.8rem;
       color: var(--ink-faint);
-      border-top: 1px solid rgba(69, 160, 32, 0.1);
+      border-top: 1px solid rgba(0,0,0,0.05);
+    }
+    .footer .footer-brand {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      color: var(--orange);
+      font-weight: 700;
     }
 
-    /* ========== SCROLL REVEAL ========== */
+    /* === Scroll Reveal === */
     .reveal {
       opacity: 0;
       transform: translateY(32px);
@@ -586,20 +511,25 @@
       .reveal { opacity: 1; transform: none; transition: none; }
     }
 
-    /* ========== RESPONSIVE ========== */
+    /* === 响应式 === */
     @media (max-width: 900px) {
-      .hero { min-height: auto; padding: 5rem 1.5rem 4rem; }
-      .s1-layout { grid-template-columns: 1fr; }
-      .s1-sticky { position: static; margin-bottom: 2rem; }
-      .s2-split { grid-template-columns: 1fr; }
-      .s3-step { grid-template-columns: 1fr; }
-      .s3-step-num { margin-bottom: -8px; }
-      .s4-questions li { font-size: clamp(1.1rem, 4vw, 1.5rem); }
+      .hero { min-height: auto; padding: 5rem 1.5rem; }
+      .layout-sticky { grid-template-columns: 1fr; }
+      .sticky-side { position: static; }
+      .split-section { grid-template-columns: 1fr; min-height: auto; }
+      .split-left { padding: 3rem 2rem; }
+      .split-right { padding: 3rem 2rem; }
+      .dark-section .question-list { flex-direction: column; align-items: center; }
+      .final-layout { grid-template-columns: 1fr; }
+      .final-visual { order: -1; }
     }
 
     @media (max-width: 600px) {
       body { font-size: 15px; }
-      .chat-bubble { max-width: 92%; font-size: 0.88rem; }
+      .steps-container { padding-left: 50px; }
+      .step-num { left: -50px; width: 40px; height: 40px; font-size: 1rem; }
+      .steps-container::before { left: 19px; }
+      .hero .hero-tags { gap: 8px; }
     }
   </style>
 </head>
@@ -607,40 +537,29 @@
 
   <!-- ====== HERO ====== -->
   <section class="hero">
-    <div class="hero-inner reveal">
-      <span class="hero-label">Personal Finance × AI</span>
-      <h1>拿AI当理财教练，<br>它帮我理清了<em>钱和生活</em>的关系</h1>
-      <p class="hero-subtitle">
-        <span>记账3年</span>
-        <span class="dot"></span>
-        <span>AI分析</span>
-        <span class="dot"></span>
-        <span>不再焦虑</span>
-      </p>
+    <span class="label-caps reveal">记账3年 × AI分析 × 不再焦虑</span>
+    <h1 class="reveal reveal-d1">拿AI当理财教练，<br>它帮我理清了钱和生活的关系</h1>
+    <p class="reveal reveal-d2">一个记账三年的自由职业者，如何用AI化解对钱的焦虑</p>
+    <div class="hero-tags reveal reveal-d3">
+      <span>💰 记账3年</span>
+      <span>🤖 AI分析</span>
+      <span>🧘 不焦虑了</span>
     </div>
   </section>
 
-  <!-- ====== SECTION 1: 我的记账习惯 ====== -->
+  <!-- ====== Section 1: 我的记账习惯（Sticky侧栏） ====== -->
   <section class="section">
     <div class="container">
-      <div class="s1-layout">
-        <div class="s1-sticky reveal">
-          <span class="section-num">01</span>
+      <div class="layout-sticky">
+        <div class="sticky-side reveal">
+          <span class="big-deco">01</span>
+          <span class="section-number">01</span>
           <h2 class="section-title">我的记账习惯</h2>
         </div>
-        <div class="s1-content">
-          <div class="s1-item reveal reveal-d1">
-            <div class="s1-icon">👫</div>
-            <p class="s1-text">成家后开始记账，夫妻<strong>3年完整账单</strong>，从未中断</p>
-          </div>
-          <div class="s1-item reveal reveal-d2">
-            <div class="s1-icon">📊</div>
-            <p class="s1-text">每月花1小时从各APP汇总收入、支出、保险、余额，做成Excel</p>
-          </div>
-          <div class="s1-item reveal reveal-d3">
-            <div class="s1-icon">🚀</div>
-            <p class="s1-text">从月光族 → 攒下钱 → 有底气离职做自由职业</p>
-          </div>
+        <div class="content-scroll">
+          <div class="item reveal reveal-d1">成家后开始认真记账，夫妻俩攒下了3年完整账单数据</div>
+          <div class="item reveal reveal-d2">每月花1小时从各APP汇总收入/支出/保险/余额，形成完整的家庭财务画像</div>
+          <div class="item reveal reveal-d3">从月光族→攒下钱→有底气离职做自由职业，记账给了我选择的勇气</div>
           <div class="quote-highlight reveal reveal-d4">
             <p>记账让钱有了实感</p>
           </div>
@@ -649,139 +568,103 @@
     </div>
   </section>
 
-  <!-- ====== SECTION 2: 焦虑来了 ====== -->
-  <section class="section" style="padding-top: 0;">
-    <div class="container">
-      <div class="s2-split reveal">
-        <div class="s2-left">
-          <h2>离职以后，<em>焦虑</em>来了</h2>
-          <p class="s2-desc">收入变少，未来不确定，手里的钱开始让人不安。</p>
-        </div>
-        <div class="s2-right">
-          <div class="s2-pain"><p>收入只有上班时的一半</p></div>
-          <div class="s2-pain"><p>不知道存款还够用多久</p></div>
-          <div class="s2-pain"><p>有3年数据，但从没好好用过</p></div>
-        </div>
-      </div>
-
-      <div class="chat-area reveal reveal-d1">
-        <div class="chat-container">
-          <div class="chat-msg user">
-            <span class="chat-label">我</span>
-            <div class="chat-bubble">我现在收入只有之前的一半，存款还够我活多久？</div>
-          </div>
+  <!-- ====== Section 2: 焦虑来了（分栏对称） ====== -->
+  <section class="split-section">
+    <div class="split-left reveal">
+      <span class="section-number">02</span>
+      <h2 class="section-title">焦虑来了</h2>
+      <ul class="pain-list">
+        <li>离职后收入只有上班时一半</li>
+        <li>不知道存款够用多久</li>
+        <li>有3年数据但从没好好用过</li>
+        <li>脑袋里全是"万一不够花怎么办"</li>
+      </ul>
+    </div>
+    <div class="split-right reveal reveal-d2">
+      <div class="chat-container">
+        <div class="chat-bubble user">
+          <span class="avatar-label">我</span>
+          我现在收入只有之前的一半，存款还够我活多久？
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ====== SECTION 3: AI帮我做了三件事 ====== -->
-  <section class="section" style="background: var(--bg-alt);">
+  <!-- ====== Section 3: AI帮我做了三件事（纵向Step流程线） ====== -->
+  <section class="section section--alt">
     <div class="container">
       <div class="section-header reveal">
-        <span class="section-num">03</span>
+        <span class="section-number">03</span>
         <h2 class="section-title">AI帮我做了三件事</h2>
       </div>
 
-      <div class="s3-steps">
+      <div class="steps-container">
         <!-- Step 1 -->
-        <div class="s3-step reveal">
-          <div class="s3-step-num">①</div>
-          <div class="s3-step-body">
-            <h3>算清家底</h3>
-            <div style="margin:16px 0">
-              <img src="images/5.png" alt="支出分析" style="width:100%;max-width:480px;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
+        <div class="step-item reveal">
+          <span class="step-num">①</span>
+          <h3>算清家底</h3>
+          <div class="step-screenshots-row">
+            <img src="images/1.png" alt="AI财务分析对话" class="step-screenshot">
+            <img src="images/6.png" alt="跑道计算" class="step-screenshot">
+          </div>
+          <div class="chat-container">
+            <div class="chat-bubble ai">
+              <span class="avatar-label">Cola</span>
+              按当前支出，存款还够维持大约2年。包含了每月定投。
             </div>
-            <div class="chat-area">
-              <div class="chat-container">
-                <div class="chat-msg ai">
-                  <span class="chat-label">Cola</span>
-                  <div class="chat-bubble">根据你的数据，按当前支出水平，存款还够你维持大约2年。而且这还包含了你每月定投的钱。</div>
-                </div>
-                <div class="chat-msg user">
-                  <span class="chat-label">我</span>
-                  <div class="chat-bubble">两年？那我焦虑个啥😂</div>
-                </div>
-              </div>
-            </div>
+            <div class="chat-bubble user">两年？那我焦虑个啥😂</div>
           </div>
         </div>
 
         <!-- Step 2 -->
-        <div class="s3-step reveal">
-          <div class="s3-step-num">②</div>
-          <div class="s3-step-body">
-            <h3>看到增长</h3>
-            <div class="chat-area">
-              <div class="chat-container">
-                <div class="chat-msg ai">
-                  <span class="chat-label">Cola</span>
-                  <div class="chat-bubble">你6月的自由职业收入已经是3月的3倍了，上升势头很明显。按照这个趋势，冬天滑两次雪完全没问题。</div>
-                </div>
-                <div class="chat-msg user">
-                  <span class="chat-label">我</span>
-                  <div class="chat-bubble">真的吗！我都没意识到涨了这么多</div>
-                </div>
-              </div>
+        <div class="step-item reveal">
+          <span class="step-num">②</span>
+          <h3>看到增长</h3>
+          <img src="images/2.png" alt="AI分析详情" class="step-screenshot">
+          <div class="chat-container">
+            <div class="chat-bubble ai">
+              <span class="avatar-label">Cola</span>
+              6月收入是3月的3倍，上升势头明显。冬天滑两次雪没问题。
             </div>
+            <div class="chat-bubble user">真的吗！我都没意识到涨了这么多</div>
           </div>
         </div>
 
         <!-- Step 3 -->
-        <div class="s3-step reveal">
-          <div class="s3-step-num">③</div>
-          <div class="s3-step-body">
-            <h3>理清优先级</h3>
-            <div style="margin:16px 0">
-              <img src="images/4.png" alt="核心诊断" style="width:100%;max-width:480px;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
-            </div>
-            <div class="chat-area">
-              <div class="chat-container">
-                <div class="chat-msg ai">
-                  <span class="chat-label">Cola</span>
-                  <div class="chat-bubble">你现在的主要目标应该是开源，而不是节流。你的固定支出已经很合理了，再省可能会影响生活质量和心理状态。把精力放在收入增长上。</div>
-                </div>
-                <div class="chat-msg user">
-                  <span class="chat-label">我</span>
-                  <div class="chat-bubble">这句话真的醍醐灌顶</div>
-                </div>
-              </div>
-            </div>
+        <div class="step-item reveal">
+          <span class="step-num">③</span>
+          <h3>理清优先级</h3>
+          <div class="step-screenshots-row">
+            <img src="images/3.png" alt="核心诊断" class="step-screenshot">
+            <img src="images/4.png" alt="诊断卡片" class="step-screenshot">
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ====== SECTION 4: 回到本质 ====== -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header reveal">
-        <span class="section-num">04</span>
-        <h2 class="section-title">回到本质</h2>
-      </div>
-
-      <div class="s4-panel reveal">
-        <p class="s4-intro">理财的终极问题不是"怎么省"，是"我想过什么生活"。</p>
-        <ol class="s4-questions">
-          <li>
-            <span class="q-num">1</span>
-            <span>我想过什么样的生活？</span>
-          </li>
-          <li>
-            <span class="q-num">2</span>
-            <span>现在的钱支不支持我过这样的生活？</span>
-          </li>
-          <li>
-            <span class="q-num">3</span>
-            <span>怎么做才能过到理想的生活？</span>
-          </li>
-        </ol>
-        <div class="s4-chat-area">
           <div class="chat-container">
-            <div class="chat-msg ai">
-              <span class="chat-label">Cola</span>
-              <div class="chat-bubble">所以最终回到一个问题：你想过什么样的生活？钱是工具，不是目的。想清楚了这个，预算和行动方案都是顺着来的。</div>
+            <div class="chat-bubble ai">
+              <span class="avatar-label">Cola</span>
+              主要目标是开源，不是节流。固定支出已合理，再省影响生活质量。把精力放在收入增长上。
+            </div>
+            <div class="chat-bubble user">这句话真的醍醐灌顶</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Section 4: 回到本质（全宽深色面板） ====== -->
+  <section class="dark-section">
+    <div class="container">
+      <div class="core-questions reveal">
+        <h2>回到本质</h2>
+        <div class="question-list">
+          <div class="question-item reveal reveal-d1">想过什么生活？</div>
+          <div class="question-item reveal reveal-d2">钱够不够？</div>
+          <div class="question-item reveal reveal-d3">怎么做？</div>
+        </div>
+        <div class="dark-chat reveal reveal-d4">
+          <div class="chat-container">
+            <div class="chat-bubble ai">
+              <span class="avatar-label">Cola</span>
+              最终回到一个问题：你想过什么样的生活？钱是工具不是目的。
             </div>
           </div>
         </div>
@@ -789,48 +672,34 @@
     </div>
   </section>
 
-  <!-- ====== SECTION 5: 做成Skill ====== -->
-  <section class="section" style="background: var(--bg-alt);">
+  <!-- ====== Section 5: 做成Skill（双栏收尾） ====== -->
+  <section class="section-final section">
     <div class="container">
-      <div class="s5-layout">
-        <div class="section-header reveal">
-          <span class="section-num">05</span>
-          <h2 class="section-title">我把它做成了一个Skill</h2>
+      <div class="final-layout">
+        <div class="final-text reveal">
+          <span class="section-number">05</span>
+          <h2>做成Skill，思路沉淀可复用</h2>
+          <ul class="final-points">
+            <li>收入会变、目标会变，但分析思路可以一直用</li>
+            <li>把"算家底→看趋势→理优先级"沉淀成Cola Skill</li>
+            <li>每次收入变化，跑一遍就能看清全局</li>
+          </ul>
+          <span class="encouragement">你也可以，先从记账开始 📝</span>
         </div>
-
-        <div class="s5-points">
-          <div class="s5-point reveal reveal-d1">
-            <div class="s5-point-icon">🔄</div>
-            <p>收入会变、目标会变，但这套思路可以沉淀为可复用的工具</p>
-          </div>
-          <div class="s5-point reveal reveal-d2">
-            <div class="s5-point-icon">📅</div>
-            <p>每月复用这个Skill，帮自己和家庭朝想要的方向努力</p>
-          </div>
-          <div class="s5-point reveal reveal-d3">
-            <div class="s5-point-icon">💪</div>
-            <p>你也可以——先从记账开始，让AI帮你看见数据背后的答案</p>
-          </div>
+        <div class="final-visual reveal reveal-d2">
+          <img src="images/7.png" alt="Cola Skill截图">
         </div>
-
-        <div style="margin:24px 0;text-align:center">
-          <img src="images/7.png" alt="Money Life Coach Skill" style="width:100%;max-width:520px;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
-        </div>
-        <a href="#" class="s5-cta reveal reveal-d4">从记账开始 →</a>
       </div>
     </div>
   </section>
 
-  <!-- ====== FOOTER ====== -->
-  <footer class="footer">
-    <div class="container">
-      <p>Made with Cola · 记账 × AI × 好好生活</p>
-    </div>
-  </footer>
+  <!-- ====== Footer ====== -->
+  <div class="footer">
+    <p>Made with <span class="footer-brand">Cola</span> · 有灵魂的AI伙伴</p>
+  </div>
 
-  <!-- ====== JS ====== -->
+  <!-- ====== Scroll Reveal JS ====== -->
   <script>
-    // Scroll Reveal
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -838,7 +707,7 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.12 });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   </script>
