@@ -28,7 +28,87 @@ body {
 /* ===== HERO ===== */
 .hero {
   padding: clamp(80px, 15vh, 160px) 0 clamp(60px, 10vh, 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(32px, 5vw, 60px);
+}
+
+.hero-text {
+  text-align: left;
+  flex: 1;
+}
+
+.hero-avatar {
+  flex-shrink: 0;
   text-align: center;
+}
+
+.avatar-flip {
+  width: clamp(100px, 15vw, 160px);
+  height: clamp(100px, 15vw, 160px);
+  perspective: 600px;
+  cursor: pointer;
+  margin: 0 auto;
+}
+
+.avatar-flip-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.6s ease;
+  transform-style: preserve-3d;
+}
+
+.avatar-flip.flipped .avatar-flip-inner {
+  transform: rotateY(180deg);
+}
+
+.avatar-front,
+.avatar-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  backface-visibility: hidden;
+  overflow: hidden;
+  border: 3px solid #45A020;
+}
+
+.avatar-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  transform: scale(1.3);
+}
+
+.avatar-back {
+  transform: rotateY(180deg);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 12px;
+}
+
+.avatar-back img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+
+.avatar-back span {
+  font-size: 0.65rem;
+  color: #6A6A6A;
+  margin-top: 4px;
+}
+
+.hero-avatar-name {
+  font-family: 'Caveat', cursive;
+  font-size: 1.4rem;
+  color: #45A020;
+  margin-top: 8px;
 }
 
 .hero-tag {
@@ -324,9 +404,23 @@ section {
 
   <!-- HERO -->
   <header class="hero">
-    <div class="hero-tag">🎮 零代码实战</div>
-    <h1>用AI给朋友做了一个<span>密室逃脱</span>游戏</h1>
-    <p class="hero-sub">全程没写一行代码。只靠跟AI聊天,从一个想法变成了一个能玩的游戏。</p>
+    <div class="hero-text">
+      <div class="hero-tag">🎮 零代码实战</div>
+      <h1>用AI做<span>赛博礼物</span><br>密室逃脱小游戏</h1>
+      <p class="hero-sub">不会写代码，但我会聊天。跟AI一来一回聊了几十轮，聊出了一个只属于朋友的游戏。</p>
+    </div>
+    <div class="hero-avatar">
+      <div class="avatar-flip" onclick="this.classList.toggle('flipped')">
+        <div class="avatar-flip-inner">
+          <div class="avatar-front"><img src="avatar.png" alt="sisi"></div>
+          <div class="avatar-back">
+            <img src="qrcode.png" alt="小红书二维码">
+            <span>小红书 @sisi</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-avatar-name">sisi</div>
+    </div>
   </header>
 
   <!-- ORIGIN -->
@@ -394,38 +488,38 @@ section {
     <ul class="tips-list">
       <li class="tip-item">
         <div class="tip-number">1</div>
-        <div class="tip-title">先给全貌，再给细节 <span class="tip-term">Context</span></div>
-        <p class="tip-desc">第一句话就把“做什么+给谁+什么感觉”说清楚。别怕给太多背景——AI的上下文窗口很大，信息越全它越不会跑偏。我一开始就告诉AI：给一个32岁男生做生日密室逃脱，他喜欢滑雪、篮球、可乐，有个1岁女儿叫柚柚。</p>
+        <div class="tip-title">先给全貌,再给细节 <span class="tip-term">Context</span></div>
+        <p class="tip-desc">第一句话就把"做什么+给谁+什么感觉"说清楚。别怕给太多背景--AI的上下文窗口很大,信息越全它越不会跑偏。我一开始就告诉AI:给一个32岁男生做生日密室逃脱,他喜欢滑雪、篮球、可乐,有个1岁女儿叫柚柚。</p>
         <div class="tip-illustration"><img src="illustrations/01-先给全貌再给细节.png" alt="先给全貌再给细节"></div>
       </li>
       <li class="tip-item">
         <div class="tip-number">2</div>
         <div class="tip-title">结构化你的需求 <span class="tip-term">Structured Input</span></div>
-        <p class="tip-desc">把“背景信息”和“具体指令”分开说。比如先说“背景：朋友认识5年，共同记忆有……”，再说“任务：帮我设计5个关卡，每关用一段记忆当谜题”。AI最怕你一大段话搅在一起。</p>
+        <p class="tip-desc">把"背景信息"和"具体指令"分开说。比如先说"背景:朋友认识5年,共同记忆有......",再说"任务:帮我设计5个关卡,每关用一段记忆当谜题"。AI最怕你一大段话搅在一起。</p>
         <div class="tip-illustration"><img src="illustrations/04-结构化你的需求.png" alt="结构化你的需求"></div>
       </li>
       <li class="tip-item">
         <div class="tip-number">3</div>
         <div class="tip-title">让AI先想再做 <span class="tip-term">Chain of Thought</span></div>
-        <p class="tip-desc">复杂需求别让AI直接出活。先说“帮我想一下方案，列出来我看看”。我做关卡设计时就是先让它出了5个方向，挑了最好的那个再往下做。避免做完才发现方向错了。</p>
+        <p class="tip-desc">复杂需求别让AI直接出活。先说"帮我想一下方案,列出来我看看"。我做关卡设计时就是先让它出了5个方向,挑了最好的那个再往下做。避免做完才发现方向错了。</p>
         <div class="tip-illustration"><img src="illustrations/02-让AI先想再做.png" alt="让AI先想再做"></div>
       </li>
       <li class="tip-item">
         <div class="tip-number">4</div>
         <div class="tip-title">给参考比描述强 <span class="tip-term">Few-Shot Prompting</span></div>
-        <p class="tip-desc">有类似的图、页面、游戏？直接发给AI看。“我想要这种感觉”比你描述半天都管用。我做视觉风格时直接发了一个参考游戏的截图，AI立刻get到了。</p>
+        <p class="tip-desc">有类似的图、页面、游戏?直接发给AI看。"我想要这种感觉"比你描述半天都管用。我做视觉风格时直接发了一个参考游戏的截图,AI立刻get到了。</p>
         <div class="tip-illustration"><img src="illustrations/05-给参考比描述强.png" alt="给参考比描述强"></div>
       </li>
       <li class="tip-item">
         <div class="tip-number">5</div>
         <div class="tip-title">一次只改一件事 <span class="tip-term">Iteration</span></div>
-        <p class="tip-desc">别一次甩10个修改点。先改内容→再调视觉→再加交互→最后修细节。每轮只聚焦一个方向，AI不会搞混，你也能判断哪步出了问题。</p>
+        <p class="tip-desc">别一次甩10个修改点。先改内容→再调视觉→再加交互→最后修细节。每轮只聚焦一个方向,AI不会搞混,你也能判断哪步出了问题。</p>
         <div class="tip-illustration"><img src="illustrations/03-一次只改一件事.png" alt="一次只改一件事"></div>
       </li>
       <li class="tip-item">
         <div class="tip-number">6</div>
         <div class="tip-title">别怕改很多轮 <span class="tip-term">Conversation is Key</span></div>
-        <p class="tip-desc">好东西就是要磨。不是你的prompt不行，是第一版永远不是最终版。每改一轮你都会更清楚自己想要什么。这个游戏前后聊了几十轮，最后的效果是一点点打磨出来的。</p>
+        <p class="tip-desc">好东西就是要磨。不是你的prompt不行,是第一版永远不是最终版。每改一轮你都会更清楚自己想要什么。这个游戏前后聊了几十轮,最后的效果是一点点打磨出来的。</p>
         <div class="tip-illustration"><img src="illustrations/06-别怕改很多轮.png" alt="别怕改很多轮"></div>
       </li>
     </ul>
