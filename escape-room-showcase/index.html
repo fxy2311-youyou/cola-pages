@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用AI给朋友做了一个密室逃脱游戏</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700;900&family=Noto+Serif+SC:wght@700;900&family=Fraunces:ital,wght@1,700&family=Caveat:wght@500&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+::selection { background: #FFD000; color: #2A2A2A; }
+
+body {
+  font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', sans-serif;
+  background: #F8FFF5;
+  color: #2A2A2A;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== HERO ===== */
+.hero {
+  padding: clamp(80px, 15vh, 160px) 0 clamp(60px, 10vh, 120px);
+  text-align: center;
+}
+
+.hero-tag {
+  display: inline-block;
+  background: #FFD000;
+  color: #2A2A2A;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 18px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.hero h1 {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 900;
+  font-size: clamp(2rem, 5.5vw, 3.2rem);
+  line-height: 1.3;
+  margin-bottom: 20px;
+}
+
+.hero h1 span {
+  color: #45A020;
+}
+
+.hero-sub {
+  font-size: 1.1rem;
+  color: #6A6A6A;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ===== SECTION COMMON ===== */
+section {
+  padding: clamp(60px, 8vh, 120px) 0;
+}
+
+.section-label {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #45A020;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.section-title {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 900;
+  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+/* ===== ORIGIN ===== */
+.origin {
+  background: #E8F5E0;
+  border-radius: 16px;
+  padding: clamp(28px, 4vw, 48px);
+  margin-bottom: clamp(40px, 6vw, 80px);
+}
+
+.origin p {
+  font-size: 1.05rem;
+  line-height: 2;
+}
+
+/* ===== SCREENSHOTS ===== */
+.screenshots-flow {
+  margin: 32px 0;
+}
+
+.screenshot-block {
+  margin-bottom: clamp(36px, 5vw, 56px);
+}
+
+.screenshot-block.full img {
+  width: 100%;
+  border-radius: 12px;
+  border: 2px solid #E8F5E0;
+}
+
+.screenshot-block.side-by-side {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.screenshot-block.side-by-side img {
+  width: 100%;
+  border-radius: 12px;
+  border: 2px solid #E8F5E0;
+}
+
+.screenshot-block.small {
+  max-width: 360px;
+}
+
+.screenshot-block.small img {
+  width: 100%;
+  border-radius: 12px;
+  border: 2px solid #E8F5E0;
+}
+
+.screenshot-block.layout-1-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.layout-left img {
+  width: 100%;
+  border-radius: 12px;
+  border: 2px solid #E8F5E0;
+}
+
+.layout-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.layout-right-item img {
+  width: 100%;
+  border-radius: 12px;
+  border: 2px solid #E8F5E0;
+}
+
+.screenshot-caption {
+  font-size: 0.85rem;
+  color: #6A6A6A;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+.screenshot-caption strong {
+  color: #45A020;
+  font-weight: 600;
+}
+
+.screenshots-flow img {
+  transition: transform 0.2s ease;
+}
+
+.screenshots-flow img:hover {
+  transform: scale(1.02);
+}
+
+.game-link {
+  display: inline-block;
+  margin-top: 24px;
+  background: #45A020;
+  color: #fff;
+  text-decoration: none;
+  padding: 14px 32px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.game-link:hover {
+  background: #3a8a1a;
+}
+
+/* ===== TIPS ===== */
+.tips-list {
+  list-style: none;
+  position: relative;
+}
+
+.tips-list::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 48px;
+  bottom: 48px;
+  border-left: 2px dashed rgba(69, 160, 32, 0.3);
+}
+
+.tip-item {
+  position: relative;
+  padding-left: 56px;
+  margin-bottom: clamp(36px, 5vw, 56px);
+}
+
+.tip-number {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 40px;
+  height: 40px;
+  background: #FFD000;
+  color: #2A2A2A;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  z-index: 1;
+}
+
+.tip-title {
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-bottom: 4px;
+}
+
+.tip-term {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.78rem;
+  color: #45A020;
+  background: #E8F5E0;
+  padding: 3px 10px;
+  border-radius: 12px;
+  margin-left: 8px;
+}
+
+.tip-desc {
+  color: #6A6A6A;
+  font-size: 0.95rem;
+  margin-top: 8px;
+  line-height: 1.8;
+}
+
+.tip-illustration {
+  margin-top: 16px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tip-illustration img {
+  width: 100%;
+  display: block;
+}
+
+/* ===== ENDING ===== */
+.ending {
+  text-align: center;
+  padding: clamp(60px, 10vh, 140px) 0 40px;
+}
+
+.ending-quote {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  font-weight: 700;
+  line-height: 1.6;
+  max-width: 560px;
+  margin: 0 auto 16px;
+}
+
+.ending-quote span {
+  background: linear-gradient(transparent 60%, rgba(255, 208, 0, 0.4) 60%);
+}
+
+.signature {
+  font-family: 'Caveat', cursive;
+  font-size: 1.8rem;
+  color: #45A020;
+  opacity: 0.7;
+  padding: 40px 0;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .screenshot-block.side-by-side,
+  .screenshot-block.layout-1-2 {
+    grid-template-columns: 1fr;
+  }
+  .tips-list::before {
+    left: 18px;
+  }
+  .tip-item {
+    padding-left: 50px;
+  }
+  .tip-number {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-tag">🎮 零代码实战</div>
+    <h1>用AI给朋友做了一个<span>密室逃脱</span>游戏</h1>
+    <p class="hero-sub">全程没写一行代码。只靠跟AI聊天,从一个想法变成了一个能玩的游戏。</p>
+  </header>
+
+  <!-- ORIGIN -->
+  <section>
+    <div class="origin">
+      <p>朋友生日快到了,不想买东西,想送点不一样的。<br>
+      突然想到:做一个<strong>只有他能玩的密室逃脱游戏</strong>--用我们的共同记忆当谜题,用他的梗当彩蛋。<br>
+      问题是:我不会写代码。</p>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section>
+    <div class="section-label">The Result</div>
+    <h2 class="section-title">做出来长这样 👇</h2>
+    <div class="screenshots-flow">
+
+      <!-- 入场动画 -->
+      <div class="screenshot-block full">
+        <img src="game-screenshots/04.png" alt="系统启动动画">
+        <p class="screenshot-caption"><strong>入场动画</strong> - 终端风加载界面,"正在加载雪山模块...检测到冰可乐补给..."让他进入游戏的第一秒就笑了</p>
+      </div>
+
+      <!-- 像素密室(左) + 收集道具&彩蛋(右上下) -->
+      <div class="screenshot-block layout-1-2">
+        <div class="layout-left">
+          <img src="game-screenshots/05.png" alt="像素密室">
+          <p class="screenshot-caption"><strong>像素密室</strong> - 复古像素房间,NPC说"又加班?先帮我拿罐可乐"</p>
+        </div>
+        <div class="layout-right">
+          <div class="layout-right-item">
+            <img src="game-screenshots/06.png" alt="收集道具">
+            <p class="screenshot-caption"><strong>收集道具</strong> - 冰可乐🥤、奶瓶🍼、尿不湿</p>
+          </div>
+          <div class="layout-right-item">
+            <img src="game-screenshots/02.png" alt="关卡彩蛋">
+            <p class="screenshot-caption"><strong>彩蛋</strong> - "口渴了吧?先来一口"</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 关卡展示:雪山装备 + 密码锁 并排 -->
+      <div class="screenshot-block side-by-side">
+        <div>
+          <img src="game-screenshots/01.png" alt="关卡:雪山装备">
+          <p class="screenshot-caption"><strong>关卡:雪山装备</strong> - 海拔5025m,选对8件装备才能到达营地</p>
+        </div>
+        <div>
+          <img src="game-screenshots/03.png" alt="关卡:密码锁">
+          <p class="screenshot-caption"><strong>关卡:密码锁</strong> - 篮球更衣室,找4条线索破解密码</p>
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align:center;">
+      <a href="https://fxy2311-youyou.github.io/cola-pages/wuyang-birthday/" target="_blank" class="game-link">🕹️ 试玩游戏</a>
+    </div>
+  </section>
+
+  <!-- TIPS -->
+  <section>
+    <div class="section-label">Prompt Tips</div>
+    <h2 class="section-title">怎么跟AI聊出来的?6个提示词技巧</h2>
+
+    <ul class="tips-list">
+      <li class="tip-item">
+        <div class="tip-number">1</div>
+        <div class="tip-title">先给全貌，再给细节 <span class="tip-term">Context</span></div>
+        <p class="tip-desc">第一句话就把“做什么+给谁+什么感觉”说清楚。别怕给太多背景——AI的上下文窗口很大，信息越全它越不会跑偏。我一开始就告诉AI：给一个32岁男生做生日密室逃脱，他喜欢滑雪、篮球、可乐，有个1岁女儿叫柚柚。</p>
+        <div class="tip-illustration"><img src="illustrations/01-先给全貌再给细节.png" alt="先给全貌再给细节"></div>
+      </li>
+      <li class="tip-item">
+        <div class="tip-number">2</div>
+        <div class="tip-title">结构化你的需求 <span class="tip-term">Structured Input</span></div>
+        <p class="tip-desc">把“背景信息”和“具体指令”分开说。比如先说“背景：朋友认识5年，共同记忆有……”，再说“任务：帮我设计5个关卡，每关用一段记忆当谜题”。AI最怕你一大段话搅在一起。</p>
+        <div class="tip-illustration"><img src="illustrations/04-结构化你的需求.png" alt="结构化你的需求"></div>
+      </li>
+      <li class="tip-item">
+        <div class="tip-number">3</div>
+        <div class="tip-title">让AI先想再做 <span class="tip-term">Chain of Thought</span></div>
+        <p class="tip-desc">复杂需求别让AI直接出活。先说“帮我想一下方案，列出来我看看”。我做关卡设计时就是先让它出了5个方向，挑了最好的那个再往下做。避免做完才发现方向错了。</p>
+        <div class="tip-illustration"><img src="illustrations/02-让AI先想再做.png" alt="让AI先想再做"></div>
+      </li>
+      <li class="tip-item">
+        <div class="tip-number">4</div>
+        <div class="tip-title">给参考比描述强 <span class="tip-term">Few-Shot Prompting</span></div>
+        <p class="tip-desc">有类似的图、页面、游戏？直接发给AI看。“我想要这种感觉”比你描述半天都管用。我做视觉风格时直接发了一个参考游戏的截图，AI立刻get到了。</p>
+        <div class="tip-illustration"><img src="illustrations/05-给参考比描述强.png" alt="给参考比描述强"></div>
+      </li>
+      <li class="tip-item">
+        <div class="tip-number">5</div>
+        <div class="tip-title">一次只改一件事 <span class="tip-term">Iteration</span></div>
+        <p class="tip-desc">别一次甩10个修改点。先改内容→再调视觉→再加交互→最后修细节。每轮只聚焦一个方向，AI不会搞混，你也能判断哪步出了问题。</p>
+        <div class="tip-illustration"><img src="illustrations/03-一次只改一件事.png" alt="一次只改一件事"></div>
+      </li>
+      <li class="tip-item">
+        <div class="tip-number">6</div>
+        <div class="tip-title">别怕改很多轮 <span class="tip-term">Conversation is Key</span></div>
+        <p class="tip-desc">好东西就是要磨。不是你的prompt不行，是第一版永远不是最终版。每改一轮你都会更清楚自己想要什么。这个游戏前后聊了几十轮，最后的效果是一点点打磨出来的。</p>
+        <div class="tip-illustration"><img src="illustrations/06-别怕改很多轮.png" alt="别怕改很多轮"></div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ENDING -->
+  <section class="ending">
+    <p class="ending-quote"><span>技术不重要,重要的是你知道你想要什么。</span><br>AI负责实现,你负责有想法。</p>
+    <div class="signature">sisi</div>
+  </section>
+
+</div>
+
+</body>
+</html>
