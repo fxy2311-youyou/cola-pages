@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>两步搞定手绘配图：我的AI插图工作流</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Caveat:wght@400;700&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange: #F1752D;
+  --orange-deep: #D45A1A;
+  --dark: #1A1A2E;
+  --warm-white: #FFF8F0;
+  --cream: #FFF8F0;
+  --cream-dark: #faf6eb;
+  --ink: #1A1A2E;
+  --ink-light: #4A4A5A;
+  --ink-faint: #8A8A9A;
+  --soft-orange: #FFE0CC;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--ink);
+  background: var(--cream);
+}
+
+::selection { background: var(--soft-orange); color: var(--ink); }
+
+.container { max-width: 840px; margin: 0 auto; padding: 0 2rem; }
+
+/* ===== HERO ===== */
+.hero {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(32px, 5vw, 64px);
+  padding: clamp(80px, 12vh, 140px) 2rem clamp(60px, 8vh, 100px);
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+.hero-text { flex: 1; }
+
+.label-caps {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 500;
+  color: var(--ink-faint);
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.hero h1 {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 900;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1.2;
+}
+
+.hero h1 .accent { color: var(--orange); }
+
+.hero-desc {
+  font-size: 1rem;
+  color: var(--ink-light);
+  margin-top: 1.2rem;
+  max-width: 480px;
+  line-height: 1.9;
+}
+
+.hero-visual {
+  flex-shrink: 0;
+}
+
+.hero-visual img {
+  width: clamp(80px, 12vw, 120px);
+  border-radius: 50%;
+}
+
+/* ===== SECTIONS ===== */
+.section { padding: clamp(60px, 10vh, 120px) 0; }
+.section--alt { background: var(--cream-dark); }
+
+.section-header { margin-bottom: clamp(28px, 4vw, 48px); }
+
+.section-number {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  color: var(--orange);
+  opacity: 0.4;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.section-title {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 900;
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  line-height: 1.4;
+}
+
+/* ===== WHAT BLOCK ===== */
+.what-block {
+  background: var(--cream-dark);
+  border-radius: 16px;
+  padding: clamp(24px, 3vw, 36px);
+  border-left: 4px solid var(--orange);
+}
+
+.what-block p {
+  font-size: 0.95rem;
+  color: var(--ink-light);
+  line-height: 1.9;
+  margin-bottom: 12px;
+}
+
+.what-block p:last-child { margin-bottom: 0; }
+.what-block strong { color: var(--ink); }
+
+.callout {
+  background: var(--soft-orange);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 16px 0;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--orange-deep);
+}
+
+/* ===== STEP CARDS ===== */
+.step-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 20px rgba(26,26,46,0.05);
+  transition: transform 0.3s ease;
+}
+
+.step-card:hover { transform: translateY(-3px); }
+
+.step-card-img {
+  width: 100%;
+  display: block;
+}
+
+.step-card-body { padding: clamp(20px, 3vw, 32px); }
+
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px; height: 34px;
+  background: var(--orange);
+  color: #fff;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+.step-card-body h3 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.step-card-body p {
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  line-height: 1.8;
+}
+
+.detail-list {
+  margin-top: 12px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.detail-list li {
+  font-size: 0.88rem;
+  color: var(--ink-light);
+  line-height: 2;
+  padding-left: 20px;
+  position: relative;
+}
+
+.detail-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--orange);
+  font-weight: 700;
+}
+
+/* ===== CHAT DEMO ===== */
+.chat-demo {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.chat-bubble {
+  padding: 14px 18px;
+  border-radius: 18px;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  margin-bottom: 12px;
+  max-width: 85%;
+  position: relative;
+}
+
+.chat-bubble.user {
+  background: var(--cream-dark);
+  color: var(--ink);
+  margin-left: auto;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-bubble.cola {
+  background: var(--orange);
+  color: #fff;
+  margin-right: auto;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-bubble .sender {
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  opacity: 0.7;
+}
+
+.chat-bubble.cola .sender { color: rgba(255,255,255,0.7); }
+.chat-bubble.user .sender { color: var(--ink-faint); }
+
+.chat-bubble code {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,0,0,0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ===== DARK PANEL ===== */
+.dark-panel {
+  background: var(--dark);
+  color: #e2e8f0;
+  border-radius: 16px;
+  padding: clamp(28px, 4vw, 44px);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.dark-panel .icon-circle {
+  flex-shrink: 0;
+  width: 52px; height: 52px;
+  background: rgba(241,117,45,0.15);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+}
+
+.dark-panel h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #fff;
+}
+
+.dark-panel p {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.7;
+}
+
+.dark-panel a {
+  color: var(--orange);
+  text-decoration: none;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.78rem;
+}
+
+/* ===== STATS ===== */
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px 20px;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(26,26,46,0.04);
+}
+
+.stat-card .num {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2.2rem, 5vw, 3rem);
+  font-weight: 900;
+  color: var(--orange);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.stat-card .label {
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center;
+  padding: clamp(40px, 6vh, 80px) 0 30px;
+}
+
+.footer img {
+  width: 36px;
+  margin-bottom: 8px;
+  opacity: 0.7;
+}
+
+.footer p {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+/* ===== SCROLL REVEAL ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.2s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .hero { flex-direction: column; text-align: center; gap: 24px; min-height: auto; }
+  .hero-desc { margin: 1rem auto 0; }
+  .stats-row { grid-template-columns: 1fr; }
+  .dark-panel { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ====== HERO ====== -->
+<section class="hero">
+  <div class="hero-text">
+    <span class="label-caps">AI 配图工作流</span>
+    <h1>两步搞定<br><span class="accent">手绘配图</span></h1>
+    <p class="hero-desc">用小黑Skill + 你自己的IP形象，2分钟出一张风格统一的正文插图。不会画画也行，再也不用找插画师。</p>
+  </div>
+  <div class="hero-visual">
+    <img src="avatar.png" alt="Cola">
+  </div>
+</section>
+
+<!-- ====== WHAT ====== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">00</span>
+      <h2 class="section-title">小黑Skill 是什么</h2>
+    </div>
+    <div class="what-block reveal reveal-d1">
+      <p>一个开源的AI配图方案。风格是<strong>纯白背景 + 黑色手绘线条 + 少量彩色批注</strong>——像在白纸上随手画的解释图，不是商业插画。</p>
+      <p>原版IP是一只黑色小怪物（小黑）。但重点来了——</p>
+      <div class="callout">你可以把小黑换成自己的卡通形象，变成你专属的插画风格。</div>
+      <p>适合：自媒体配图、文章插图、方法论图解、口播稿配图、教程说明图。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ====== STEP 1 ====== -->
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">01</span>
+      <h2 class="section-title">先做一个你自己的IP形象</h2>
+    </div>
+    <div class="step-card reveal reveal-d1">
+      <img class="step-card-img" src="01-做你自己的IP.png" alt="Step 1: 做IP">
+      <div class="step-card-body">
+        <div class="step-badge">1</div>
+        <h3>用AI生成你的卡通版本</h3>
+        <p>不需要画功。描述一下你的穿搭、发型、标志性配饰，让AI帮你画出来。</p>
+        <ul class="detail-list">
+          <li>告诉AI你的外形特征（帽子、发色、穿搭风格）</li>
+          <li>多试几版，直到找到"对了！"的那张</li>
+          <li>这个形象以后会出现在你所有的配图里</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== STEP 2 ====== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">02</span>
+      <h2 class="section-title">从GitHub下载小黑Skill</h2>
+    </div>
+    <div class="step-card reveal reveal-d1">
+      <img class="step-card-img" src="02-从GitHub下载.png" alt="Step 2: 下载">
+      <div class="step-card-body">
+        <div class="step-badge">2</div>
+        <h3>装到你的AI工具里</h3>
+        <p>把项目克隆到本地。里面有完整的提示词模板和构图规则。</p>
+        <ul class="detail-list">
+          <li>装好后，发一篇文章给AI</li>
+          <li>它自动分析哪里需要配图、配什么内容</li>
+          <li>输出16:9横版手绘插图，风格统一</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== CHAT DEMO ====== -->
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">02.5</span>
+      <h2 class="section-title">实际跟 Cola 聊的过程</h2>
+    </div>
+    <div class="chat-demo reveal reveal-d1">
+      <div class="chat-bubble user">
+        <div class="sender">我</div>
+        用小黑skill，把小黑换成我的IP形象，给我的文章做配图
+      </div>
+      <div class="chat-bubble cola">
+        <div class="sender">Cola</div>
+        收到。我先分析你文章的结构，看哪几个地方适合配图——“认知锚点”优先：核心判断、前后对比、流程节点。
+      </div>
+      <div class="chat-bubble cola">
+        <div class="sender">Cola</div>
+        建议配3张图：<br>
+        ① “先做 IP”——你拿笔在画布上画自己<br>
+        ② “下载项目”——GitHub → 文件夹<br>
+        ③ “流水线出图”——文章进去，插图出来
+      </div>
+      <div class="chat-bubble user">
+        <div class="sender">我</div>
+        酷酷酷，开始吧
+      </div>
+      <div class="chat-bubble cola">
+        <div class="sender">Cola</div>
+        3张生成完毕 ✔️ 全部在 <code>illustrations/</code> 目录下。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== RESULT ====== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">03</span>
+      <h2 class="section-title">然后就是这个效果</h2>
+    </div>
+    <div class="step-card reveal reveal-d1">
+      <img class="step-card-img" src="03-两分钟出配图.png" alt="效果">
+      <div class="step-card-body">
+        <p>发一篇文章 → AI分析结构 → 自动出配图方案 → 生成插图。<br><strong>全程2分钟，风格统一，不用反复调。</strong></p>
+      </div>
+    </div>
+
+    <div class="stats-row reveal reveal-d2">
+      <div class="stat-card">
+        <div class="num">2</div>
+        <div class="label">分钟出一张图</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">0</div>
+        <div class="label">画功要求</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== GITHUB SOURCE ====== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-number">04</span>
+      <h2 class="section-title">去哪里拿</h2>
+    </div>
+    <div class="dark-panel reveal reveal-d1">
+      <div class="icon-circle">🐙</div>
+      <div>
+        <h3>helloianneo/ian-xiaohei-illustrations</h3>
+        <p>开源项目，MIT License。原作者：Ian（helloianneo）。<br>个人学习和内容创作免费使用。</p>
+        <a href="https://github.com/helloianneo/ian-xiaohei-illustrations" target="_blank">github.com/helloianneo/ian-xiaohei-illustrations</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== FOOTER ====== -->
+<footer class="footer">
+  <img src="avatar.png" alt="Cola">
+  <p>Made with Cola · 小黑Skill介绍</p>
+</footer>
+
+<!-- ====== Scroll Reveal ====== -->
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
