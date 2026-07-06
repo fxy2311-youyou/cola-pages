@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宇宙无敌表达训练系统 — 从零到桌面应用的真实过程</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Caveat:wght@400;700&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #F1752D;
+      --orange-deep: #D45A1A;
+      --orange-soft: #FFE0CC;
+      --dark: #1A1A2E;
+      --cream: #FFF8F0;
+      --cream-dark: #faf6eb;
+      --ink: #1A1A2E;
+      --ink-light: #4A4A5A;
+      --ink-faint: #8A8A9A;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--ink);
+      background: var(--cream);
+    }
+
+    ::selection { background: var(--orange-soft); color: var(--ink); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+    /* === HERO === */
+    .hero {
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 6rem 2rem 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .hero-badge img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+    }
+
+    .hero-badge span {
+      font-size: 0.82rem;
+      color: var(--ink-faint);
+    }
+
+    .hero h1 {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      line-height: 1.2;
+      margin-bottom: 20px;
+      max-width: 800px;
+    }
+
+    .hero .subtitle {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--ink-light);
+      max-width: 640px;
+      margin-bottom: 32px;
+    }
+
+    .hero .tag-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 6px 14px;
+      background: var(--orange-soft);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: var(--orange-deep);
+      font-weight: 500;
+    }
+
+    /* === SECTION === */
+    .section { padding: clamp(80px, 12vh, 140px) 0; }
+    .section--alt { background: var(--cream-dark); }
+    .section--dark { background: var(--cream-dark); color: var(--ink); }
+
+    .section-header { margin-bottom: clamp(32px, 5vw, 56px); }
+
+    .section-num {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+      color: var(--orange);
+      opacity: 0.5;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .section-title {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+      line-height: 1.35;
+    }
+
+    /* === LAYOUT === */
+    .layout-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(40px, 5vw, 80px);
+      align-items: start;
+    }
+
+    .layout-sticky {
+      display: grid;
+      grid-template-columns: 0.32fr 1fr;
+      gap: clamp(40px, 6vw, 100px);
+      align-items: start;
+    }
+
+    .sticky-side { position: sticky; top: 80px; }
+
+    /* === CHAT === */
+    .chat { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+
+    .bubble {
+      max-width: 80%;
+      padding: 14px 18px;
+      border-radius: 20px;
+      font-size: 0.88rem;
+      line-height: 1.7;
+    }
+
+    .bubble.user {
+      align-self: flex-end;
+      background: var(--cream);
+      color: var(--ink);
+      border: 1.5px solid #eee;
+      border-bottom-right-radius: 4px;
+    }
+
+    .bubble.cola {
+      align-self: flex-start;
+      background: var(--orange);
+      color: #fff;
+      border-bottom-left-radius: 4px;
+    }
+
+    .bubble .name {
+      font-size: 0.68rem;
+      font-weight: 700;
+      margin-bottom: 3px;
+      opacity: 0.6;
+    }
+
+    /* === STEP CARDS (参考拆书页面) === */
+    .step-card {
+      background: var(--cream);
+      border-radius: 16px;
+      padding: clamp(24px, 3vw, 36px);
+      margin-bottom: 20px;
+      border: 1.5px solid rgba(241, 117, 45, 0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-card::before {
+      content: attr(data-step);
+      position: absolute;
+      top: -8px;
+      right: 12px;
+      font-family: 'Fraunces', serif;
+      font-size: 5rem;
+      font-weight: 900;
+      color: var(--orange);
+      opacity: 0.06;
+      line-height: 1;
+    }
+
+    .step-card h4 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-card p { font-size: 0.9rem; color: var(--ink-light); }
+
+    .step-label {
+      font-family: 'Caveat', cursive;
+      font-size: 0.85rem;
+      color: var(--orange);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    /* === TIMELINE (版本迭代) === */
+    .timeline { padding-left: 48px; position: relative; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      bottom: 16px;
+      width: 2px;
+      border-left: 2px dashed var(--orange);
+      opacity: 0.25;
+    }
+
+    .tl-item { position: relative; margin-bottom: 32px; }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -38px;
+      top: 10px;
+      width: 14px;
+      height: 14px;
+      background: var(--orange-soft);
+      border: 3px solid var(--orange);
+      border-radius: 50%;
+    }
+    .tl-item.current::before { background: var(--orange); }
+    .tl-item h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+    .tl-item p { font-size: 0.92rem; color: var(--ink-light); margin: 0; }
+
+    /* === FEATURE GRID === */
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .feat-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 24px 20px;
+    }
+
+    .feat-card .icon { font-size: 1.6rem; margin-bottom: 10px; }
+    .feat-card h4 { font-size: 0.9rem; color: #fff; margin-bottom: 6px; font-weight: 700; }
+    .feat-card p { font-size: 0.78rem; color: #999; margin: 0; }
+
+    /* === LEXICON DEMO === */
+    .lex-demo { margin: 24px 0; }
+    .lex-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(241,117,45,0.1);
+    }
+    .lex-row:last-child { border-bottom: none; }
+    .lex-bad {
+      background: rgba(241, 117, 45, 0.12);
+      color: var(--orange-deep);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .lex-arrow { color: var(--ink-faint); }
+    .lex-good { display: flex; gap: 6px; flex-wrap: wrap; }
+    .lex-good span {
+      background: var(--orange-soft);
+      color: var(--orange-deep);
+      padding: 3px 10px;
+      border-radius: 16px;
+      font-size: 0.8rem;
+    }
+
+    /* === PULL QUOTE === */
+    .pull-quote {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      font-weight: 700;
+      padding: 24px 0;
+      border-top: 2px solid var(--orange);
+      border-bottom: 2px solid var(--orange);
+      margin: 32px 0;
+      color: var(--ink);
+    }
+
+    /* === CHANGE CARDS === */
+    .change-card {
+      background: var(--cream);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-bottom: 14px;
+      border-left: 4px solid var(--orange);
+    }
+    .change-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; color: var(--orange-deep); }
+    .change-card p { font-size: 0.88rem; color: var(--ink-light); margin: 0; }
+
+    /* === CTA === */
+    .cta-box {
+      background: var(--orange-soft);
+      border-radius: 20px;
+      padding: clamp(32px, 5vw, 56px);
+      text-align: center;
+    }
+    .cta-box h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+    .cta-steps {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    .cta-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cta-step .num {
+      width: 28px; height: 28px;
+      background: var(--orange);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 900;
+    }
+    .cta-step span { font-size: 0.88rem; font-weight: 500; }
+
+    /* === FOOTER === */
+    .footer {
+      text-align: center;
+      padding: 40px 0;
+    }
+    .footer img { width: 32px; height: 32px; border-radius: 50%; margin-bottom: 8px; }
+    .footer p { font-size: 0.8rem; color: var(--ink-faint); }
+
+    /* === KW highlight === */
+    .kw {
+      background: var(--orange-soft);
+      padding: 0.1em 0.4em;
+      border-radius: 4px;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 900px) {
+      .hero { min-height: auto; padding: 4rem 1.5rem 3rem; }
+      .layout-split { grid-template-columns: 1fr; }
+      .layout-sticky { grid-template-columns: 1fr; }
+      .sticky-side { position: static; }
+      .feat-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) { body { font-size: 15px; } }
+
+    /* === REVEAL === */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====== HERO ====== -->
+  <section class="hero">
+    <div class="hero-badge">
+      <img src="cola-avatar.png" alt="Cola">
+      <span>Cola Skill 分享 · 来自真实用户实践</span>
+    </div>
+    <h1>宇宙无敌表达训练系统</h1>
+    <p class="subtitle">一个自媒体创作者跟Cola聊了两周，从零搭出来的本地桌面应用。没写一行代码。对着它说话，它帮你看见自己的表达问题。</p>
+    <img src="表达训练系统-总结配图.png" alt="宇宙无敌表达系统流程图" style="width:100%;max-width:720px;margin:28px 0;border-radius:12px;">
+    <div class="tag-row">
+      <a href="https://github.com/fxy2311-youyou/expression-trainer" target="_blank" class="tag" style="text-decoration:none;cursor:pointer;">已开源 · expression-trainer</a>
+      <span class="tag">离线语音识别</span>
+      <span class="tag">27000词情感词库</span>
+    </div>
+  </section>
+
+  <!-- ====== 01 起因 ====== -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-num">01</span>
+        <h2 class="section-title">起因：录口播的人都有一个看不见的敌人</h2>
+      </div>
+      <div class="layout-split reveal reveal-d1">
+        <div>
+          <p style="margin-bottom:14px;">Sisi，做自媒体。每周都在录口播内容。问题不是"不会说话"——她很能说。</p>
+          <p style="margin-bottom:14px;">问题是回听录音的时候发现：满屏<span class="kw">"然后"</span><span class="kw">"嗯"</span><span class="kw">"就是"</span>。想表达的观点绕了三圈才说到。很多词太笼统——"很好""很多""开心"——听的人get不到重点。</p>
+          <p>最难受的是：<strong>说的时候完全意识不到</strong>。等录完回听才发现。她想要的是——说话的同时就能看到自己的问题。看到了，自然就会改。</p>
+        </div>
+        <div>
+          <div class="step-card" data-step="!">
+            <span class="step-label">Origin</span>
+            <h4>卡住 →</h4>
+            <p>一次5分钟录音里出现了29个填充词——平均每10秒一个。"然后"×11，"嗯"×8，"就是"×6。但说的时候一点感觉都没有。</p>
+          </div>
+          <div class="step-card" data-step="→">
+            <span class="step-label">Insight</span>
+            <h4>转折 →</h4>
+            <p>不是词汇量不够，是说话的时候缺少"镜子"。如果说的同时能看到自己在说什么、哪些词有问题——问题就会自动减少。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 02 第一版 ====== -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-num">02</span>
+        <h2 class="section-title">第一版：先让文字跟上嘴巴</h2>
+      </div>
+      <div class="reveal reveal-d1" style="max-width:800px;">
+        <p style="margin-bottom:20px;">最开始的需求只有一句话：<strong>"我想要一个实时字幕的东西，说话的时候能看到自己在说什么。"</strong></p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0;">
+          <div class="step-card" data-step="1" style="background:#fff;">
+            <h4>说话</h4>
+            <p>对着麦克风讲，字幕实时出现</p>
+          </div>
+          <div class="step-card" data-step="2" style="background:#fff;">
+            <h4>AI反馈</h4>
+            <p>说完之后生成报告，告诉你哪里有问题</p>
+          </div>
+          <div class="step-card" data-step="3" style="background:#fff;">
+            <h4>部署上线</h4>
+            <p>Cola用浏览器的Web Speech API + Groq免费API搭了一个网页版</p>
+          </div>
+        </div>
+        <p>第一版就这么简单。可以用了。</p>
+        <p style="margin-top:10px;color:var(--ink-light);">但问题来了——<strong>浏览器的语音识别要联网，中文识别率一般，说快了跟不上。</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 03 转折 ====== -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="layout-sticky reveal">
+        <div class="sticky-side">
+          <span class="section-num" style="font-size:clamp(3rem,8vw,5rem);opacity:0.15;">03</span>
+          <h2 class="section-title" style="margin-top:4px;">转折：发现了一个翻译工具里的语音引擎</h2>
+        </div>
+        <div>
+          <div class="chat">
+            <div class="bubble user"><div class="name">Sisi</div>浏览器那个语音识别不行。有没有离线的方案？</div>
+            <div class="bubble cola"><div class="name">Cola</div>我去GitHub找找。</div>
+            <div class="bubble cola"><div class="name">Cola</div>找到了——sherpa-onnx。一个给翻译软件用的离线语音识别引擎。完全本地运行，不联网，中英双语，18k+ stars。</div>
+            <div class="bubble user"><div class="name">Sisi</div>那我们做成本地应用吧。</div>
+            <div class="bubble cola"><div class="name">Cola</div>好。Electron + Node.js打包成桌面app，sherpa-onnx内嵌进去。</div>
+          </div>
+          <div class="pull-quote">关键是——我不知道这个东西存在。Cola去GitHub搜到的。我说"帮我找"，它就帮我找了。</div>
+          <p style="color:var(--ink-light);">从网页版搬到本地桌面应用。语音引擎从在线换成离线。整个技术栈重搭了一遍——但我做的事情没变：聊需求。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 04 加词库 ====== -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-num">04</span>
+        <h2 class="section-title">加词库：从"看到字"到"看到问题"</h2>
+      </div>
+      <div class="layout-split reveal reveal-d1">
+        <div>
+          <div class="chat" style="margin-bottom:16px;">
+            <div class="bubble user"><div class="name">Sisi</div>我想让它知道什么词太笼统，碰到了提醒我。</div>
+            <div class="bubble cola"><div class="name">Cola</div>大连理工有一个27000词情感词库。帮你筛选100个高频笼统词实时高亮，500个精准词做替换。</div>
+          </div>
+          <p style="margin-bottom:12px;">说到"开心"，旁边弹出替换建议。说到"很多"，弹出更精准的表达。</p>
+          <p><strong>词库是死的，但它在你说话的那一秒提醒你，效果是活的。</strong></p>
+        </div>
+        <div>
+          <div class="lex-demo">
+            <div class="lex-row">
+              <span class="lex-bad">开心</span>
+              <span class="lex-arrow">→</span>
+              <div class="lex-good"><span>雀跃</span><span>释然</span><span>松了口气</span></div>
+            </div>
+            <div class="lex-row">
+              <span class="lex-bad">很多</span>
+              <span class="lex-arrow">→</span>
+              <div class="lex-good"><span>密集</span><span>反复</span><span>超出预期</span></div>
+            </div>
+            <div class="lex-row">
+              <span class="lex-bad">难过</span>
+              <span class="lex-arrow">→</span>
+              <div class="lex-good"><span>窒息</span><span>被掏空</span><span>钝痛</span></div>
+            </div>
+            <div class="lex-row">
+              <span class="lex-bad">好</span>
+              <span class="lex-arrow">→</span>
+              <div class="lex-good"><span>精准</span><span>干脆</span><span>到位</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 05 加Skill (DARK) ====== -->
+  <section class="section section--dark">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-num">05</span>
+        <h2 class="section-title">加能力：从GitHub找来两个Skill</h2>
+      </div>
+      <div class="reveal reveal-d1">
+        <p style="margin-bottom:20px;">报告不能只是"你说了8次然后"。要能分析行为模式——什么时候开始犹豫？什么结构上总是绕弯子？</p>
+        <p style="margin-bottom:12px;">Cola从GitHub上一个4700+ stars的开源Skill仓库里选了两个能力融进去：</p>
+        <div class="feat-grid" style="grid-template-columns:1fr 1fr;margin-bottom:24px;">
+          <div class="feat-card" style="background:#fff;border:1.5px solid rgba(241,117,45,0.12);">
+            <div class="icon">🧠</div>
+            <h4 style="color:var(--ink);">行为分析能力</h4>
+            <p style="color:var(--ink-light);">分析你说话的行为模式：什么时候犹豫、重复、绕圈子</p>
+          </div>
+          <div class="feat-card" style="background:#fff;border:1.5px solid rgba(241,117,45,0.12);">
+            <div class="icon">📝</div>
+            <h4 style="color:var(--ink);">内容结构分析</h4>
+            <p style="color:var(--ink-light);">分析你表达的结构：有没有说到重点、逻辑是否完整</p>
+          </div>
+        </div>
+        <div style="background:var(--orange-soft);border-radius:14px;padding:24px;border:1.5px dashed var(--orange);">
+          <h4 style="color:var(--orange-deep);font-size:1.05rem;margin-bottom:8px;">📦 怎么抓GitHub上的东西？</h4>
+          <p style="color:var(--ink-light);font-size:0.9rem;margin-bottom:10px;">跟Cola说一句话就行：</p>
+          <p style="color:var(--ink);font-size:1rem;font-weight:700;">"帮我安装这个仓库" + 链接</p>
+          <p style="color:var(--ink-faint);font-size:0.82rem;margin-top:8px;">把仓库链接一起发给它，剩下的交给Cola。它会自动去抓、自动安装、自动集成。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 06 迭代 ====== -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="layout-sticky reveal">
+        <div class="sticky-side">
+          <span class="section-num" style="font-size:clamp(3rem,8vw,5rem);opacity:0.15;">06</span>
+          <h2 class="section-title">不断迭代：改了4个版本才找到想要什么</h2>
+        </div>
+        <div>
+          <div class="timeline">
+            <div class="tl-item">
+              <h4>v1 — 浮动面板</h4>
+              <p>面板遮住字幕，看不到自己说的话。❌ 不行</p>
+            </div>
+            <div class="tl-item">
+              <h4>v2 — 三列布局</h4>
+              <p>左边统计、中间字幕、右边反馈。✓ 能用了</p>
+            </div>
+            <div class="tl-item">
+              <h4>v3 — 粘贴逐字稿</h4>
+              <p>可以把之前录好的稿子粘进来分析。加了一键清空、保存。✓ 好用了</p>
+            </div>
+            <div class="tl-item current">
+              <h4>v4 — AI语境化建议</h4>
+              <p>右栏改成AI根据上下文给建议，词库只做高亮。✓ 对了</p>
+            </div>
+          </div>
+          <p style="margin:20px 0 12px;font-size:0.9rem;color:var(--ink-light);">后来还改了：</p>
+          <div class="step-card" data-step="+" style="background:#fff;">
+            <p>• 报告生成断了 → max_tokens 1500→<strong>4096</strong><br>• Groq 403了 → 换成<strong>DeepSeek</strong><br>• 加了<strong>Prompt编辑页面</strong>（自定义训练规则）<br>• 报告开头加了"宇宙无敌少女收到你的录音啦~~"</p>
+          </div>
+          <div class="pull-quote">想清楚自己要什么很重要。但也不可能一开始就想清楚——做着做着才知道。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 07 意外收获 ====== -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-num">07</span>
+        <h2 class="section-title">意外收获：工具反过来改变了我的表达</h2>
+      </div>
+      <div class="reveal reveal-d1" style="max-width:720px;">
+        <div class="change-card">
+          <h4>口头禅在减少</h4>
+          <p>调试系统时不断给自己出报告，看到满屏"然后"。现在碰到需要思考的时候就停住、留白，想清楚再说下一句。</p>
+        </div>
+        <div class="change-card">
+          <h4>脑子会自动搭框架</h4>
+          <p>一直用语音跟Cola聊需求、让它整理框架。聊着聊着脑子里开始自动生成结构。现在跟AI还是跟观众表达，都会先搭框架再说。</p>
+        </div>
+        <div style="background:var(--orange);color:#fff;border-radius:14px;padding:24px;margin-top:16px;">
+          <p style="font-family:'Noto Serif SC',serif;font-size:1.15rem;font-weight:900;margin-bottom:6px;">做内容不是创作的第一步，是最后一步</p>
+          <p style="font-size:0.88rem;opacity:0.85;">观察 → 想法 → 实践 → 感悟 → 分发</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 08 怎么用 ====== -->
+  <section class="section section--alt">
+    <div class="container reveal">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <h2 class="section-title">怎么开始用</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
+        <!-- 第一步 -->
+        <div style="background:#fff;border-radius:20px;padding:clamp(24px,3vw,36px);position:relative;">
+          <span style="display:inline-block;background:var(--orange);color:#fff;padding:6px 18px;border-radius:20px;font-size:0.82rem;font-weight:700;margin-bottom:16px;">第一步</span>
+          <h3 style="font-family:'Noto Serif SC',serif;font-size:1.3rem;font-weight:900;margin-bottom:12px;">下载安装</h3>
+          <p style="color:var(--orange-deep);font-size:0.9rem;font-weight:500;margin-bottom:12px;">从GitHub免费下载 ✦</p>
+          <div style="background:var(--orange-soft);border-radius:12px;padding:16px;">
+            <a href="https://github.com/fxy2311-youyou/expression-trainer" target="_blank" style="font-family:'Fira Code',monospace;font-size:0.82rem;color:var(--ink);word-break:break-all;display:block;text-decoration:none;">github.com/fxy2311-youyou/expression-trainer</a>
+          </div>
+          <p style="font-size:0.8rem;color:var(--ink-faint);margin-top:12px;">搜索 expression-trainer 就能找到。</p>
+        </div>
+        <!-- 第二步 -->
+        <div style="background:#fff;border-radius:20px;padding:clamp(24px,3vw,36px);position:relative;">
+          <span style="display:inline-block;background:var(--orange);color:#fff;padding:6px 18px;border-radius:20px;font-size:0.82rem;font-weight:700;margin-bottom:16px;">第二步</span>
+          <h3 style="font-family:'Noto Serif SC',serif;font-size:1.3rem;font-weight:900;margin-bottom:12px;">填一个API Key</h3>
+          <p style="color:var(--orange-deep);font-size:0.9rem;font-weight:500;margin-bottom:12px;">选择任意API，几分钟搞定 ✦</p>
+          <div style="background:var(--orange-soft);border-radius:12px;padding:16px;text-align:center;">
+            <p style="font-size:0.88rem;color:var(--ink);font-weight:500;">设置 → 填入Key → 保存</p>
+          </div>
+          <p style="font-size:0.8rem;color:var(--ink-faint);margin-top:12px;">不填也能用基础功能（离线语音+词库），只是没有AI深度分析。</p>
+        </div>
+        <!-- 第三步 -->
+        <div style="background:#fff;border-radius:20px;padding:clamp(24px,3vw,36px);position:relative;">
+          <span style="display:inline-block;background:var(--orange);color:#fff;padding:6px 18px;border-radius:20px;font-size:0.82rem;font-weight:700;margin-bottom:16px;">第三步</span>
+          <h3 style="font-family:'Noto Serif SC',serif;font-size:1.3rem;font-weight:900;margin-bottom:12px;">然后开口说一句</h3>
+          <div style="border:2px solid var(--orange);border-radius:40px;padding:16px 24px;text-align:center;margin:20px 0;">
+            <p style="font-family:'Noto Serif SC',serif;font-size:1.1rem;color:var(--orange-deep);font-weight:700;">"今天我想聊一下......"</p>
+          </div>
+          <p style="font-size:0.85rem;color:var(--ink-light);text-align:center;">它会实时转写、实时标记问题、<br>说完生成完整报告。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FOOTER ====== -->
+  <footer class="footer">
+    <img src="cola-avatar.png" alt="Cola">
+    <p>Made with Cola · 2026</p>
+  </footer>
+
+  <!-- Scroll Reveal -->
+  <script>
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>
