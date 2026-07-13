@@ -1,0 +1,2264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sisi Design Green — Brand Playground v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=Caveat:wght@400;700&family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== CSS Variables ===== */
+    :root {
+      --green: #45A020;
+      --yellow: #FFD000;
+      --magenta: #E5007E;
+      --cream: #F8FFF5;
+      --dark: #2A2A2A;
+      --ink: #2A2A2A;
+      --ink-light: #4A4A5A;
+      --ink-faint: #8A8A9A;
+      --orange: #45A020;
+      --orange-light: rgba(69, 160, 32, 0.15);
+      --orange-deep: #358018;
+      --warm-white: #E5007E;
+      --cream-dark: #faf6eb;
+      --blue: #45A020;
+      --red: #E5007E;
+    }
+
+    /* ===== Reset ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.6;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    section {
+      padding: clamp(60px, 10vh, 120px) 0;
+    }
+
+    h1, h2, h3 { line-height: 1.3; }
+
+    /* ===== F1: Cursor Trail (全页) ===== */
+    .cursor-dot {
+      position: fixed;
+      width: 14px;
+      height: 14px;
+      background: var(--magenta);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.1s;
+    }
+    .cursor-trail-dot {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background: var(--yellow);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.6;
+    }
+    @media (hover: none) {
+      .cursor-dot, .cursor-trail-dot { display: none; }
+      body { cursor: auto; }
+    }
+
+    /* ===== Nav (#9) ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
+      background: rgba(248,255,245,.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(26,26,26,.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,.06); }
+    .nav-logo {
+      font-family: 'Fraunces', serif;
+      font-weight: 900;
+      font-size: 1.2rem;
+      color: var(--green);
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 0.85rem;
+      position: relative;
+      cursor: none;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0; right: 0;
+      height: 2px;
+      background: var(--yellow);
+      transform: scaleX(0);
+      transition: transform .25s ease-out;
+    }
+    .nav-links a:hover::after { transform: scaleX(1); }
+
+    /* ===== Scroll Reveal (#4) ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+    .reveal-d4 { transition-delay: 0.4s; }
+    .reveal-d5 { transition-delay: 0.5s; }
+
+    /* ===== D1: Scale Up Pop ===== */
+    .reveal-scale {
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+    /* ===== Section Header (#2) ===== */
+    .section-header { margin-bottom: 2.5rem; }
+    .section-number {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      color: var(--green);
+      opacity: 0.3;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .section-title {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      color: var(--ink);
+    }
+
+    /* ===== Hero Section ===== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      padding-top: 80px;
+      background: var(--yellow);
+    }
+    .hero-content { position: relative; z-index: 2; }
+    .hero h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 900;
+      color: var(--dark);
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--ink-light);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ===== E1: Floating Orbs ===== */
+    .orbs-container {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      animation: orbFloat 6s ease-in-out infinite;
+    }
+    .orb:nth-child(1) {
+      width: 120px; height: 120px;
+      background: rgba(69, 160, 32, 0.4);
+      top: 20%; left: 20%;
+    }
+    .orb:nth-child(2) {
+      width: 80px; height: 80px;
+      background: rgba(255, 208, 0, 0.5);
+      top: 60%; right: 20%;
+      animation-delay: -2s;
+    }
+    .orb:nth-child(3) {
+      width: 100px; height: 100px;
+      background: rgba(229, 0, 126, 0.3);
+      bottom: 20%; left: 50%;
+      animation-delay: -4s;
+    }
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0); }
+      33% { transform: translate(20px, -20px); }
+      66% { transform: translate(-15px, 15px); }
+    }
+
+    /* ===== A1: Typewriter ===== */
+    .typewriter {
+      font-family: 'Caveat', cursive;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--ink);
+      border-right: 3px solid var(--magenta);
+      white-space: nowrap;
+      overflow: hidden;
+      display: inline-block;
+      animation: typing 3.5s steps(18, end) infinite, tw-blink 0.75s step-end infinite;
+      max-width: 18ch;
+    }
+    @keyframes typing {
+      0% { max-width: 0; }
+      50% { max-width: 18ch; }
+      90% { max-width: 18ch; }
+      100% { max-width: 0; }
+    }
+    @keyframes tw-blink {
+      from, to { border-color: transparent; }
+      50% { border-color: var(--magenta); }
+    }
+
+    /* ===== A3: Shiny Text ===== */
+    .shiny-text {
+      font-family: 'Fraunces', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--ink);
+      position: relative;
+      display: inline-block;
+      overflow: hidden;
+    }
+    .shiny-text::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: rgba(255, 208, 0, 0.4);
+      transform: skewX(-20deg);
+      animation: shineText 2.5s ease-in-out infinite;
+    }
+    @keyframes shineText {
+      0% { left: -100%; }
+      100% { left: 150%; }
+    }
+
+    /* ===== A4: Morphing Text ===== */
+    .morph-container {
+      position: relative;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .morph-text {
+      font-family: 'Fraunces', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      position: absolute;
+      color: var(--green);
+      transition: opacity 0.6s, filter 0.6s;
+    }
+    .morph-text.out { opacity: 0; filter: blur(8px); }
+    .morph-text.in { opacity: 1; filter: blur(0); }
+
+    /* ===== A2: Number Counter ===== */
+    .counter-wrap {
+      display: flex;
+      gap: 48px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .counter-item { text-align: center; }
+    .counter-num {
+      font-family: 'Fraunces', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--green);
+    }
+    .counter-label {
+      font-size: 0.8rem;
+      opacity: 0.6;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* ===== 1A: Magazine Card ===== */
+    .magazine-card {
+      padding: 32px 24px 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .magazine-card .card-title {
+      font-family: 'Fraunces', 'Noto Serif SC', serif;
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1.15;
+      color: var(--ink);
+      min-height: 80px;
+    }
+    .magazine-card .card-desc {
+      font-size: 0.8rem;
+      color: var(--ink-light);
+      margin-top: 16px;
+    }
+    .magazine-card .card-aux {
+      font-size: 0.7rem;
+      color: var(--green);
+      margin-top: 8px;
+      font-weight: 500;
+      display: block;
+    }
+
+    /* ===== 1C: Tag Card ===== */
+    .tag-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .tag-card .card-pill {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      margin-bottom: 14px;
+    }
+    .card-pill--green { background: rgba(69,160,32,0.1); color: var(--green); }
+    .card-pill--yellow { background: rgba(255,208,0,0.25); color: #9a8100; }
+    .card-pill--magenta { background: rgba(229,0,126,0.1); color: var(--magenta); }
+    .tag-card .card-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .tag-card .card-desc {
+      font-size: 0.85rem;
+      color: var(--ink-light);
+    }
+
+    /* ===== 1D: Icon Card ===== */
+    .icon-card {
+      display: flex;
+      align-items: stretch;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      min-height: 130px;
+    }
+    .icon-card .card-icon-area {
+      flex: 0 0 33%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.8rem;
+    }
+    .card-icon-area--green { background: rgba(69,160,32,0.06); }
+    .card-icon-area--yellow { background: rgba(255,208,0,0.12); }
+    .card-icon-area--magenta { background: rgba(229,0,126,0.06); }
+    .icon-card .card-content {
+      flex: 1;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .icon-card .card-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .icon-card .card-desc {
+      font-size: 0.8rem;
+      color: var(--ink-light);
+    }
+
+    /* ===== 1E Quotes ===== */
+    .quote-bar {
+      border-left: 8px solid var(--green);
+      padding: 32px 32px 32px 40px;
+      position: relative;
+      background: white;
+      border-radius: 0 12px 12px 0;
+    }
+    .quote-bar::before {
+      content: '\201C';
+      font-family: 'Fraunces', serif;
+      font-size: 80px;
+      color: var(--green);
+      opacity: 0.15;
+      position: absolute;
+      top: -10px; left: 20px;
+      line-height: 1;
+    }
+    .quote-bar .quote-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.2rem;
+      line-height: 1.8;
+      color: var(--ink);
+      font-weight: 700;
+    }
+    .quote-bar .quote-source {
+      margin-top: 16px;
+      font-size: 0.85rem;
+      color: var(--ink-light);
+    }
+
+    .quote-solid {
+      background: var(--green);
+      border-radius: 20px;
+      padding: 36px;
+      color: #fff;
+    }
+    .quote-solid .quote-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.2rem;
+      line-height: 1.7;
+    }
+    .quote-solid .quote-source {
+      margin-top: 16px;
+      font-size: 0.85rem;
+      opacity: 0.75;
+      text-align: right;
+    }
+
+    .quote-lines {
+      border-top: 4px solid var(--green);
+      border-bottom: 4px solid var(--green);
+      padding: 36px 24px;
+      text-align: center;
+    }
+    .quote-lines .quote-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.2rem;
+      line-height: 1.7;
+      color: var(--ink);
+    }
+    .quote-lines .quote-source {
+      margin-top: 16px;
+      font-size: 0.85rem;
+      color: var(--green);
+      font-weight: 600;
+      letter-spacing: 2px;
+    }
+
+    .quote-tag .tag {
+      display: inline-block;
+      background: var(--green);
+      color: #fff;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
+      padding: 4px 12px;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      letter-spacing: 1px;
+    }
+    .quote-tag .quote-text {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--ink);
+      font-weight: 500;
+      padding-left: 20px;
+      border-left: 4px solid rgba(69,160,32,0.3);
+    }
+    .quote-tag .quote-source {
+      margin-top: 14px;
+      padding-left: 20px;
+      font-size: 0.85rem;
+      color: var(--ink-light);
+    }
+
+    /* ===== #3: Key Insight Variants ===== */
+    .quote-deco {
+      position: relative;
+      padding: 32px 32px 32px 56px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .quote-deco::before {
+      content: '\201C';
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      font-family: 'Fraunces', serif;
+      font-size: 3.5rem;
+      line-height: 1;
+      color: var(--green);
+      opacity: 0.6;
+    }
+    .quote-deco p {
+      font-size: 0.95rem;
+      line-height: 1.9;
+      color: var(--ink-light);
+    }
+
+    .quote-note {
+      position: relative;
+      padding: 24px 28px;
+      background: white;
+      border-radius: 10px;
+      border: 1.5px dashed rgba(69, 160, 32, 0.3);
+    }
+    .quote-note-tag {
+      position: absolute;
+      top: -10px;
+      left: 20px;
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: var(--green);
+      background: var(--cream);
+      padding: 0 8px;
+      font-weight: 700;
+    }
+    .quote-note p {
+      font-family: 'Caveat', cursive;
+      font-size: 1.2rem;
+      line-height: 1.85;
+      color: var(--ink-light);
+    }
+
+    .quote-typo {
+      position: relative;
+      padding: 20px 28px 20px 40px;
+    }
+    .quote-typo::before {
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 60%;
+      background: var(--yellow);
+      border-radius: 2px;
+    }
+    .quote-typo p {
+      font-size: 1rem;
+      line-height: 1.85;
+      color: var(--ink);
+      font-weight: 500;
+      font-style: italic;
+    }
+
+    /* ===== #6: Pull Quote ===== */
+    .viral-pullquote {
+      padding: 36px 40px;
+      background: var(--yellow);
+      border-radius: 16px;
+      position: relative;
+      color: var(--dark);
+    }
+    .viral-pullquote::before {
+      content: '\201C';
+      font-family: 'Fraunces', serif;
+      font-size: 5rem;
+      color: var(--dark);
+      position: absolute;
+      top: -10px; left: 20px;
+      opacity: 0.2;
+      line-height: 1;
+    }
+    .viral-pullquote p {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      font-weight: 700;
+      line-height: 1.8;
+      color: var(--dark);
+    }
+
+    /* ===== #7: Chat Bubbles ===== */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 640px;
+    }
+    .chat-bubble {
+      padding: 14px 20px;
+      border-radius: 18px;
+      max-width: 85%;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .chat-bubble.user {
+      background: var(--yellow);
+      color: var(--ink);
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .chat-bubble.ai {
+      background: var(--green);
+      color: #fefcf6;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    /* ===== #8: Tip Header ===== */
+    .tip-header .tip-number {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(3rem, 8vw, 5rem);
+      font-weight: 900;
+      color: var(--green);
+      opacity: 0.15;
+      line-height: 0.85;
+      display: block;
+    }
+    .tip-header .tip-title {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      margin-top: -0.5rem;
+    }
+
+    /* ===== 10A: Giant Number Cards ===== */
+    .chair-number-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .chair-number-card {
+      position: relative;
+      background: white;
+      border-radius: 20px;
+      padding: 40px 24px 28px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .chair-number-card .chair-big-num {
+      position: absolute;
+      top: -15px;
+      right: -5px;
+      font-family: 'Fraunces', serif;
+      font-size: 6rem;
+      font-weight: 900;
+      line-height: 1;
+      pointer-events: none;
+    }
+    .chair-number-card:nth-child(1) .chair-big-num { color: rgba(69,160,32,0.12); }
+    .chair-number-card:nth-child(2) .chair-big-num { color: rgba(255,208,0,0.25); }
+    .chair-number-card:nth-child(3) .chair-big-num { color: rgba(229,0,126,0.1); }
+    .chair-number-card h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .chair-number-card p {
+      font-size: 0.85rem;
+      color: var(--ink-light);
+      line-height: 1.7;
+      position: relative;
+    }
+
+    /* ===== 10B: Magazine Editorial ===== */
+    .chair-magazine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+    .chair-magazine-card {
+      position: relative;
+      padding: 32px 0;
+    }
+    .chair-magazine-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: var(--ink);
+      opacity: 0.1;
+    }
+    .chair-magazine-card .chair-num {
+      font-family: 'Fraunces', serif;
+      font-size: 0.75rem;
+      font-style: italic;
+      color: var(--ink-faint);
+      margin-bottom: 12px;
+    }
+    .chair-magazine-card h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.4rem;
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .chair-magazine-card p {
+      font-size: 0.85rem;
+      color: var(--ink-light);
+      line-height: 1.8;
+    }
+    .chair-magazine-card .chair-tag {
+      display: inline-block;
+      margin-top: 16px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.65rem;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ===== 10C: Dashed Sketch ===== */
+    .chair-dashed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .chair-dashed-card {
+      border: 2px dashed;
+      border-radius: 16px;
+      padding: 28px 22px;
+      position: relative;
+      background: white;
+    }
+    .chair-dashed-card:nth-child(1) { border-color: rgba(69,160,32,0.3); }
+    .chair-dashed-card:nth-child(2) { border-color: rgba(255,208,0,0.5); }
+    .chair-dashed-card:nth-child(3) { border-color: rgba(229,0,126,0.3); }
+    .chair-dashed-card .chair-label {
+      position: absolute;
+      top: -10px;
+      left: 16px;
+      font-family: 'Caveat', cursive;
+      font-size: 0.95rem;
+      font-weight: 700;
+      background: var(--cream);
+      padding: 0 8px;
+    }
+    .chair-dashed-card:nth-child(1) .chair-label { color: var(--green); }
+    .chair-dashed-card:nth-child(2) .chair-label { color: #9a8100; }
+    .chair-dashed-card:nth-child(3) .chair-label { color: var(--magenta); }
+    .chair-dashed-card h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      margin-top: 6px;
+    }
+    .chair-dashed-card p {
+      font-size: 0.85rem;
+      color: var(--ink-light);
+      line-height: 1.7;
+    }
+
+    /* ===== 10D: Solid Fill (no gradient, pure colors) ===== */
+    .chair-gradient-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .chair-gradient-card {
+      border-radius: 20px;
+      padding: 32px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .chair-gradient-card:nth-child(1) { background: rgba(69,160,32,0.08); }
+    .chair-gradient-card:nth-child(2) { background: rgba(255,208,0,0.15); }
+    .chair-gradient-card:nth-child(3) { background: rgba(229,0,126,0.08); }
+    .chair-gradient-card .chair-emoji { font-size: 2rem; margin-bottom: 16px; }
+    .chair-gradient-card h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .chair-gradient-card p {
+      font-size: 0.85rem;
+      color: var(--ink-light);
+      line-height: 1.7;
+    }
+
+    /* ===== 10E: Typography Only ===== */
+    .chair-typo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
+    .chair-typo-card .chair-divider {
+      width: 32px;
+      height: 3px;
+      margin-bottom: 20px;
+    }
+    .chair-typo-card:nth-child(1) .chair-divider { background: var(--green); }
+    .chair-typo-card:nth-child(2) .chair-divider { background: var(--yellow); }
+    .chair-typo-card:nth-child(3) .chair-divider { background: var(--magenta); }
+    .chair-typo-card h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+    .chair-typo-card p {
+      font-size: 0.88rem;
+      color: var(--ink-light);
+      line-height: 1.9;
+    }
+    .chair-typo-card .chair-meta {
+      display: block;
+      margin-top: 16px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.65rem;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ===== #11: System Flow ===== */
+    .system-flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      padding: 24px 32px;
+      background: white;
+      border-radius: 14px;
+      border: 1px solid rgba(69, 160, 32, 0.1);
+    }
+    .system-flow span {
+      font-size: 0.9rem;
+      padding: 6px 14px;
+      background: var(--cream);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    }
+    .flow-arrow {
+      color: var(--green);
+      font-size: 1.2rem;
+      background: transparent !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+    }
+
+    /* ===== #12A: Compare Cards ===== */
+    .compare-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .compare-block {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+    .compare-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid;
+    }
+    .compare-block--dont .compare-header { border-color: var(--magenta); }
+    .compare-block--do .compare-header { border-color: var(--green); }
+    .compare-header .compare-icon { font-size: 1.3rem; }
+    .compare-header .compare-label {
+      font-family: 'Fraunces', serif;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .compare-block--dont .compare-label { color: var(--magenta); }
+    .compare-block--do .compare-label { color: var(--green); }
+    .compare-block ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .compare-block li {
+      font-size: 0.88rem;
+      color: var(--ink-light);
+      padding-left: 20px;
+      position: relative;
+      line-height: 1.6;
+    }
+    .compare-block--dont li::before { content: '×'; position: absolute; left: 0; color: var(--magenta); font-weight: 700; }
+    .compare-block--do li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+
+    /* ===== #13: Skill Card ===== */
+    .skill-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,.06);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+    .skill-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--yellow);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .skill-card:hover { transform: translateY(-4px); }
+    .skill-card:hover::before { opacity: 1; }
+    .skill-card h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .skill-card p { font-size: 0.85rem; color: var(--ink-light); }
+
+    /* ===== #15: Avatar Cluster ===== */
+    .hero-cluster {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 2rem;
+    }
+    .ring {
+      position: absolute;
+      inset: -12px;
+      border: 2px dashed rgba(69,160,32,0.25);
+      border-radius: 50%;
+      animation: heroSpin 20s linear infinite;
+    }
+    @keyframes heroSpin { to { transform: rotate(360deg); } }
+    .avatar-placeholder {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      background: var(--yellow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      position: relative;
+      z-index: 2;
+    }
+    .orbit-item {
+      position: absolute;
+      background: white;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.7rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+      z-index: 3;
+    }
+
+    /* ===== #16: Filter Bar ===== */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+    }
+    .filter-tag {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      background: rgba(0,0,0,.05);
+      border: none;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .filter-tag.active {
+      color: #fff;
+      background: var(--green);
+    }
+    .filter-tag:hover:not(.active) { background: rgba(0,0,0,.1); }
+
+    /* ===== #20: CTA Button ===== */
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: var(--yellow);
+      color: var(--dark);
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: transform .2s, box-shadow .2s;
+      border: none;
+      cursor: pointer;
+    }
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255,208,0,0.4);
+    }
+
+    /* ===== B1: Border Beam ===== */
+    .btn-border-beam {
+      padding: 14px 32px;
+      background: transparent;
+      color: var(--green);
+      border: 2px solid var(--green);
+      border-radius: 50px;
+      font-family: 'Noto Sans SC', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .btn-border-beam::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      border-radius: 50px;
+      background: conic-gradient(from var(--beam-angle, 0deg), transparent 70%, var(--yellow) 85%, var(--green));
+      z-index: -1;
+      animation: beamRotate 2s linear infinite;
+    }
+    .btn-border-beam::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      background: var(--cream);
+      border-radius: 48px;
+      z-index: -1;
+    }
+    @property --beam-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @keyframes beamRotate { to { --beam-angle: 360deg; } }
+
+    /* ===== B2: 3D Press ===== */
+    .btn-3d {
+      padding: 14px 32px;
+      background: var(--green);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Noto Sans SC', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #358018, 0 8px 12px rgba(0,0,0,0.15);
+      transform: translateY(0);
+      transition: all 0.1s ease;
+    }
+    .btn-3d:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #358018, 0 3px 6px rgba(0,0,0,0.1);
+    }
+
+    /* ===== C1: Neon Glow Card ===== */
+    .card-neon {
+      background: var(--yellow);
+      color: var(--dark);
+      border: 1px solid var(--green);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 0 5px var(--green), inset 0 0 5px rgba(69, 160, 32, 0.1);
+      transition: box-shadow 0.3s;
+    }
+    .card-neon:hover {
+      box-shadow: 0 0 20px var(--green), 0 0 40px rgba(69, 160, 32, 0.3), inset 0 0 10px rgba(69, 160, 32, 0.2);
+    }
+    .card-neon h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .card-neon p { font-size: 0.85rem; opacity: 0.7; }
+
+    /* ===== C2: Stacked Cards ===== */
+    .stacked-cards {
+      position: relative;
+      width: 220px;
+      height: 140px;
+      cursor: pointer;
+      margin: 2rem auto;
+    }
+    .stacked-cards .s-card {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .stacked-cards .s-card:nth-child(1) {
+      background: var(--green);
+      color: white;
+      z-index: 3;
+    }
+    .stacked-cards .s-card:nth-child(2) {
+      background: var(--yellow);
+      color: var(--dark);
+      z-index: 2;
+      transform: translateY(8px) scale(0.96);
+    }
+    .stacked-cards .s-card:nth-child(3) {
+      background: var(--magenta);
+      color: white;
+      z-index: 1;
+      transform: translateY(16px) scale(0.92);
+    }
+
+    /* ===== E2: Flickering Grid ===== */
+    .flicker-section {
+      position: relative;
+      background: var(--green);
+      border-radius: 16px;
+      padding: 60px 40px;
+      overflow: hidden;
+      color: white;
+    }
+    .flicker-grid {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      grid-template-rows: repeat(6, 1fr);
+      gap: 2px;
+      pointer-events: none;
+    }
+    .flicker-cell {
+      background: rgba(255, 208, 0, 0.05);
+      border-radius: 2px;
+      animation: flicker 3s ease-in-out infinite;
+    }
+    @keyframes flicker {
+      0%, 100% { background: rgba(255, 208, 0, 0.05); }
+      50% { background: rgba(255, 208, 0, 0.3); }
+    }
+
+    /* ===== G1: Animated Tabs ===== */
+    .tabs-demo {
+      display: inline-flex;
+      background: rgba(69, 160, 32, 0.06);
+      border-radius: 10px;
+      padding: 4px;
+      position: relative;
+    }
+    .tabs-demo .tab {
+      padding: 10px 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+      transition: color 0.3s;
+      border-radius: 8px;
+      user-select: none;
+    }
+    .tabs-demo .tab.active { color: white; }
+    .tabs-demo .tab-indicator {
+      position: absolute;
+      top: 4px;
+      height: calc(100% - 8px);
+      background: var(--green);
+      border-radius: 8px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ===== G2: Toggle Switch ===== */
+    .toggle-container {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+    .toggle {
+      width: 56px;
+      height: 30px;
+      background: rgba(69, 160, 32, 0.2);
+      border-radius: 15px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .toggle.active { background: var(--green); }
+    .toggle .knob {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 24px;
+      height: 24px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .toggle.active .knob { transform: translateX(26px); }
+
+    /* ===== Code Panels ===== */
+    .code-macos {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.15);
+    }
+    .code-macos .code-titlebar {
+      background: #2d2d3a;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .code-macos .code-dots { display: flex; gap: 6px; }
+    .code-macos .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .code-macos .dot:nth-child(1) { background: #ff5f56; }
+    .code-macos .dot:nth-child(2) { background: #ffbd2e; }
+    .code-macos .dot:nth-child(3) { background: #27c93f; }
+    .code-macos .code-filename {
+      flex: 1;
+      text-align: center;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.7rem;
+      color: #8A8A9A;
+    }
+    .code-macos .code-body {
+      background: #1a1b26;
+      padding: 24px;
+    }
+    .code-macos pre {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.82rem;
+      line-height: 1.9;
+      color: #a9b1d6;
+      margin: 0;
+    }
+    .code-macos .kw { color: #bb9af7; }
+    .code-macos .fn { color: #7aa2f7; }
+    .code-macos .str { color: #9ece6a; }
+    .code-macos .cm { color: #565f89; }
+
+    .code-notebook {
+      background: #fffef8;
+      border: 1px solid #e8e4d9;
+      border-radius: 4px;
+      position: relative;
+      box-shadow: 2px 3px 0 #e8e4d9;
+    }
+    .code-notebook .code-holes {
+      position: absolute;
+      left: 28px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: rgba(229,0,126,0.2);
+    }
+    .code-notebook .code-tab {
+      padding: 8px 16px 8px 48px;
+      border-bottom: 1px solid #e8e4d9;
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: var(--green);
+      font-weight: 700;
+    }
+    .code-notebook pre {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      line-height: 2.2;
+      color: var(--ink);
+      margin: 0;
+      padding: 16px 20px 16px 48px;
+    }
+
+    .code-typewriter {
+      background: #f5f0e8;
+      border: 2px solid #d4c9b5;
+      padding: 32px 28px;
+      position: relative;
+    }
+    .code-typewriter::before {
+      content: 'TYPEWRITER OUTPUT';
+      position: absolute;
+      top: -11px;
+      left: 20px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      color: var(--ink-faint);
+      background: #f5f0e8;
+      padding: 0 8px;
+    }
+    .code-typewriter pre {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.82rem;
+      line-height: 2;
+      color: var(--ink);
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+    .code-typewriter .kw { color: var(--green); text-decoration: underline; text-underline-offset: 3px; }
+    .code-typewriter .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 1.1em;
+      background: var(--ink);
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .code-clean {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      position: relative;
+    }
+    .code-clean .code-corner-tag {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.6rem;
+      color: var(--ink-faint);
+      padding: 2px 8px;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 4px;
+    }
+    .code-clean pre {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.82rem;
+      line-height: 2;
+      color: var(--ink);
+      margin: 0;
+    }
+    .code-clean .kw { color: var(--green); font-weight: 600; }
+    .code-clean .fn { color: #7c3aed; }
+    .code-clean .str { color: var(--magenta); }
+
+    /* ===== Keyword Badges ===== */
+    .keyword-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .keyword-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      background: var(--yellow);
+      color: var(--dark);
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ===== Sisi Signature ===== */
+    .sisi-signature {
+      text-align: center;
+      padding: 40px 0;
+      font-family: 'Caveat', cursive;
+      font-size: 1.8rem;
+      color: var(--green);
+      opacity: 0.7;
+      letter-spacing: 2px;
+    }
+
+    /* ===== Section Backgrounds ===== */
+    .bg-white { background: white; }
+    .bg-cream { background: var(--cream); }
+    .bg-yellow { background: var(--yellow); }
+    .bg-yellow-light { background: rgba(255,208,0,0.15); }
+
+    /* ===== Grid helpers ===== */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .flex-center { display: flex; align-items: center; justify-content: center; }
+    .gap-24 { gap: 24px; }
+    .mb-16 { margin-bottom: 16px; }
+    .mb-24 { margin-bottom: 24px; }
+    .mb-40 { margin-bottom: 40px; }
+    .mt-40 { margin-top: 40px; }
+    .text-center { text-align: center; }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 768px) {
+      .grid-2, .grid-3,
+      .chair-number-grid, .chair-magazine-grid,
+      .chair-dashed-grid, .chair-gradient-grid,
+      .chair-typo-grid, .compare-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .reveal-scale { opacity: 1; transform: none; transition: none; }
+      .typewriter { animation: none; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- F1: Cursor Trail (全页生效) -->
+  <div class="cursor-dot" id="cursorDot"></div>
+
+  <!-- Nav (#9) -->
+  <nav>
+    <span class="nav-logo">Sisi Green ✦</span>
+    <div class="nav-links">
+      <a href="#text-effects">文字动效</a>
+      <a href="#cards">卡片</a>
+      <a href="#quotes">引用块</a>
+      <a href="#code">代码面板</a>
+      <a href="#interactions">交互</a>
+    </div>
+  </nav>
+
+  <!-- Hero + E1 Floating Orbs -->
+  <section class="hero" id="hero">
+    <div class="orbs-container">
+      <div class="orb"></div>
+      <div class="orb"></div>
+      <div class="orb"></div>
+    </div>
+    <div class="hero-content">
+      <!-- #15: Avatar Cluster -->
+      <div class="hero-cluster reveal">
+        <div class="ring"></div>
+        <div class="avatar-placeholder">🌿</div>
+        <span class="orbit-item" style="top:0;right:5%">设计系统</span>
+        <span class="orbit-item" style="bottom:10%;left:-10%">品牌DNA</span>
+        <span class="orbit-item" style="top:40%;right:-20%">表达力</span>
+      </div>
+      <h1 class="reveal reveal-d1">Sisi Design Green</h1>
+      <p class="reveal reveal-d2">品牌表达系统 Playground — 组件库 × 动效库 全览</p>
+      <!-- Keyword Badges -->
+      <div class="keyword-badges reveal reveal-d3" style="justify-content:center; margin-top:1.5rem;">
+        <span class="keyword-badge">🌿 绿色系统</span>
+        <span class="keyword-badge">✨ 20+组件</span>
+        <span class="keyword-badge">🎬 12+动效</span>
+      </div>
+      <div class="reveal reveal-d4" style="margin-top: 2rem;">
+        <a href="#text-effects" class="cta-button">开始探索 →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Section: Text Effects ===== -->
+  <section id="text-effects" class="bg-cream">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-number">01</span>
+        <h2 class="section-title">文字动效</h2>
+      </div>
+
+      <!-- A1: Typewriter -->
+      <div class="reveal mb-40">
+        <h3 style="font-family:'Noto Serif SC',serif; margin-bottom:1rem;">A1. 打字机效果</h3>
+        <span class="typewriter">Hello, I'm Sisi ✨</span>
+      </div>
+
+      <!-- A3: Shiny Text -->
+      <div class="reveal mb-40">
+        <h3 style="font-family:'Noto Serif SC',serif; margin-bottom:1rem;">A3. 光泽扫过</h3>
+        <span class="shiny-text">宇宙无敌表达系统</span>
+      </div>
+
+      <!-- A4: Morphing Text -->
+      <div class="reveal mb-40">
+        <h3 style="font-family:'Noto Serif SC',serif; margin-bottom:1rem;">A4. 文字变幻</h3>
+        <div class="morph-container">
+          <span class="morph-text in" data-words='["看见","停顿","力量","改变","表达"]'></span>
+        </div>
+      </div>
+
+      <!-- A2: Number Counter -->
+      <div class="reveal mb-40">
+        <h3 style="font-family:'Noto Serif SC',serif; margin-bottom:1rem;">A2. 数字滚动</h3>
+        <div class="counter-wrap">
+          <div class="counter-item">
+            <span class="counter-num" data-target="2700">0</span>
+            <span class="counter-label">词汇量</span>
+          </div>
+          <div class="counter-item">
+            <span class="counter-num" data-target="35">0</span>
+            <span class="counter-label">组件数</span>
+          </div>
+          <div class="counter-item">
+            <span class="counter-num" data-target="12">0</span>
+            <span class="counter-label">动效数</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Section: Button Effects ===== -->
+  <section class="bg-yellow-light">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-number">02</span>
+        <h2 class="section-title">按钮动效 & CTA</h2>
+      </div>
+
+      <div class="reveal grid-3" style="align-items:center;">
+        <div class="text-center">
+          <p class="mb-16" style="font-size:0.8rem; color:var(--ink-faint)">B1. 边框光束</p>
+          <button class="btn-border-beam">开始体验 →</button>
+        </div>
+        <div class="text-center">
+          <p class="mb-16" style="font-size:0.8rem; color:var(--ink-faint)">B2. 3D按压</p>
+          <button class="btn-3d">点击练习 🎤</button>
+        </div>
+        <div class="text-center">
+          <p class="mb-16" style="font-size:0.8rem; color:var(--ink-faint)">#20. CTA按钮</p>
+          <a href="#" class="cta-button">立即行动 ✦</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Section: Cards ===== -->
+  <section id="cards" class="bg-cream">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-number">03</span>
+        <h2 class="section-title">卡片组件库</h2>
+      </div>
+
+      <!-- 1A: Magazine Card -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">1A. 杂志裁切风卡片</h3>
+      <div class="reveal grid-2 mb-40">
+        <div class="magazine-card">
+          <h3 class="card-title">Design with Purpose</h3>
+          <p class="card-desc">每一个设计决策都有意义，让品牌表达不再空洞</p>
+          <span class="card-aux">BRAND SYSTEM</span>
+        </div>
+        <div class="magazine-card">
+          <h3 class="card-title">绿色是一种态度</h3>
+          <p class="card-desc">不只是颜色，是生长、是活力、是一直在前进</p>
+          <span class="card-aux">PHILOSOPHY</span>
+        </div>
+      </div>
+
+      <!-- 1C: Tag Card -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">1C. 标签卡片</h3>
+      <div class="reveal grid-3 mb-40">
+        <div class="tag-card">
+          <span class="card-pill card-pill--green">组件</span>
+          <h3 class="card-title">可复用设计</h3>
+          <p class="card-desc">每个组件都经过测试，开箱即用</p>
+        </div>
+        <div class="tag-card">
+          <span class="card-pill card-pill--yellow">动效</span>
+          <h3 class="card-title">有生命力</h3>
+          <p class="card-desc">动效让静态页面变成有呼吸的生命体</p>
+        </div>
+        <div class="tag-card">
+          <span class="card-pill card-pill--magenta">品牌</span>
+          <h3 class="card-title">个人IP</h3>
+          <p class="card-desc">一眼就知道是你，不用贴logo</p>
+        </div>
+      </div>
+
+      <!-- 1D: Icon Card -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">1D. 侧边Icon卡片</h3>
+      <div class="reveal grid-2 mb-40">
+        <div class="icon-card">
+          <div class="card-icon-area card-icon-area--green">🎨</div>
+          <div class="card-content">
+            <h3 class="card-title">设计系统</h3>
+            <p class="card-desc">统一的视觉语言和组件规范</p>
+          </div>
+        </div>
+        <div class="icon-card">
+          <div class="card-icon-area card-icon-area--yellow">⚡</div>
+          <div class="card-content">
+            <h3 class="card-title">动效引擎</h3>
+            <p class="card-desc">让每个页面都有律动和呼吸感</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- C1: Neon Glow -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">C1. 霓虹发光卡片</h3>
+      <div class="reveal grid-3 mb-40">
+        <div class="card-neon">
+          <h3>实时逐字稿</h3>
+          <p>看见你说的每一个字</p>
+        </div>
+        <div class="card-neon">
+          <h3>情绪识别</h3>
+          <p>AI理解你话里的温度</p>
+        </div>
+        <div class="card-neon">
+          <h3>智能报告</h3>
+          <p>从混乱到清晰只需一秒</p>
+        </div>
+      </div>
+
+      <!-- C2: Stacked Cards -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">C2. 堆叠卡片 <span style="font-size:0.75rem;color:var(--ink-faint)">(点击切换)</span></h3>
+      <div class="reveal mb-40">
+        <div class="stacked-cards" onclick="cycleStack(this)">
+          <div class="s-card"><p>看见</p></div>
+          <div class="s-card"><p>停顿</p></div>
+          <div class="s-card"><p>报告</p></div>
+        </div>
+      </div>
+
+      <!-- #13: Skill Card -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">#13. 技能卡片 (Hover)</h3>
+      <div class="reveal grid-3 mb-40">
+        <div class="skill-card">
+          <h3>品牌设计</h3>
+          <p>统一风格,一键出品</p>
+        </div>
+        <div class="skill-card">
+          <h3>动效编排</h3>
+          <p>让静态变动态,有呼吸感</p>
+        </div>
+        <div class="skill-card">
+          <h3>表达系统</h3>
+          <p>用代码写出品牌性格</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Section: Three-Column Cards ===== -->
+  <section class="bg-white">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-number">04</span>
+        <h2 class="section-title">三列卡片(5种变体)</h2>
+      </div>
+
+      <!-- 10A: Giant Number -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">10A. 大编号叠底</h3>
+      <div class="reveal mb-40">
+        <div class="chair-number-grid">
+          <div class="chair-number-card">
+            <span class="chair-big-num">01</span>
+            <h3>发现问题</h3>
+            <p>用好奇心替代焦虑，把问题变成课题</p>
+          </div>
+          <div class="chair-number-card">
+            <span class="chair-big-num">02</span>
+            <h3>系统思考</h3>
+            <p>不解决单点，而是建设系统性的解决方案</p>
+          </div>
+          <div class="chair-number-card">
+            <span class="chair-big-num">03</span>
+            <h3>持续输出</h3>
+            <p>表达是最好的学习方式，写下来就是力量</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10B: Magazine Editorial -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">10B. 杂志排版</h3>
+      <div class="reveal mb-40">
+        <div class="chair-magazine-grid">
+          <div class="chair-magazine-card">
+            <div class="chair-num">i.</div>
+            <h3>Clarity</h3>
+            <p>清晰比花哨更重要，每个元素都要回答"为什么在这里"</p>
+            <span class="chair-tag">principle</span>
+          </div>
+          <div class="chair-magazine-card">
+            <div class="chair-num">ii.</div>
+            <h3>Warmth</h3>
+            <p>技术产品也可以有温度，设计是人与人之间的桥</p>
+            <span class="chair-tag">value</span>
+          </div>
+          <div class="chair-magazine-card">
+            <div class="chair-num">iii.</div>
+            <h3>Boldness</h3>
+            <p>不要平庸地安全，敢于有主张才有辨识度</p>
+            <span class="chair-tag">attitude</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10C: Dashed Sketch -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">10C. 手绘虚线框</h3>
+      <div class="reveal mb-40">
+        <div class="chair-dashed-grid">
+          <div class="chair-dashed-card">
+            <span class="chair-label">Skill #1</span>
+            <h3>组件设计</h3>
+            <p>可复用、有弹性、美观的UI模块</p>
+          </div>
+          <div class="chair-dashed-card">
+            <span class="chair-label">Skill #2</span>
+            <h3>动效编排</h3>
+            <p>让界面有生命力的微交互设计</p>
+          </div>
+          <div class="chair-dashed-card">
+            <span class="chair-label">Skill #3</span>
+            <h3>品牌表达</h3>
+            <p>用视觉语言讲述独特的个人故事</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10D: Solid Fill -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">10D. 纯色底卡</h3>
+      <div class="reveal mb-40">
+        <div class="chair-gradient-grid">
+          <div class="chair-gradient-card">
+            <div class="chair-emoji">🎯</div>
+            <h3>精准定位</h3>
+            <p>找到你独特的品牌定位和表达方式</p>
+          </div>
+          <div class="chair-gradient-card">
+            <div class="chair-emoji">🛠️</div>
+            <h3>系统工具</h3>
+            <p>一套完整的设计token和组件库</p>
+          </div>
+          <div class="chair-gradient-card">
+            <div class="chair-emoji">🔐</div>
+            <h3>品牌一致性</h3>
+            <p>无论谁做都能保持品牌调性</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10E: Typography Only -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">10E. 纯排版</h3>
+      <div class="reveal mb-40">
+        <div class="chair-typo-grid">
+          <div class="chair-typo-card">
+            <div class="chair-divider"></div>
+            <h3>Less is More</h3>
+            <p>减去装饰，留下本质。好设计是看不见的设计</p>
+            <span class="chair-meta">philosophy</span>
+          </div>
+          <div class="chair-typo-card">
+            <div class="chair-divider"></div>
+            <h3>Show Don't Tell</h3>
+            <p>不要说你很好，让作品自己说话</p>
+            <span class="chair-meta">principle</span>
+          </div>
+          <div class="chair-typo-card">
+            <div class="chair-divider"></div>
+            <h3>Stay Curious</h3>
+            <p>永远对新事物保持好奇，这是创造力的源泉</p>
+            <span class="chair-meta">mindset</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Section: Quotes ===== -->
+  <section id="quotes" class="bg-yellow-light">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-number">05</span>
+        <h2 class="section-title">引用 & Key Insight</h2>
+      </div>
+
+      <!-- 1E-A -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">1E-A. 左粗线+大引号</h3>
+      <div class="reveal mb-40">
+        <div class="quote-bar">
+          <div class="quote-text">好的品牌不是设计出来的，是活出来的</div>
+          <div class="quote-source">— Sisi 品牌哲学</div>
+        </div>
+      </div>
+
+      <!-- 1E-B -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">1E-B. 满底卡片</h3>
+      <div class="reveal mb-40">
+        <div class="quote-solid">
+          <div class="quote-text">设计不是让东西变好看，是让东西变好用、变有温度</div>
+          <div class="quote-source">— 设计原则 #1</div>
+        </div>
+      </div>
+
+      <!-- 1E-C -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">1E-C. 上下横线夹引用</h3>
+      <div class="reveal mb-40">
+        <div class="quote-lines">
+          <div class="quote-text">一个人的品牌力 = 表达力 × 一致性 × 时间</div>
+          <div class="quote-source">BRAND FORMULA</div>
+        </div>
+      </div>
+
+      <!-- 1E-D -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">1E-D. 标签式引用</h3>
+      <div class="reveal mb-40">
+        <div class="quote-tag">
+          <span class="tag">KEY INSIGHT</span>
+          <div class="quote-text">不要等到完美再开始表达，表达本身就是通向完美的路</div>
+          <div class="quote-source">— 写作笔记</div>
+        </div>
+      </div>
+
+      <!-- #3A: Quote Deco -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">3A. 大引号装饰</h3>
+      <div class="reveal mb-40">
+        <div class="quote-deco">
+          <p>当你开始用系统化的方式做品牌，你会发现创意不是灵感的偶然闪现，而是框架内的自由表达</p>
+        </div>
+      </div>
+
+      <!-- #3B: Handwritten Note -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">3B. 手写批注风</h3>
+      <div class="reveal mb-40">
+        <div class="key-insight quote-note">
+          <span class="quote-note-tag">Key Insight ✦</span>
+          <p>品牌的一致性不是"每次都一样"，而是"每次都像你"。就像一个人穿不同衣服，你还是一眼能认出来</p>
+        </div>
+      </div>
+
+      <!-- #3C: Quote Typo -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">3C. 纯排版强调</h3>
+      <div class="reveal mb-40">
+        <div class="quote-typo">
+          <p>Design is not just what it looks like. Design is how it works.</p>
+        </div>
+      </div>
+
+      <!-- #6: Pull Quote -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">#6. Pull Quote</h3>
+      <div class="reveal mb-40">
+        <div class="viral-pullquote">
+          <p>你的设计系统就是你的性格说明书——不用解释，别人看一眼就懂你是谁</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Section: Chat & Flow ===== -->
+  <section class="bg-cream">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-number">06</span>
+        <h2 class="section-title">对话 & 流程</h2>
+      </div>
+
+      <!-- #7: Chat Bubbles -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">#7. 对话气泡</h3>
+      <div class="reveal mb-40">
+        <div class="chat-container">
+          <div class="chat-bubble user">帮我做一个品牌设计系统</div>
+          <div class="chat-bubble ai">好的～先聊聊你的品牌性格吧。你希望别人一看到你的内容，第一感觉是什么？</div>
+          <div class="chat-bubble user">有活力，专业但不死板</div>
+          <div class="chat-bubble ai">明白了！绿色+黄色+一点洋红的跳脱，听起来就是你 ✨</div>
+        </div>
+      </div>
+
+      <!-- #11: System Flow -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">#11. 系统流程条</h3>
+      <div class="reveal mb-40">
+        <div class="system-flow">
+          <span>输入内容</span>
+          <span class="flow-arrow">→</span>
+          <span>AI分析</span>
+          <span class="flow-arrow">→</span>
+          <span>品牌适配</span>
+          <span class="flow-arrow">→</span>
+          <span>输出页面</span>
+        </div>
+      </div>
+
+      <!-- #8: Tip Header -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">#8. Tip Header</h3>
+      <div class="reveal mb-40">
+        <div class="tip-header">
+          <span class="tip-number">01</span>
+          <h2 class="tip-title">先定义品牌性格，再选颜色</h2>
+        </div>
+      </div>
+
+      <!-- #16: Filter Bar -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">#16. Filter标签栏</h3>
+      <div class="reveal mb-40">
+        <div class="filter-bar">
+          <button class="filter-tag active">全部</button>
+          <button class="filter-tag">组件</button>
+          <button class="filter-tag">动效</button>
+          <button class="filter-tag">布局</button>
+          <button class="filter-tag">品牌</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Section: Do/Don't ===== -->
+  <section class="bg-white">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-number">07</span>
+        <h2 class="section-title">Do / Don't 对比</h2>
+      </div>
+
+      <!-- 12A: Card Columns -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">12A. 卡片分栏</h3>
+      <div class="reveal mb-40">
+        <div class="compare-cards">
+          <div class="compare-block compare-block--dont">
+            <div class="compare-header">
+              <span class="compare-icon">🚫</span>
+              <span class="compare-label">Don't</span>
+            </div>
+            <ul>
+              <li>使用渐变做装饰背景</li>
+              <li>黑色/暗色区块做卡片底</li>
+              <li>堆叠过多颜色没有主次</li>
+            </ul>
+          </div>
+          <div class="compare-block compare-block--do">
+            <div class="compare-header">
+              <span class="compare-icon">✅</span>
+              <span class="compare-label">Do</span>
+            </div>
+            <ul>
+              <li>用纯色+透明度做层次</li>
+              <li>黄色/绿色/白色做背景</li>
+              <li>三色轮换保持节奏感</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Section: Code Panels ===== -->
+  <section id="code" class="bg-cream">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-number">08</span>
+        <h2 class="section-title">代码面板</h2>
+      </div>
+
+      <!-- 5A: macOS Window -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">5A. macOS窗口</h3>
+      <div class="reveal mb-40">
+        <div class="code-macos">
+          <div class="code-titlebar">
+            <div class="code-dots">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+            <span class="code-filename">brand-system.ts</span>
+          </div>
+          <div class="code-body">
+            <pre><code><span class="kw">const</span> <span class="fn">brandColors</span> = {
+  <span class="str">green</span>: <span class="str">'#45A020'</span>,
+  <span class="str">yellow</span>: <span class="str">'#FFD000'</span>,
+  <span class="str">magenta</span>: <span class="str">'#E5007E'</span>,
+  <span class="str">cream</span>: <span class="str">'#F8FFF5'</span>,
+} <span class="cm">// 品牌DNA色板</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5B: Notebook Paper -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">5B. 笔记本纸</h3>
+      <div class="reveal mb-40">
+        <div class="code-notebook">
+          <div class="code-holes"></div>
+          <div class="code-tab">✏️ design-tokens.md</div>
+          <pre><code># 设计 Token
+- 主色: 活力绿 #45A020
+- 强调: 明黄 #FFD000
+- 跳脱: 洋红 #E5007E
+- 底色: 奶油绿 #F8FFF5</code></pre>
+        </div>
+      </div>
+
+      <!-- 5C: Typewriter -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">5C. 打字机</h3>
+      <div class="reveal mb-40">
+        <div class="code-typewriter">
+          <pre><code><span class="kw">STEP 1</span> → 定义品牌性格
+<span class="kw">STEP 2</span> → 选择色彩系统
+<span class="kw">STEP 3</span> → 建立组件库
+<span class="kw">STEP 4</span> → 输出一致页面<span class="cursor"></span></code></pre>
+        </div>
+      </div>
+
+      <!-- 5D: Clean White -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">5D. 极简白底</h3>
+      <div class="reveal mb-40">
+        <div class="code-clean">
+          <span class="code-corner-tag">CSS</span>
+          <pre><code><span class="kw">:root</span> {
+  <span class="fn">--green</span>: <span class="str">#45A020</span>;
+  <span class="fn">--yellow</span>: <span class="str">#FFD000</span>;
+  <span class="fn">--magenta</span>: <span class="str">#E5007E</span>;
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Section: Interactions ===== -->
+  <section id="interactions" class="bg-yellow-light">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-number">09</span>
+        <h2 class="section-title">布局交互</h2>
+      </div>
+
+      <!-- G1: Animated Tabs -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">G1. 动画标签栏</h3>
+      <div class="reveal mb-40">
+        <div class="tabs-demo">
+          <div class="tab-indicator"></div>
+          <div class="tab active" onclick="switchTab(this, 0)">看见</div>
+          <div class="tab" onclick="switchTab(this, 1)">停顿</div>
+          <div class="tab" onclick="switchTab(this, 2)">报告</div>
+        </div>
+      </div>
+
+      <!-- G2: Toggle Switch -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">G2. 开关切换</h3>
+      <div class="reveal mb-40">
+        <div class="toggle-container">
+          <span>Off</span>
+          <div class="toggle" onclick="this.classList.toggle('active')">
+            <div class="knob"></div>
+          </div>
+          <span>On</span>
+        </div>
+      </div>
+
+      <!-- D1: Scale Up -->
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">D1. 缩放入场</h3>
+      <div class="reveal-scale mb-40" style="text-align:center;">
+        <div style="display:inline-block; padding:32px 48px; background:var(--yellow); border-radius:16px;">
+          <p style="font-family:'Fraunces',serif; font-size:1.5rem; font-weight:700; color:var(--dark);">✨ Pop!</p>
+          <p style="font-size:0.85rem; color:var(--ink-light); margin-top:8px;">滚动到此处时缩放入场</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Section: E2 Flickering Grid ===== -->
+  <section class="bg-cream">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-number">10</span>
+        <h2 class="section-title">背景装饰</h2>
+      </div>
+
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">E2. 闪烁网格</h3>
+      <div class="reveal mb-40">
+        <div class="flicker-section">
+          <div class="flicker-grid" id="flickerGrid"></div>
+          <div style="position:relative; z-index:1; text-align:center;">
+            <h3 style="font-family:'Fraunces',serif; font-size:1.8rem; font-weight:900; margin-bottom:0.5rem;">Flickering Grid</h3>
+            <p style="opacity:0.8;">绿色背景 + 黄色网格闪烁 = 科技感氛围</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="reveal mb-16" style="font-family:'Noto Serif SC',serif;">E1. 浮动光球 (见Hero区背景)</h3>
+      <div class="reveal mb-40">
+        <div style="position:relative; background:var(--yellow); border-radius:16px; padding:60px 40px; overflow:hidden;">
+          <div class="orbs-container">
+            <div class="orb"></div>
+            <div class="orb"></div>
+            <div class="orb"></div>
+          </div>
+          <div style="position:relative; z-index:1; text-align:center;">
+            <h3 style="font-family:'Fraunces',serif; font-size:1.5rem; font-weight:900;">Floating Orbs</h3>
+            <p style="font-size:0.85rem; color:var(--ink-light); margin-top:8px;">黄色底 + 三色光球浮动</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Section: Scroll Reveal Demo ===== -->
+  <section class="bg-white">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-number">11</span>
+        <h2 class="section-title">Scroll Reveal 入场</h2>
+      </div>
+
+      <div class="grid-3">
+        <div class="reveal" style="background:var(--yellow);padding:24px;border-radius:12px;text-align:center;">
+          <p style="font-weight:700;">默认</p>
+          <p style="font-size:0.8rem;color:var(--ink-light)">delay: 0</p>
+        </div>
+        <div class="reveal reveal-d2" style="background:rgba(69,160,32,0.1);padding:24px;border-radius:12px;text-align:center;">
+          <p style="font-weight:700;">延迟 0.2s</p>
+          <p style="font-size:0.8rem;color:var(--ink-light)">reveal-d2</p>
+        </div>
+        <div class="reveal reveal-d4" style="background:rgba(229,0,126,0.08);padding:24px;border-radius:12px;text-align:center;">
+          <p style="font-weight:700;">延迟 0.4s</p>
+          <p style="font-size:0.8rem;color:var(--ink-light)">reveal-d4</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Signature ===== -->
+  <div class="sisi-signature">sisi</div>
+
+  <!-- ===== JavaScript ===== -->
+  <script>
+    // === F1: Cursor Trail (全页) ===
+    (function() {
+      if (!window.matchMedia('(hover: hover)').matches) return;
+
+      const dot = document.getElementById('cursorDot');
+      const trails = [];
+      const TRAIL_COUNT = 12;
+
+      for (let i = 0; i < TRAIL_COUNT; i++) {
+        const t = document.createElement('div');
+        t.className = 'cursor-trail-dot';
+        document.body.appendChild(t);
+        trails.push({ el: t, x: 0, y: 0 });
+      }
+
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        dot.style.left = mouseX - 7 + 'px';
+        dot.style.top = mouseY - 7 + 'px';
+      });
+
+      function animateTrail() {
+        let x = mouseX, y = mouseY;
+        trails.forEach((t, i) => {
+          const speed = 0.3 - i * 0.015;
+          t.x += (x - t.x) * speed;
+          t.y += (y - t.y) * speed;
+          t.el.style.left = t.x - 4 + 'px';
+          t.el.style.top = t.y - 4 + 'px';
+          t.el.style.opacity = (1 - i / TRAIL_COUNT) * 0.6;
+          x = t.x;
+          y = t.y;
+        });
+        requestAnimationFrame(animateTrail);
+      }
+      animateTrail();
+    })();
+
+    // === Scroll Reveal (#4 + D1) ===
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal, .reveal-scale').forEach(el => revealObs.observe(el));
+
+    // === Nav scroll effect ===
+    window.addEventListener('scroll', () => {
+      document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // === A2: Number Counter ===
+    function animateCounters() {
+      document.querySelectorAll('.counter-num').forEach(el => {
+        const target = parseInt(el.dataset.target);
+        const duration = 2000;
+        const start = performance.now();
+        function update(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.round(target * eased).toLocaleString();
+          if (progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+      });
+    }
+    const counterObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { animateCounters(); counterObs.disconnect(); } });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.counter-wrap').forEach(el => counterObs.observe(el));
+
+    // === A4: Morphing Text ===
+    document.querySelectorAll('.morph-text').forEach(el => {
+      const words = JSON.parse(el.dataset.words);
+      let idx = 0;
+      el.textContent = words[0];
+      el.classList.add('in');
+      setInterval(() => {
+        el.classList.remove('in');
+        el.classList.add('out');
+        setTimeout(() => {
+          idx = (idx + 1) % words.length;
+          el.textContent = words[idx];
+          el.classList.remove('out');
+          el.classList.add('in');
+        }, 600);
+      }, 2500);
+    });
+
+    // === C2: Stacked Cards ===
+    function cycleStack(container) {
+      const cards = [...container.children];
+      const first = cards[0];
+      container.appendChild(first);
+      container.querySelectorAll('.s-card').forEach((card, i) => {
+        card.style.zIndex = 3 - i;
+        card.style.transform = `translateY(${i * 8}px) scale(${1 - i * 0.04})`;
+      });
+    }
+
+    // === G1: Tab Indicator ===
+    function switchTab(el, index) {
+      const container = el.parentElement;
+      container.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      const indicator = container.querySelector('.tab-indicator');
+      indicator.style.left = el.offsetLeft + 'px';
+      indicator.style.width = el.offsetWidth + 'px';
+    }
+    // Init tab indicator
+    document.querySelectorAll('.tabs-demo').forEach(tabs => {
+      const active = tabs.querySelector('.tab.active');
+      const indicator = tabs.querySelector('.tab-indicator');
+      if (active && indicator) {
+        indicator.style.left = active.offsetLeft + 'px';
+        indicator.style.width = active.offsetWidth + 'px';
+      }
+    });
+
+    // === E2: Flickering Grid ===
+    const grid = document.getElementById('flickerGrid');
+    if (grid) {
+      for (let i = 0; i < 60; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'flicker-cell';
+        cell.style.animationDelay = `${Math.random() * 3}s`;
+        cell.style.animationDuration = `${2 + Math.random() * 2}s`;
+        grid.appendChild(cell);
+      }
+    }
+
+    // === Filter Bar interaction ===
+    document.querySelectorAll('.filter-tag').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.parentElement.querySelectorAll('.filter-tag').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

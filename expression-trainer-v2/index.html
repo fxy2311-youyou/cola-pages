@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宇宙无敌表达训练系统 v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Caveat:wght@400;700&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #45A020;
+      --yellow: #FFD000;
+      --magenta: #E5007E;
+      --green-light: #E8F5E0;
+      --dark: #2A2A2A;
+      --cream: #F8FFF5;
+      --cream-dark: #f2faf0;
+      --ink: #2A2A2A;
+      --ink-light: #4A4A5A;
+      --ink-faint: #8A8A9A;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--ink);
+      background: var(--cream);
+    }
+
+    ::selection { background: var(--yellow); color: var(--dark); }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* === 横向浮动导航时间轴 === */
+    .float-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding: 12px 24px;
+      background: rgba(248, 255, 245, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(69, 160, 32, 0.1);
+    }
+
+    .float-nav .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      text-decoration: none;
+      position: relative;
+      border-radius: 100px;
+      transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .float-nav .nav-item:hover {
+      background: rgba(69, 160, 32, 0.06);
+    }
+
+    .float-nav .nav-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(69, 160, 32, 0.2);
+      border: 2px solid var(--green);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+    }
+
+    .float-nav .nav-item.active .nav-dot {
+      background: var(--green);
+      transform: scale(1.4);
+    }
+
+    .float-nav .nav-label {
+      font-size: 0.72rem;
+      color: var(--ink-faint);
+      white-space: nowrap;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 500;
+    }
+
+    .float-nav .nav-item.active .nav-label {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .float-nav .nav-line {
+      width: 20px;
+      height: 2px;
+      background: rgba(69, 160, 32, 0.15);
+    }
+
+    /* === HERO === */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 0.45fr;
+      align-items: center;
+      gap: 48px;
+      padding: 6rem 2rem 4rem;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .hero-text .label-caps {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-weight: 500;
+      color: var(--green);
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .hero-text h1 {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: clamp(2.2rem, 5.5vw, 4rem);
+      line-height: 1.2;
+      color: var(--ink);
+    }
+
+    /* Typewriter animation on hero title highlight */
+    .hero-text h1 .title-highlight {
+      background: var(--yellow);
+      padding: 0.05em 0.2em;
+      border-radius: 6px;
+      display: inline;
+      box-decoration-break: clone;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Shiny text sweep on title-highlight */
+    .title-highlight::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.5);
+      transform: skewX(-20deg);
+      animation: shineText 3s ease-in-out infinite;
+    }
+    @keyframes shineText {
+      0% { left: -100%; }
+      100% { left: 150%; }
+    }
+
+    .hero-text .subtitle {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      color: var(--ink-light);
+      margin-top: 1.2rem;
+    }
+
+    .hero-text .hero-desc {
+      font-size: 1.05rem;
+      color: var(--ink-light);
+      margin-top: 1.5rem;
+      max-width: 560px;
+      line-height: 1.9;
+    }
+
+    .hero-visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-visual img {
+      width: clamp(220px, 28vw, 360px);
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 32px rgba(69,160,32,0.15));
+    }
+
+    /* === Typewriter hero title === */
+    .typewriter-title {
+      display: inline-block;
+      border-right: 3px solid var(--magenta);
+      animation: tw-blink 0.75s step-end infinite;
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: 0;
+    }
+    .typewriter-title.typing {
+      animation: typeIn 2s steps(14, end) forwards, tw-blink 0.75s step-end infinite;
+      max-width: 14ch;
+    }
+    @keyframes typeIn {
+      from { max-width: 0; }
+      to { max-width: 14ch; }
+    }
+    @keyframes tw-blink {
+      from, to { border-color: transparent; }
+      50% { border-color: var(--magenta); }
+    }
+
+    /* === 核心观点 深色面板 === */
+    .section-dark {
+      background: var(--dark);
+      color: #e8e8e8;
+      padding: clamp(80px, 12vh, 140px) 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section-dark::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 350px;
+      height: 350px;
+      border: 2.5px dashed rgba(69, 160, 32, 0.2);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .section-dark .content-row {
+      display: grid;
+      grid-template-columns: 1fr 0.4fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .section-dark .main-point .badge-反直觉 {
+      display: inline-block;
+      background: var(--magenta);
+      color: #fff;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+    }
+
+    .section-dark .main-point .big-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .section-dark .main-point .big-text .em { color: var(--yellow); }
+
+    /* Neon glow card in dark section */
+    .section-dark .side-note {
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid var(--green);
+      box-shadow: 0 0 5px var(--green), inset 0 0 5px rgba(69, 160, 32, 0.1);
+      transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .section-dark .side-note:hover {
+      box-shadow: 0 0 20px var(--green), 0 0 40px rgba(69, 160, 32, 0.3), inset 0 0 10px rgba(69, 160, 32, 0.2);
+    }
+
+    .section-dark .side-note .side-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--yellow);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-dark .side-note p { font-size: 0.9rem; color: #bbb; line-height: 1.7; }
+
+    /* === 看见和停顿 独立页 === */
+    .section-two-things {
+      padding: clamp(100px, 14vh, 180px) 0;
+      text-align: center;
+    }
+
+    .section-two-things h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      margin-bottom: 3rem;
+    }
+
+    .two-pills {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .two-pills .pill {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #fff;
+      border-radius: 100px;
+      padding: 24px 48px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 900;
+    }
+
+    .two-pills .pill .pill-num {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fraunces', serif;
+      font-size: 1.2rem;
+    }
+
+    /* === 01 看见 === */
+    .section-see {
+      padding: clamp(80px, 12vh, 160px) 0;
+      background: var(--cream-dark);
+    }
+
+    .layout-sticky {
+      display: grid;
+      grid-template-columns: 0.3fr 1fr;
+      gap: clamp(40px, 6vw, 100px);
+      align-items: start;
+    }
+
+    .sticky-side {
+      position: sticky;
+      top: 80px;
+    }
+
+    .sticky-side .section-number {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: clamp(4rem, 8vw, 7rem);
+      color: var(--green);
+      opacity: 0.15;
+      line-height: 1;
+      display: block;
+    }
+
+    .sticky-side h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      margin-top: 0.5rem;
+    }
+
+    .sticky-side .side-hint {
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      color: var(--ink-faint);
+      margin-top: 0.8rem;
+    }
+
+    .content-scroll p {
+      margin-bottom: 1.5rem;
+      font-size: 1.05rem;
+      line-height: 1.9;
+    }
+
+    .content-scroll .keyword-highlight {
+      background: rgba(255, 208, 0, 0.3);
+      padding: 0.1em 0.4em;
+      border-radius: 6px;
+      display: inline;
+      box-decoration-break: clone;
+      font-weight: 700;
+    }
+
+    .content-scroll .big-highlight {
+      display: block;
+      background: var(--yellow);
+      color: var(--dark);
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .movie-ref {
+      background: #fff;
+      border-radius: 16px;
+      padding: clamp(24px, 3vw, 36px);
+      margin: 2rem 0;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .movie-ref::before {
+      content: '🎬';
+      position: absolute;
+      top: -5px;
+      right: 20px;
+      font-size: 3.5rem;
+      opacity: 0.1;
+    }
+
+    .movie-ref .movie-title {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--magenta);
+      margin-bottom: 0.8rem;
+    }
+
+    .movie-ref .movie-desc {
+      font-size: 0.95rem;
+      color: var(--ink-light);
+      line-height: 1.8;
+    }
+
+    .example-block {
+      background: var(--green-light);
+      border-radius: 12px;
+      padding: clamp(20px, 3vw, 32px);
+      margin: 2rem 0;
+      border-left: 4px solid var(--green);
+    }
+
+    .example-block .example-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--green);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .example-block p { margin-bottom: 0.5rem; font-size: 0.95rem; }
+
+    /* === 02 停顿 === */
+    .section-pause {
+      padding: clamp(80px, 12vh, 160px) 0;
+    }
+
+    .section-pause .section-header { margin-bottom: clamp(40px, 6vw, 60px); }
+
+    .section-pause .section-number {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: clamp(4rem, 8vw, 7rem);
+      color: var(--green);
+      opacity: 0.15;
+      line-height: 1;
+      display: block;
+    }
+
+    .section-pause h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      margin-top: 0.5rem;
+    }
+
+    .section-pause .pause-subtitle {
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      color: var(--ink-faint);
+      margin-top: 0.5rem;
+    }
+
+    .pause-intro {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      max-width: 780px;
+      margin-bottom: 3rem;
+    }
+
+    .pause-intro .name-highlight { font-weight: 700; color: var(--green); }
+
+    /* Rules grid with stagger */
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: clamp(12px, 1.5vw, 18px);
+    }
+
+    .rule-card {
+      background: var(--green-light);
+      border-radius: 12px;
+      padding: 16px;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      /* stagger setup */
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .rule-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .rule-card:hover { transform: translateY(-3px); }
+
+    .rule-card .rule-emoji { font-size: 1.4rem; margin-bottom: 6px; }
+
+    .rule-card .rule-name {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .rule-card .rule-example {
+      font-size: 0.75rem;
+      color: var(--ink-light);
+      padding: 4px 8px;
+      background: #fff;
+      border-radius: 6px;
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    .pause-result {
+      margin-top: clamp(40px, 6vw, 60px);
+      background: #fff;
+      border-radius: 16px;
+      padding: clamp(24px, 3vw, 40px);
+      border-left: 6px solid var(--magenta);
+      max-width: 780px;
+    }
+
+    .pause-result p { font-size: 1.05rem; line-height: 1.8; }
+
+    /* === 报告 Section === */
+    .section-report {
+      padding: clamp(80px, 12vh, 160px) 0;
+      background: var(--cream-dark);
+    }
+
+    .section-report .section-header { margin-bottom: clamp(40px, 6vw, 60px); }
+
+    .section-report .section-header h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    }
+
+    .section-report .section-header .prompt-badge {
+      display: inline-block;
+      background: var(--yellow);
+      color: var(--dark);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
+    .report-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+      padding-left: 60px;
+    }
+
+    .report-list::before {
+      content: '';
+      position: absolute;
+      left: 22px;
+      top: 30px; bottom: 30px;
+      width: 2px;
+      border-left: 2px dashed var(--green);
+      opacity: 0.3;
+    }
+
+    .report-item { position: relative; padding: 20px 0; }
+
+    .report-item .report-dot {
+      position: absolute;
+      left: -60px; top: 22px;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .report-item h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .report-item p { font-size: 0.9rem; color: var(--ink-light); line-height: 1.7; }
+
+    .report-item .sub-list {
+      list-style: none;
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .report-item .sub-list li {
+      display: inline-block;
+      background: var(--green-light);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      color: var(--ink-light);
+    }
+
+    /* === CTA === */
+    .section-cta {
+      background: var(--magenta);
+      color: #fff;
+      padding: clamp(80px, 12vh, 140px) 0;
+      text-align: center;
+    }
+
+    .section-cta .cta-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      opacity: 0.8;
+      margin-bottom: 1.2rem;
+      font-weight: 600;
+    }
+
+    .section-cta h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: clamp(1.8rem, 4.5vw, 3rem);
+      margin-bottom: 1.5rem;
+    }
+
+    .section-cta .cta-desc {
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.8;
+      opacity: 0.9;
+    }
+
+    /* Border Beam CTA button */
+    .section-cta .cta-action {
+      display: inline-block;
+      background: transparent;
+      color: #fff;
+      padding: 16px 44px;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-decoration: none;
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.6);
+    }
+    .section-cta .cta-action::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      border-radius: 100px;
+      background: conic-gradient(from var(--beam-angle, 0deg), transparent 70%, var(--yellow) 85%, #fff);
+      z-index: -1;
+      animation: beamRotate 2s linear infinite;
+    }
+    .section-cta .cta-action::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      background: var(--magenta);
+      border-radius: 98px;
+      z-index: -1;
+    }
+    @property --beam-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @keyframes beamRotate { to { --beam-angle: 360deg; } }
+
+    .section-cta .cta-repo {
+      margin-top: 1.2rem;
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
+
+    /* === Footer === */
+    .footer {
+      padding: clamp(40px, 6vh, 80px) 0;
+      text-align: center;
+    }
+
+    .footer .signature {
+      font-family: 'Caveat', cursive;
+      font-size: 1.8rem;
+      color: var(--green);
+      opacity: 0.7;
+    }
+
+    /* === Scale-Up Reveal (sections) === */
+    .reveal-scale {
+      opacity: 0;
+      transform: scale(0.85);
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .reveal-scale.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* === Standard Scroll Reveal === */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+    .reveal-d4 { transition-delay: 0.4s; }
+    .reveal-d5 { transition-delay: 0.5s; }
+
+    /* === Stagger container === */
+    .stagger-container .stagger-item {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .stagger-container.visible .stagger-item {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .stagger-container.visible .stagger-item:nth-child(1) { transition-delay: 0.05s; }
+    .stagger-container.visible .stagger-item:nth-child(2) { transition-delay: 0.1s; }
+    .stagger-container.visible .stagger-item:nth-child(3) { transition-delay: 0.15s; }
+    .stagger-container.visible .stagger-item:nth-child(4) { transition-delay: 0.2s; }
+    .stagger-container.visible .stagger-item:nth-child(5) { transition-delay: 0.25s; }
+    .stagger-container.visible .stagger-item:nth-child(6) { transition-delay: 0.3s; }
+    .stagger-container.visible .stagger-item:nth-child(7) { transition-delay: 0.35s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal, .reveal-scale, .rule-card, .stagger-container .stagger-item { 
+        opacity: 1; transform: none; transition: none; 
+      }
+      .title-highlight::after, .typewriter-title { animation: none; }
+    }
+
+    /* === 响应式 === */
+    @media (max-width: 900px) {
+      .float-nav { padding: 8px 12px; }
+      .float-nav .nav-label { display: none; }
+      .float-nav .nav-line { width: 12px; }
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding: 4rem 1.5rem 3rem;
+        text-align: center;
+      }
+      .hero-visual { order: -1; margin-bottom: 1rem; }
+      .hero-visual img { width: 180px; }
+      .section-dark .content-row { grid-template-columns: 1fr; }
+      .layout-sticky { grid-template-columns: 1fr; }
+      .sticky-side { position: static; margin-bottom: 2rem; }
+      .rules-grid { grid-template-columns: repeat(2, 1fr); }
+      .two-pills .pill { font-size: 1.3rem; padding: 18px 32px; }
+    }
+
+    @media (max-width: 600px) {
+      body { font-size: 15px; }
+      .rules-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====== 浮动导航时间轴 ====== -->
+  <nav class="float-nav">
+    <a class="nav-item active" href="#hero"><span class="nav-dot"></span><span class="nav-label">开头</span></a>
+    <div class="nav-line"></div>
+    <a class="nav-item" href="#why"><span class="nav-dot"></span><span class="nav-label">为什么做这个</span></a>
+    <div class="nav-line"></div>
+    <a class="nav-item" href="#two-things"><span class="nav-dot"></span><span class="nav-label">最重要的事</span></a>
+    <div class="nav-line"></div>
+    <a class="nav-item" href="#see"><span class="nav-dot"></span><span class="nav-label">01 看见</span></a>
+    <div class="nav-line"></div>
+    <a class="nav-item" href="#pause"><span class="nav-dot"></span><span class="nav-label">02 停顿</span></a>
+    <div class="nav-line"></div>
+    <a class="nav-item" href="#report"><span class="nav-dot"></span><span class="nav-label">分析报告</span></a>
+    <div class="nav-line"></div>
+    <a class="nav-item" href="#cta"><span class="nav-dot"></span><span class="nav-label">CTA</span></a>
+  </nav>
+
+  <!-- ====== HERO ====== -->
+  <section class="hero" id="hero">
+    <div class="hero-text">
+      <span class="label-caps">Expression Training System</span>
+      <h1>一个实时的<br><span class="title-highlight">宇宙无敌表达系统</span></h1>
+      <p class="subtitle">练表达和练健身，是一回事。</p>
+      <p class="hero-desc">没有实时反馈，你永远不知道自己动作是不是错的。我做自媒体之后最大的卡点就是表达，试了很多方法都不行，很容易陷在表达混乱的坑里。后来发现核心问题是：看不到自己表达的过程。</p>
+      <p class="hero-desc" style="font-weight:700; color:var(--ink); margin-top:1rem;">所以我做了一面镜子。</p>
+    </div>
+    <div class="hero-visual">
+      <img src="avatar.png" alt="sisi">
+    </div>
+  </section>
+
+  <!-- ====== 为什么做这个 深色面板 ====== -->
+  <section class="section-dark" id="why">
+    <div class="container">
+      <div class="content-row">
+        <div class="main-point reveal-scale">
+          <span class="badge-反直觉">⚡ 反直觉</span>
+          <div class="big-text">
+            表达能力不是靠<span class="em">"多录"</span>练出来的。<br>
+            如果你从来看不见自己说了什么，<br>
+            你只是在更熟练地说废话。
+          </div>
+        </div>
+        <div class="side-note reveal-scale" style="transition-delay:0.15s;">
+          <p class="side-label">💥 第一次录完</p>
+          <p>我第一次录完都惊呆了——3分钟的内容，27个"然后"，14个"就是"，9个"对"。平均每说6个字，就有1个是没用的东西。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 最重要的两件事 ====== -->
+  <section class="section-two-things" id="two-things">
+    <div class="container">
+      <h2 class="reveal-scale">练表达真正需要的两件事</h2>
+      <div class="two-pills stagger-container">
+        <div class="pill stagger-item"><span class="pill-num">01</span> 看见</div>
+        <div class="pill stagger-item"><span class="pill-num">02</span> 停顿</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 01 看见 ====== -->
+  <section class="section-see" id="see">
+    <div class="container">
+      <div class="layout-sticky">
+        <div class="sticky-side reveal-scale">
+          <span class="section-number">01</span>
+          <h2>看见</h2>
+          <p class="side-hint">see yourself first</p>
+        </div>
+        <div class="content-scroll">
+          <p class="reveal">表达的卡点是：你脑子里想的是A，说出来的是B，还加上一堆没有用的填充词。但你自己听不见，因为你的大脑会自动帮你补全。</p>
+
+          <div class="movie-ref reveal-scale">
+            <p class="movie-title">The King's Speech · 国王的演讲（2010）</p>
+            <p class="movie-desc">英国国王乔治六世有严重的口吃。他自己觉得"还行"，因为他从来没有认真听过自己说话的样子。</p>
+            <p class="movie-desc" style="margin-top:0.8rem;">直到治疗师Lionel Logue把他的录音放给他听。国王崩溃了——他第一次从"听众视角"听到自己，才意识到问题有多严重。</p>
+            <p class="movie-desc" style="margin-top:0.8rem;"><strong>在那之前，他不知道自己有问题。听见了自己之后，改变才真正开始。</strong></p>
+          </div>
+
+          <p class="reveal">这个系统做的就是同一件事：你说的每一个字，实时打在屏幕上。口头禅标红。你以为自己说了2次"然后"，其实你说了9次。</p>
+
+          <div class="big-highlight reveal">这种认知冲击是改变的起点——你不知道自己有问题，你就不会改。</div>
+
+          <div class="example-block reveal-scale">
+            <p class="example-label">🎯 情感词库替换</p>
+            <p>内置大连理工大学情感词库，<strong>27000多个词</strong>，分为喜·怒·哀·惧·恶·惊七大类。</p>
+            <p style="margin-top:0.8rem;">你说"开心"→ 振奋？雀跃？得意？<br>你说"很多"→ 堆满了？排了三列？</p>
+            <p style="margin-top:0.8rem; font-size:0.85rem; color:var(--ink-faint);">看见废词是第一步。看见词汇的模糊是第二步。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 02 停顿 ====== -->
+  <section class="section-pause" id="pause">
+    <div class="container">
+      <div class="section-header reveal-scale">
+        <span class="section-number">02</span>
+        <h2>停顿</h2>
+        <p class="pause-subtitle">停顿是有力量的</p>
+      </div>
+
+      <div class="pause-intro reveal">
+        <p>为什么有些人说话你就是愿意听？<span class="name-highlight">奥巴马</span>在查尔斯顿悼词里，开口唱Amazing Grace之前停了<strong>11秒</strong>。<span class="name-highlight">乔布斯</span>发布iPhone说"今天苹果重新发明手机"，然后停了<strong>3秒</strong>。</p>
+        <p style="margin-top:1rem;"><strong>停顿的本质是——你对自己说的话够笃定，才敢停下来让别人看清楚它。</strong></p>
+        <p style="margin-top:1rem;">但填充词是无意识的。你控制不住。我设了<strong>11个实时触发规则</strong>——正在说话的时候，教练就在旁边：</p>
+      </div>
+
+      <div class="rules-grid" id="rulesGrid">
+        <div class="rule-card"><div class="rule-emoji">🔁</div><div class="rule-name">重复检测</div><div class="rule-example">"说过一遍"</div></div>
+        <div class="rule-card"><div class="rule-emoji">🎯</div><div class="rule-name">结论缺失</div><div class="rule-example">"说结论"</div></div>
+        <div class="rule-card"><div class="rule-emoji">⚡</div><div class="rule-name">前后矛盾</div><div class="rule-example">"跟前面矛盾"</div></div>
+        <div class="rule-card"><div class="rule-emoji">🎨</div><div class="rule-name">举例缺失</div><div class="rule-example">"举个例子？"</div></div>
+        <div class="rule-card"><div class="rule-emoji">🧭</div><div class="rule-name">主题跑偏</div><div class="rule-example">"跑题"</div></div>
+        <div class="rule-card"><div class="rule-emoji">⭐</div><div class="rule-name">金句捕捉</div><div class="rule-example">"⭐ 这句好"</div></div>
+        <div class="rule-card"><div class="rule-emoji">⏱️</div><div class="rule-name">时间感知</div><div class="rule-example">"3分钟还没进主题"</div></div>
+        <div class="rule-card"><div class="rule-emoji">🎭</div><div class="rule-name">立场模糊</div><div class="rule-example">"你到底觉得呢？"</div></div>
+        <div class="rule-card"><div class="rule-emoji">✨</div><div class="rule-name">类比检测</div><div class="rule-example">"✓ 有画面"</div></div>
+        <div class="rule-card"><div class="rule-emoji">🔢</div><div class="rule-name">抽象过多</div><div class="rule-example">"给个数字"</div></div>
+        <div class="rule-card"><div class="rule-emoji">💬</div><div class="rule-name">自问自答</div><div class="rule-example">"✓ 好结构"</div></div>
+      </div>
+
+      <div class="pause-result reveal-scale">
+        <p>我用了一段时间之后，现在录视频卡顿的时候，<strong>直接停下来不说话</strong>，而不是用"然后"去填。节奏感一下就出来了。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 报告 ====== -->
+  <section class="section-report" id="report">
+    <div class="container">
+      <div class="section-header reveal-scale">
+        <h2>录完生成分析报告</h2>
+        <span class="prompt-badge">📝 内置 Prompt · 117行</span>
+      </div>
+
+      <div class="report-list stagger-container">
+        <div class="report-item stagger-item">
+          <span class="report-dot">1</span>
+          <h3>总评</h3>
+          <p>总分（0-100）+ 一句话定位：你的表达整体特点和核心问题。</p>
+        </div>
+        <div class="report-item stagger-item">
+          <span class="report-dot">2</span>
+          <h3>亮点</h3>
+          <p>逐句标出说得好的部分——画面感强？逻辑清晰？钩子有效？引用原文+点评。</p>
+        </div>
+        <div class="report-item stagger-item">
+          <span class="report-dot">3</span>
+          <h3>逐句编辑</h3>
+          <p>原文 → 建议 → 原因。逐句精简，不跳过。</p>
+        </div>
+        <div class="report-item stagger-item">
+          <span class="report-dot">4</span>
+          <h3>用词精准度</h3>
+          <p>列出所有情绪词/程度词/描述词，给出更细腻的替代。</p>
+        </div>
+        <div class="report-item stagger-item">
+          <span class="report-dot">5</span>
+          <h3>行为模式分析</h3>
+          <p>深度分析你的沟通行为模式：</p>
+          <ul class="sub-list">
+            <li>填充词模式</li>
+            <li>冲突回避</li>
+            <li>犹豫模式</li>
+            <li>直接性评分</li>
+            <li>说服力结构</li>
+          </ul>
+        </div>
+        <div class="report-item stagger-item">
+          <span class="report-dot">6</span>
+          <h3>数据</h3>
+          <p>总时长、总字数、语速、表达密度、填充词频率、犹豫词占比、直接性评分。</p>
+        </div>
+        <div class="report-item stagger-item">
+          <span class="report-dot">7</span>
+          <h3>下次练习重点</h3>
+          <p>1条最关键的改进方向 + 具体练法。可操作，不是空话。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== CTA ====== -->
+  <section class="section-cta" id="cta">
+    <div class="container">
+      <p class="cta-label reveal">CALL TO ACTION</p>
+      <h2 class="reveal" style="transition-delay:0.1s;">录60秒，看看你的逐字稿</h2>
+      <p class="cta-desc reveal" style="transition-delay:0.2s;">GitHub免费下载。首次下载约1.5G（内置语音识别引擎 + 27000词情感词典）。右上角设置填入你的API Key即可使用。</p>
+      <a class="cta-action reveal" style="transition-delay:0.3s;" href="https://github.com/fxy2311-youyou/expression-trainer" target="_blank">去 GitHub 下载 → expression-trainer</a>
+      <p class="cta-repo reveal" style="transition-delay:0.4s;">fxy2311-youyou / expression-trainer</p>
+    </div>
+  </section>
+
+  <!-- ====== Footer ====== -->
+  <footer class="footer">
+    <p class="signature">sisi</p>
+  </footer>
+
+  <!-- ====== JS ====== -->
+  <script>
+    // Unified IntersectionObserver for all reveal effects
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal, .reveal-scale, .stagger-container').forEach(el => observer.observe(el));
+
+    // Rules grid stagger — custom observer for individual cards
+    const rulesObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const grid = entry.target;
+          const cards = grid.querySelectorAll('.rule-card');
+          cards.forEach((card, i) => {
+            setTimeout(() => {
+              card.classList.add('visible');
+            }, i * 60);
+          });
+          rulesObs.unobserve(grid);
+        }
+      });
+    }, { threshold: 0.15 });
+    const rulesGrid = document.getElementById('rulesGrid');
+    if (rulesGrid) rulesObs.observe(rulesGrid);
+
+    // Float nav active state
+    const navItems = document.querySelectorAll('.float-nav .nav-item');
+    const sections = [];
+    navItems.forEach(item => {
+      const id = item.getAttribute('href').replace('#', '');
+      const el = document.getElementById(id);
+      if (el) sections.push({ el, item });
+    });
+
+    const navObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navItems.forEach(n => n.classList.remove('active'));
+          const match = sections.find(s => s.el === entry.target);
+          if (match) match.item.classList.add('active');
+        }
+      });
+    }, { threshold: 0.3 });
+
+    sections.forEach(s => navObserver.observe(s.el));
+  </script>
+</body>
+</html>
