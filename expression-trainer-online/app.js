@@ -526,7 +526,6 @@ class ExpressionTrainer {
     document.getElementById('settings-apikey').value = settings.apiKey || '';
     document.getElementById('settings-model').value = settings.model || '';
     document.getElementById('settings-endpoint').value = settings.customEndpoint || '';
-    document.getElementById('settings-posthog').value = localStorage.getItem('posthog_key') || '';
     document.getElementById('settings-custom-group').classList.toggle('hidden', settings.provider !== 'custom');
     this.settingsModal.classList.remove('hidden');
   }
@@ -539,15 +538,6 @@ class ExpressionTrainer {
       customEndpoint: document.getElementById('settings-endpoint').value.trim()
     };
     saveSettings(settings);
-
-    const phKey = document.getElementById('settings-posthog').value.trim();
-    if (phKey) {
-      localStorage.setItem('posthog_key', phKey);
-      if (window.posthog && window.posthog.init) posthog.init(phKey, { api_host: 'https://us.i.posthog.com' });
-    } else {
-      localStorage.removeItem('posthog_key');
-    }
-
     this.settingsModal.classList.add('hidden');
   }
 
