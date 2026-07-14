@@ -1,19 +1,65 @@
 // 宇宙无敌表达训练系统 - Web版 (Web Speech API)
 
-// ===== 词库 =====
-const FILLER_WORDS = [
+// ===== 语言设置 =====
+function getLang() { return localStorage.getItem('expr_lang') || 'zh'; }
+function setLang(lang) { localStorage.setItem('expr_lang', lang); }
+
+// ===== 中文词库 =====
+const FILLER_WORDS_ZH = [
   '嗯', '啊', '呃', '额', '那个', '就是', '然后',
   '这个', '对吧', '是吧', '你知道', '怎么说呢',
   '反正', '基本上', '总之', '所以说'
 ];
-
-const HEDGE_WORDS = [
+const HEDGE_WORDS_ZH = [
   '可能', '也许', '大概', '应该', '我觉得', '好像',
   '似乎', '或许', '不一定', '差不多', '算是',
   '某种程度上', '一般来说', '感觉'
 ];
 
-const VAGUE_TO_PRECISE = {
+// ===== 英文词库 =====
+const FILLER_WORDS_EN = [
+  'um', 'uh', 'ah', 'er', 'like', 'you know', 'basically',
+  'actually', 'literally', 'so', 'well', 'right', 'okay so',
+  'I mean', 'you see', 'kind of like', 'sort of like'
+];
+const HEDGE_WORDS_EN = [
+  'maybe', 'perhaps', 'probably', 'I think', 'I guess',
+  'kind of', 'sort of', 'a little bit', 'somewhat',
+  'I suppose', 'it seems', 'more or less', 'in a way', 'arguably'
+];
+const VAGUE_TO_PRECISE_EN = {
+  'good': ['excellent', 'outstanding', 'remarkable', 'exceptional', 'superb', 'stellar'],
+  'bad': ['terrible', 'dreadful', 'appalling', 'atrocious', 'disastrous', 'abysmal'],
+  'big': ['enormous', 'substantial', 'colossal', 'immense', 'massive', 'considerable'],
+  'small': ['minuscule', 'negligible', 'trivial', 'microscopic', 'compact', 'modest'],
+  'very': ['exceptionally', 'remarkably', 'extraordinarily', 'tremendously', 'profoundly', 'intensely'],
+  'a lot': ['extensively', 'abundantly', 'substantially', 'considerably', 'tremendously', 'immensely'],
+  'thing': ['aspect', 'element', 'factor', 'component', 'phenomenon', 'concept'],
+  'stuff': ['material', 'content', 'resources', 'elements', 'components', 'substance'],
+  'nice': ['delightful', 'pleasant', 'exquisite', 'charming', 'gracious', 'splendid'],
+  'happy': ['elated', 'thrilled', 'ecstatic', 'overjoyed', 'euphoric', 'jubilant'],
+  'sad': ['devastated', 'heartbroken', 'melancholy', 'sorrowful', 'despondent', 'grief-stricken'],
+  'interesting': ['fascinating', 'compelling', 'captivating', 'intriguing', 'riveting', 'thought-provoking'],
+  'important': ['crucial', 'vital', 'essential', 'paramount', 'significant', 'critical'],
+  'hard': ['challenging', 'demanding', 'grueling', 'strenuous', 'arduous', 'formidable'],
+  'easy': ['effortless', 'straightforward', 'seamless', 'intuitive', 'manageable', 'uncomplicated'],
+  'fast': ['rapid', 'swift', 'lightning-fast', 'instantaneous', 'brisk', 'accelerated'],
+  'slow': ['gradual', 'sluggish', 'unhurried', 'leisurely', 'plodding', 'painstaking'],
+  'get': ['obtain', 'acquire', 'secure', 'achieve', 'attain', 'procure'],
+  'make': ['create', 'construct', 'produce', 'generate', 'establish', 'craft'],
+  'really': ['genuinely', 'truly', 'undeniably', 'absolutely', 'undoubtedly', 'fundamentally']
+};
+
+// ===== 根据语言获取词库 =====
+function getFillerWords() { return getLang() === 'en' ? FILLER_WORDS_EN : FILLER_WORDS_ZH; }
+function getHedgeWords() { return getLang() === 'en' ? HEDGE_WORDS_EN : HEDGE_WORDS_ZH; }
+function getVagueToPrecise() { return getLang() === 'en' ? VAGUE_TO_PRECISE_EN : VAGUE_TO_PRECISE_ZH; }
+
+// 兼容旧引用
+const FILLER_WORDS = FILLER_WORDS_ZH;
+const HEDGE_WORDS = HEDGE_WORDS_ZH;
+
+const VAGUE_TO_PRECISE_ZH = {
   '开心': ['欣喜', '雀跃', '兴奋', '欣慰', '畅快', '满足'],
   '难过': ['心酸', '失落', '委屈', '心疼', '沮丧', '低落'],
   '害怕': ['恐惧', '焦虑', '不安', '慌张', '胆怯', '忐忑'],
@@ -35,6 +81,7 @@ const VAGUE_TO_PRECISE = {
   '说': ['表达', '阐述', '强调', '指出', '坦言', '声明'],
   '想想': ['反思', '回顾', '审视', '复盘', '琢磨', '斟酌']
 };
+const VAGUE_TO_PRECISE = VAGUE_TO_PRECISE_ZH;
 
 // ===== Prompt 模板 =====
 function getRealtimePrompt(text, context, customPrompt) {
@@ -56,7 +103,32 @@ function getRealtimePrompt(text, context, customPrompt) {
   if (topic) contextBlock += `[开头主题: "${topic}"] `;
   if (prevPoints.length > 0) contextBlock += `[已说过的观点: ${prevPoints.join(';')}]`;
 
-  const system = `你是中文口语表达的实时教练。每次只输出1条提示，不超过8个字，不加标点，不解释。
+  let system;
+  if (getLang() === 'en') {
+    system = `你是英语口语表达的实时教练。用中文输出提示，每次只1条，不超过8个字，不加标点。
+
+用户正在用英语演讲/表达。根据最新这段话判断是否触发规则：
+
+## 触发规则
+1. 重复检测：同一观点说过→「说过一遍」
+2. 结论缺失：只有铺垫没结论→「说结论」
+3. 好结构：出现自问自答(why?because...)→「✓ 好结构」
+4. 缺例子：说了很久没举例→「举个例子？」
+5. 前后矛盾→「跟前面矛盾」
+6. 超时未入主题→「3分钟，还没进主题」
+7. 金句：有力/有画面感→「⭐ 这句好」
+8. 类比/故事→「✓ 有画面」
+9. 太抽象没具体数字→「太抽象，给个数字」
+10. 跑题→「跑题」
+11. 立场模糊(it depends/not bad/whatever)→「你到底觉得呢？」
+
+## 硬性约束
+- 用中文输出提示，不超过8个字
+- 不加引号、标点、编号
+- 都没触发则输出空行
+- 不管语音识别错误` + customBlock;
+  } else {
+    system = `你是中文口语表达的实时教练。每次只输出1条提示，不超过8个字，不加标点，不解释。
 
 你的职责：根据最新这段话，判断是否触发以下任一规则。触发了输出对应提示。都没触发输出空行。
 
@@ -80,6 +152,7 @@ function getRealtimePrompt(text, context, customPrompt) {
 - 正向反馈（3、7、8）和负向提醒混着来，不要偏向某一种
 - 如果都没触发，输出一个空行
 - 不管错别字、不管语音识别错误` + customBlock;
+  }
 
   const user = `${contextBlock}\n\n最新一段：\n"${text.slice(-500)}"`;
 
@@ -94,7 +167,62 @@ function getReportPrompt(fullText, stats, customPrompt) {
     if (customPrompt.customWords) customBlock += `\n\n## 用户额外口癖词(请在报告中一并统计)\n${customPrompt.customWords}`;
   }
 
-  const system = `你是专业中文表达教练,融合了两套核心能力:
+  let system;
+  if (getLang() === 'en') {
+    system = `你是专业英语口语表达教练。用户刚用英语说了一段话，你需要用中文写一份详细的分析报告。
+
+报告开头第一句话固定为：「宇宙无敌少女收到你的英语录音啦~~」
+
+请严格按以下结构输出(markdown格式):
+
+## 总评
+给一个总分(0-100)和一句话定位。
+
+## ✓ 亮点
+引用英文原文中说得好的部分，用中文解释为什么好。
+
+## 🔧 连句编辑
+对每句有问题的英文，给出:
+> 原文: "xxx"
+> 建议: "xxx"
+> 原因(中文): xxx
+
+包括: 语法错误、用词不精准、句式单一、表达不地道、逻辑不清晰。
+
+## 📝 用词精准度
+
+| 原词 | 可替换为 |
+|------|--------|
+| good | excellent / outstanding / remarkable |
+| very | incredibly / remarkably / profoundly |
+
+只列出笼统/重复/低级的英文词，给出更高级的替代。
+
+## 💬 行为模式分析
+
+**填充词模式**: um/uh/like/you know等出现频率和情境。
+**犹豫模式**: maybe/I think/kind of等hedging词的使用情况。
+**直接性**: 哪些地方可以更直接，对比原文vs直接版。
+**语法准确度**: 时态、主谓一致、冒词、介词等常见问题。
+**发音提示**: 根据语音识别结果推测可能的发音问题。
+
+## 📊 数据
+
+| 指标 | 数值 |
+|------|------|
+| 时长 | Xs |
+| 总词数 | X |
+| 语速 | X词/分钟 |
+| 填充词频率 | X次/分钟 |
+| 犹豫词占比 | X% |
+
+## 🎯 下次练习重点
+只给1条最关键的改进方向 + 具体怎么练。
+
+---
+语气要求:用中文写，直接、犯利、有建设性。像一个严格但真心关心你的英语教练。` + customBlock;
+  } else {
+    system = `你是专业中文表达教练,融合了两套核心能力:
 
 **能力一：沟通行为分析 (meeting-insights-analyzer)**
 ——识别行为模式、冲突回避、填充词习惯、说话比例、主导性vs被动性、倒退语言(hedging)模式、间接表达习惯。具体分析维度:
@@ -216,6 +344,7 @@ function getReportPrompt(fullText, stats, customPrompt) {
 ---
 
 语气要求:直接、犀利、有建设性。像一个严格但真心关心你的教练。不要客套、不要废话。` + customBlock;
+  }
 
   const user = `以下是说话者的完整口语内容:
 
@@ -285,24 +414,31 @@ async function callAI(messages, maxTokens = 200) {
 function analyzeText(text) {
   if (!text || !text.trim()) return null;
 
+  const lang = getLang();
+  const fillerList = getFillerWords();
+  const hedgeList = getHedgeWords();
+  const vagueMap = getVagueToPrecise();
+
   const words = segmentText(text);
   const totalWords = words.length;
 
   const fillers = [];
   words.forEach((word, idx) => {
-    if (FILLER_WORDS.includes(word)) fillers.push({ word, position: idx });
+    const w = lang === 'en' ? word.toLowerCase() : word;
+    if (fillerList.some(f => lang === 'en' ? f.toLowerCase() === w : f === w)) fillers.push({ word, position: idx });
   });
 
   const hedges = [];
   words.forEach((word, idx) => {
-    if (HEDGE_WORDS.includes(word)) hedges.push({ word, position: idx });
+    const w = lang === 'en' ? word.toLowerCase() : word;
+    if (hedgeList.some(h => lang === 'en' ? h.toLowerCase() === w : h === w)) hedges.push({ word, position: idx });
   });
 
   const vagueWords = [];
   words.forEach((word, idx) => {
-    if (VAGUE_TO_PRECISE[word]) {
-      vagueWords.push({ word, position: idx, alternatives: VAGUE_TO_PRECISE[word] });
-    }
+    const w = lang === 'en' ? word.toLowerCase() : word;
+    const key = Object.keys(vagueMap).find(k => lang === 'en' ? k.toLowerCase() === w : k === w);
+    if (key) vagueWords.push({ word, position: idx, alternatives: vagueMap[key] });
   });
 
   const meaningfulWords = totalWords - fillers.length - hedges.length;
@@ -312,10 +448,18 @@ function analyzeText(text) {
 }
 
 function segmentText(text) {
+  if (getLang() === 'en') {
+    // 英文用空格分词
+    return text.split(/\s+/).filter(w => w.length > 0);
+  }
+  // 中文用词典匹配
   const words = [];
   let i = 0;
   const maxLen = 6;
-  const dict = new Set([...FILLER_WORDS, ...HEDGE_WORDS, ...Object.keys(VAGUE_TO_PRECISE)]);
+  const fillerList = getFillerWords();
+  const hedgeList = getHedgeWords();
+  const vagueMap = getVagueToPrecise();
+  const dict = new Set([...fillerList, ...hedgeList, ...Object.keys(vagueMap)]);
 
   while (i < text.length) {
     let matched = false;
@@ -396,6 +540,8 @@ class ExpressionTrainer {
     this.initElements();
     this.bindEvents();
     this.showWelcome();
+    // 初始化语言按钮显示
+    this.btnLangToggle.textContent = getLang().toUpperCase();
     track('page_view');
   }
 
@@ -407,6 +553,7 @@ class ExpressionTrainer {
     this.btnStop = document.getElementById('btn-stop');
     this.btnReport = document.getElementById('btn-report');
     this.btnSettings = document.getElementById('btn-settings');
+    this.btnLangToggle = document.getElementById('btn-lang-toggle');
     this.btnPromptEditor = document.getElementById('btn-prompt-editor');
     this.btnCopyText = document.getElementById('btn-copy-text');
     this.btnSaveText = document.getElementById('btn-save-text');
@@ -442,6 +589,7 @@ class ExpressionTrainer {
 
     // Topbar
     this.btnSettings.addEventListener('click', () => this.openSettings());
+    this.btnLangToggle.addEventListener('click', () => this.toggleLang());
     this.btnPromptEditor.addEventListener('click', () => this.openPromptEditor());
 
     // Subtitle toolbar
@@ -520,6 +668,16 @@ class ExpressionTrainer {
   }
 
   // ===== Settings =====
+  toggleLang() {
+    const current = getLang();
+    const next = current === 'zh' ? 'en' : 'zh';
+    setLang(next);
+    this.btnLangToggle.textContent = next.toUpperCase();
+    // 提示用户
+    const msg = next === 'en' ? 'Switched to English mode' : '已切换为中文模式';
+    this.addFeedbackItem(msg, 'ai');
+  }
+
   openSettings() {
     const settings = loadSettings();
     document.getElementById('settings-provider').value = settings.provider || 'deepseek';
@@ -571,7 +729,7 @@ class ExpressionTrainer {
     }
 
     this.recognition = new SpeechRecognition();
-    this.recognition.lang = 'zh-CN';
+    this.recognition.lang = getLang() === 'en' ? 'en-US' : 'zh-CN';
     this.recognition.continuous = true;
     this.recognition.interimResults = true;
 
@@ -742,16 +900,27 @@ class ExpressionTrainer {
 
   highlightText(text) {
     let result = text;
-    // 笼统词（只高亮多字词，避免单字过度标记）
-    const HIGHLIGHT_VAGUE = ['开心','难过','害怕','生气','不舒服','很好','很多','很快','很大','很小','好看','不好','喜欢','讨厌','觉得','想想'];
-    HIGHLIGHT_VAGUE.sort((a, b) => b.length - a.length).forEach(w => {
-      result = result.replace(new RegExp(w, 'g'), `<span class="vague">${w}</span>`);
+    const fillers = getFillerWords();
+    const hedges = getHedgeWords();
+    const vagueMap = getVagueToPrecise();
+    const vagueKeys = Object.keys(vagueMap);
+    // 笼统词
+    vagueKeys.sort((a, b) => b.length - a.length).forEach(w => {
+      const escaped = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const flags = getLang() === 'en' ? 'gi' : 'g';
+      result = result.replace(new RegExp(escaped, flags), `<span class="vague">${w}</span>`);
     });
     // 填充词
-    const fillerPattern = new RegExp('(' + FILLER_WORDS.sort((a, b) => b.length - a.length).join('|') + ')', 'g');
+    const fillersSorted = [...fillers].sort((a, b) => b.length - a.length);
+    const fillerEscaped = fillersSorted.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const fillerFlags = getLang() === 'en' ? 'gi' : 'g';
+    const fillerPattern = new RegExp('(' + fillerEscaped.join('|') + ')', fillerFlags);
     result = result.replace(fillerPattern, '<span class="filler">$1</span>');
     // 犹豫词
-    const hedgePattern = new RegExp('(' + HEDGE_WORDS.sort((a, b) => b.length - a.length).join('|') + ')', 'g');
+    const hedgesSorted = [...hedges].sort((a, b) => b.length - a.length);
+    const hedgeEscaped = hedgesSorted.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const hedgeFlags = getLang() === 'en' ? 'gi' : 'g';
+    const hedgePattern = new RegExp('(' + hedgeEscaped.join('|') + ')', hedgeFlags);
     result = result.replace(hedgePattern, '<span class="hedge">$1</span>');
     return result;
   }
