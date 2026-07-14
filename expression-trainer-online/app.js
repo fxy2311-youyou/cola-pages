@@ -364,6 +364,19 @@ function track(event, props) {
   }
 }
 
+// ===== 后端数据上报 =====
+const API_BASE = 'https://cola-dispatch.marswave-543.workers.dev/app-cd8409';
+function getUID() {
+  let uid = localStorage.getItem('expr_uid');
+  if (!uid) { uid = 'u_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem('expr_uid', uid); }
+  return uid;
+}
+function reportToBackend(endpoint, data) {
+  try { fetch(API_BASE + endpoint, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({uid: getUID(), ...data}) }); } catch(e) {}
+}
+// 页面加载时上报访问
+reportToBackend('/api/track', {});
+
 // ===== 主应用 =====
 class ExpressionTrainer {
   constructor() {
@@ -689,6 +702,11 @@ class ExpressionTrainer {
     }
 
     track('recording_stop', { duration: this.stats.duration, words: this.stats.totalWords });
+    // 上报训练数据到后端
+    if (this.fullText.trim()) {
+      const density = this.stats.totalWords > 0 ? ((this.stats.totalWords - this.stats.fillers - this.stats.hedges) / this.stats.totalWords * 100).toFixed(0) + '%' : '--';
+      reportToBackend('/api/session', { duration: this.stats.duration, totalWords: this.stats.totalWords, fillers: this.stats.fillers, hedges: this.stats.hedges, vagueWords: this.stats.vagueWords, density, fullText: this.fullText.slice(0, 5000) });
+    }
   }
 
   // ===== ASR结果处理 =====
@@ -852,6 +870,8 @@ class ExpressionTrainer {
       this.lastReport = result;
       this.renderReport(result);
       track('report_success');
+      // 报告内容也上报后端
+      reportToBackend('/api/session', { duration: this.stats.duration, totalWords: this.stats.totalWords, fillers: this.stats.fillers, hedges: this.stats.hedges, vagueWords: this.stats.vagueWords, density: '', fullText: this.fullText.slice(0, 5000), report: result.slice(0, 10000) });
     } else {
       this.reportBody.innerHTML = `<p style="color:#ff6b6b;">生成失败：请检查设置中的API Key是否正确。</p>`;
     }
