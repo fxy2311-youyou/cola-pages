@@ -120,6 +120,7 @@ footer{border-top:1px solid var(--line);padding:20px 0 28px;display:flex;justify
     <div class="rule"><b>04</b><div><strong>签到第一天要有系统负责人</strong><p>签到系统第一天使用时，Desal 必须在场。遇到系统问题，先通过当班主创联系。</p></div></div>
     <div class="rule"><b>05</b><div><strong>离开前交代去向</strong><p>临时离开区域时，请把可联系的人、预计返回时间和正在跟进的事项交代给现场伙伴。</p></div></div>
     <div class="rule"><b>06</b><div><strong>电话待补齐后再发现场版</strong><p>当前 Excel 没有电话号码数据，通讯录中的电话和个人备注请补录确认后，再分享给全体执行人员。</p></div></div>
+    <div class="rule"><b>07</b><div><strong>每天两个固定采购时间点</strong><p>后勤每天固定在 12:00 和 18:00 处理采购。同一天的两个时间点由同一位负责人（30 日为同一组负责人）负责，请在对应时间点之前，把采购信息提前给到后勤负责人，避免临时找人或漏采。</p></div></div>
   </div>
 </section>
 </main>
@@ -128,8 +129,8 @@ footer{border-top:1px solid var(--line);padding:20px 0 28px;display:flex;justify
 <script>
 const areas = [
   {id:'workshop', index:'①', name:'Workshop 区', note:'主创在对应班次作为区域联系人。', shifts:[
-    {label:'班次 1',time:'8:00—14:00',people:{26:['/'],27:['托托'],28:['托托'],29:['西瓜'],30:['/']}},
-    {label:'班次 2',time:'14:00—20:30',people:{26:['/'],27:['bona'],28:['西瓜'],29:['bona'],30:['/']}}
+    {label:'班次 1',time:'8:00—14:00',people:{26:['/'],27:['托托'],28:['托托'],29:['托托'],30:['/']}},
+    {label:'班次 2',time:'14:00—20:30',people:{26:['/'],27:['bona'],28:['bona'],29:['bona'],30:['/']}}
   ]},
   {id:'coding', index:'⑥', name:'Coding + 睡眠区', note:'产品提交与评委打分系统的开始、截止节点，Desal 必须在场。', shifts:[
     {label:'班次 1',time:'8:00—16:00',people:{26:['jenny'],27:['栗子'],28:['jenny'],29:['栗子'],30:['Desal','sisi']}},
@@ -151,9 +152,9 @@ const areas = [
   {id:'sponsor', index:'⑤', name:'赞助商区', note:'原表 26 日下方另写 jenny，暂按追加联系人保留。', shifts:[
     {label:'班次 1',time:'9:00—18:00',people:{26:['心果','rae','jenny'],27:['阿润'],28:['小涵'],29:['托托','刺刺'],30:['jenny']}}
   ]},
-  {id:'logistics', index:'⑦', name:'后勤', note:'固定时间点安排；18:00 的人员原表为空，需补充确认。', shifts:[
-    {label:'固定时间',time:'12:00',people:{26:['橙子'],27:['阿润'],28:['橙子'],29:['阿润'],30:['橙子','阿润']}},
-    {label:'固定时间',time:'18:00',people:{26:['待补充'],27:['待补充'],28:['待补充'],29:['待补充'],30:['待补充']}}
+  {id:'logistics', index:'⑦', name:'后勤', note:'每天两个固定采购时间点：12:00 和 18:00；同一天的两个时间点由同一位负责人负责，30 日为同一组负责人。', shifts:[
+    {label:'固定时间点',time:'12:00',people:{26:['橙子'],27:['阿润'],28:['橙子'],29:['阿润'],30:['橙子','阿润']}},
+    {label:'固定时间点',time:'18:00',people:{26:['橙子'],27:['阿润'],28:['橙子'],29:['阿润'],30:['橙子','阿润']}}
   ]}
 ];
 const dates=['26','27','28','29','30'];
@@ -171,10 +172,17 @@ const contactDefaults={
   小羊:{phone:'18874083011'},
   小田:{phone:'15088678387'},
   bona:{phone:'13194595808'},
-  西瓜:{phone:'16621003453'}
+  西瓜:{phone:'16621003453'},
+  eagle:{phone:'18101645271'},
+  栗子:{phone:'15388996558'},
+  Desal:{phone:'18906665536'},
+  小涵:{phone:'13455207310'},
+  rae:{phone:'18917911264'},
+  刺刺:{phone:'15901962705'},
+  心果:{phone:'19808982155'}
 };
 const systemNotes=['产品提交系统开始和截止时，Desal 必须在场','评委打分提交系统开始和截止时，Desal 必须在场','硬件系统第一次使用时，Desal 必须在场','签到系统第一天使用时，Desal 必须在场'];
-const people = [...new Set(areas.flatMap(a=>a.shifts.flatMap(s=>dates.flatMap(d=>s.people[d]||[]))).map(normalizePerson).filter(p=>p && p!=='/' && p!=='待补充'))].sort((a,b)=>a.localeCompare(b,'zh-CN'));
+const people = [...new Set(areas.flatMap(a=>a.shifts.flatMap(s=>dates.flatMap(d=>s.people[d]||[]))).map(normalizePerson).filter(p=>p && p!=='/' && !p.startsWith('待')))].sort((a,b)=>a.localeCompare(b,'zh-CN'));
 const state={area:'all',date:'all',person:'all',query:'',view:'schedule',selectedPerson:people[0]||''};
 const contactKey='creator-schedule-contacts-v1';
 let contacts=JSON.parse(localStorage.getItem(contactKey)||'{}');
@@ -222,7 +230,7 @@ function renderSchedule(){
       const shifts=area.shifts.map(shift=>{
         const persons=(shift.people[date]||[]).map(normalizePerson).filter(person=>(state.person==='all'||person===state.person)&&matchesText(area,shift,date,person));
         if(!persons.length)return '';
-        return `<div class="area-shift"><div class="area-shift-meta"><span class="area-shift-label">${esc(shift.label)}</span><span class="area-shift-time">${esc(shift.special?.[date]||shift.time)}</span></div><div class="people">${persons.map(person=>person==='/'?'<span class="empty-chip">未安排</span>':person==='待补充'?'<span class="empty-chip">人员待补充</span>':personMarkup(person)).join('')}</div>${shift.special?.[date]?`<div class="special">原表备注：该日为 ${esc(shift.special[date])}</div>`:''}</div>`;
+        return `<div class="area-shift"><div class="area-shift-meta"><span class="area-shift-label">${esc(shift.label)}</span><span class="area-shift-time">${esc(shift.special?.[date]||shift.time)}</span></div><div class="people">${persons.map(person=>person==='/'?'<span class="empty-chip">暂无</span>':person.startsWith('待')?'<span class="empty-chip">人员待确认</span>':personMarkup(person)).join('')}</div>${shift.special?.[date]?`<div class="special">原表备注：该日为 ${esc(shift.special[date])}</div>`:''}</div>`;
       }).join('');
       return `<div class="area-date-card ${state.date===date?'active':''}">${shifts||'<div class="area-date-empty">当天暂无安排</div>'}</div>`;
     }).join('');
